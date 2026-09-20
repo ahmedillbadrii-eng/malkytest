@@ -304,6 +304,27 @@ function renderOrders(){
 }
 function renderStock(){ $("#criticalStock").innerHTML=stock.map(s=>{let p=s.qty/s.max*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} وحدة متاحة</small><div class="progress"><b class="${c}" style="width:${Math.max(p,3)}%"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("")}
 function renderBranches(){
+  const selectedBranch = $("#branch").value;
+
+  const filteredBranches = selectedBranch === "all"
+    ? branches
+    : branches.filter(b => b.name === selectedBranch);
+
+  $("#branchesTable").innerHTML = filteredBranches.map(b => `
+    <tr>
+      <td><b>${b.name || "غير محدد"}</b></td>
+      <td>${b.orders ?? 0}</td>
+      <td>${b.sales || "0 ج"}</td>
+      <td>${b.pending ?? 0}</td>
+      <td>—</td>
+      <td>
+        <span class="status ${b.status_class || "green"}">
+          ${b.status || "جيد"}
+        </span>
+      </td>
+    </tr>
+  `).join("");
+}
   $("#branchesTable").innerHTML = branches.map(b => `
     <tr>
       <td><b>${b.name || "غير محدد"}</b></td>
