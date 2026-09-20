@@ -303,7 +303,18 @@ function renderOrders(){
  $("#ordersTable").innerHTML=arr.map(o=>`<tr><td><span class="order-id">${o.id}</span></td><td>${o.time}</td><td>${o.name}<br><small style="color:var(--muted)">${o.phone}</small></td><td>${o.branch}</td><td>${o.items}</td><td><b>${o.total} ج</b></td><td>${o.payment==="instapay"?"InstaPay":"كاش"}</td><td>${badgeStatus(o.status)}</td><td><div class="mini-actions"><button class="mini" data-view="${o.id}">تفاصيل</button>${o.status==="pending"?`<button class="mini green" data-confirm="${o.id}">تأكيد</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${o.id}">التالي</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="9" class="empty">لا توجد طلبات مطابقة</td></tr>`;
 }
 function renderStock(){ $("#criticalStock").innerHTML=stock.map(s=>{let p=s.qty/s.max*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} وحدة متاحة</small><div class="progress"><b class="${c}" style="width:${Math.max(p,3)}%"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("")}
-function renderBranches(){$("#branchesTable").innerHTML=branches.map(b=>`<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td>${b[2]}</td><td>${b[3]}</td><td>${b[4]}</td><td><span class="badge b-${b[5]}">${b[5]==="green"?"متصل":"تنبيه"}</span></td></tr>`).join("")}
+function renderBranches(){
+  $("#branchesTable").innerHTML = branches.map(b => `
+    <tr>
+      <td><b>${b.name || "غير محدد"}</b></td>
+      <td>${b.orders ?? 0}</td>
+      <td>${b.sales || "0 ج"}</td>
+      <td>${b.pending ?? 0}</td>
+      <td>—</td>
+      <td><span class="status ${b.status_class || "green"}">${b.status || "جيد"}</span></td>
+    </tr>
+  `).join("");
+}
 function renderCustomers(){$("#customersTable").innerHTML=customers.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join("")}
 function renderPayments(){$("#paymentStats").innerHTML=`<div class="status-list"><div class="status-row"><span>إجمالي المدفوع</span><b>7,985 ج</b></div><div class="status-row"><span>مؤكد</span><span class="badge b-green">18</span></div><div class="status-row"><span>قيد المراجعة</span><span class="badge b-yellow">4</span></div><div class="status-row"><span>فشل</span><span class="badge b-red">1</span></div></div>`;$("#paymentPending").innerHTML=orders.filter(o=>o.status==="pending").map(o=>`<div class="status-row" style="margin-bottom:8px"><span><b>${o.id}</b><br><small>${o.name} • ${o.total} ج</small></span><button class="mini green" data-confirm="${o.id}">تأكيد</button></div>`).join("")}
 function showSection(id){
