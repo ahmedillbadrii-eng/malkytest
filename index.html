@@ -1,66 +1,6 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<script>
-window.MALKY_API = {
-  // TEST URL — replace with Production URL after the first successful test.
-  data: 'https://ahmadbadryy.duckdns.org/webhook-test/malky-dashboard-data',
-  action: 'https://ahmadbadryy.duckdns.org/webhook-test/malky-dashboard-action'
-};
-
-window.MALKY_LIVE = {
-  enabled: true,
-  fallbackToDemo: true,
-  lastData: null
-};
-
-async function malkyFetchLiveData() {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 8000);
-  try {
-    const r = await fetch(window.MALKY_API.data, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-store',
-      signal: controller.signal
-    });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const data = await r.json();
-    window.MALKY_LIVE.lastData = data;
-    window.dispatchEvent(new CustomEvent('malky-live-data', { detail: data }));
-    return data;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-async function malkySendAction(action, orderId, status) {
-  const body = { action, order_id: orderId };
-  if (status) body.status = status;
-
-  const r = await fetch(window.MALKY_API.action, {
-    method: 'POST',
-    mode: 'cors',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
-  return await r.json();
-}
-
-// Make the existing refresh button try the live API first.
-document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(async () => {
-    try {
-      await malkyFetchLiveData();
-    } catch (e) {
-      console.warn('Malky live API not reachable yet:', e);
-      window.dispatchEvent(new CustomEvent('malky-live-error', { detail: e }));
-    }
-  }, 300);
-});
-</script>
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>المالكي — إدارة وتشغيل</title>
@@ -148,6 +88,7 @@ body{background:linear-gradient(180deg,#f8faff 0%,#f4f6fa 100%);color:var(--text
 </aside>
 
 <main class="main">
+<div id="apiDiagnostic" class="live-strip"><span class="live-dot"></span><span id="liveText">جاري الاتصال بـ n8n…</span></div>
 <header class="top">
   <div class="title"><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub">كل اللي محتاج تعرفه عن الطلبات والتشغيل في شاشة واحدة</p></div>
   <div class="actions"><button class="btn" id="refresh">↻ مزامنة الآن</button><button class="btn primary" id="quick">＋ إضافة طلب</button></div>
@@ -164,9 +105,9 @@ body{background:linear-gradient(180deg,#f8faff 0%,#f4f6fa 100%);color:var(--text
 <div class="kpis">
   <div class="card kpi"><div class="kpi-top"><span>طلبات اليوم</span><span>🛒</span></div><div class="num" id="kOrders">24</div><div class="trend up">↑ 14% عن أمس</div></div>
   <div class="card kpi"><div class="kpi-top"><span>مبيعات اليوم</span><span>💵</span></div><div class="num" id="kSales">8,740 ج</div><div class="trend up">↑ 9.2%</div></div>
-  <div class="card kpi"><div class="kpi-top"><span>مدفوعات مؤكدة</span><span>✅</span></div><div class="num">7,985 ج</div><div class="trend up">18 عملية</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>مدفوعات مؤكدة</span><span>✅</span></div><div class="num" id="kConfirmed">0 ج</div><div class="trend up" id="kConfirmedCount">0 عملية</div></div>
   <div class="card kpi"><div class="kpi-top"><span>قيد الانتظار</span><span>⏳</span></div><div class="num" id="kPending">4</div><div class="trend down">تحتاج متابعة</div></div>
-  <div class="card kpi"><div class="kpi-top"><span>تنبيهات المخزون</span><span>⚠️</span></div><div class="num">6</div><div class="trend down">3 أصناف حرجة</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>تنبيهات المخزون</span><span>⚠️</span></div><div class="num" id="kStockAlerts">0</div><div class="trend down">تنبيهات حالية</div></div>
 </div>
 <div class="grid">
   <div class="card"><div class="card-head"><h2>المبيعات خلال الأسبوع</h2><div class="legend"><span><i></i>المبيعات</span></div></div><div class="card-body"><div class="chart" id="chart"></div></div></div>
@@ -237,8 +178,7 @@ const API = {
 let apiOnline = false;
 let lastSync = null;
 
-let orders=[
- {id:"DEMO-001",time:"—",name:"بيانات تجريبية",phone:"—",branch:"بانتظار المزامنة",items:"سيتم استبدالها بالبيانات الحقيقية",total:0,payment:"cash",status:"pending"}
+let orders=[]
 /* live data from n8n replaces demo data automatically */
 /*,time:"20:56",name:"احمد بدري",phone:"201101216597",branch:"Stock_Heliopolis",items:"مكسرة كراميل ×3",total:395,payment:"cash",status:"processing"},
  {id:"ELM-1011",time:"20:31",name:"محمد علي",phone:"201155889922",branch:"Stock_NasrCity",items:"بليلة بالمكسرات ×2",total:310,payment:"instapay",status:"paid"},
@@ -269,7 +209,7 @@ function setConnection(online, message){
   const liveText=document.querySelector("#liveText");
   const syncText=document.querySelector("#syncText");
   if(strip){strip.classList.toggle("online",online);strip.classList.toggle("offline",!online);}
-  if(liveText) liveText.textContent=online?"البيانات متصلة وتُحدّث من n8n":"الداشبورد جاهز — بانتظار اتصال n8n";
+  if(liveText) liveText.textContent=online?"متصل بـ n8n — البيانات الحالية من API":"تعذر الاتصال بـ n8n — لا توجد بيانات Demo";
   if(syncText) syncText.textContent=lastSync?("آخر مزامنة "+lastSync.toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"})):"آخر مزامنة —";
   const gs=[...document.querySelectorAll(".status-row")].find(x=>x.textContent.includes("Google Sheets"));
   if(gs){ const b=gs.querySelector(".badge"); if(b){b.textContent=online?"متصل":"محاكاة"; b.className=`badge ${online?'b-green':'b-yellow'}`; } }
@@ -314,7 +254,13 @@ function applyLiveData(data){
   if(d.kpis){
     if(d.kpis.orders_today!=null) $("#kOrders").textContent=Number(d.kpis.orders_today).toLocaleString("en-US");
     if(d.kpis.sales_today!=null) $("#kSales").textContent=Number(d.kpis.sales_today).toLocaleString("en-US")+" ج";
+    if(d.kpis.payments_confirmed!=null){
+      const confirmedValue = Number(d.kpis.payments_confirmed);
+      $("#kConfirmed").textContent=confirmedValue.toLocaleString("en-US")+" عملية";
+      $("#kConfirmedCount").textContent=confirmedValue.toLocaleString("en-US")+" عملية مؤكدة";
+    }
     if(d.kpis.pending!=null) $("#kPending").textContent=Number(d.kpis.pending).toLocaleString("en-US");
+    if(d.kpis.stock_alerts!=null) $("#kStockAlerts").textContent=Number(d.kpis.stock_alerts).toLocaleString("en-US");
   }
   renderHome(); renderStock(); renderBranches(); renderCustomers(); renderPayments(); renderOrders();
 }
@@ -331,7 +277,7 @@ async function loadLiveData(showToast=false){
   }catch(err){
     apiOnline=false; setConnection(false,"n8n • وضع تجريبي");
     $("#syncTime").textContent="تعذر الاتصال — Demo";
-    if(showToast) toast("تعذر الاتصال بـ n8n — تم إبقاء بيانات العرض");
+    if(showToast) toast("تعذر الاتصال بـ n8n — لا توجد بيانات تجريبية معروضة");
     return false;
   }
 }
@@ -404,19 +350,9 @@ $("#close").onclick=()=>$("#modal").classList.remove("open");$("#modal").addEven
 $("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderOrders();toast("تم مسح الفلاتر")};
 $("#refresh").onclick=()=>loadLiveData(true);
 $("#quick").onclick=()=>{showSection("orders");toast("من هنا نقدر لاحقًا نربط إنشاء الطلب بـn8n")};
-renderHome();renderStock();renderBranches();renderCustomers();renderPayments();renderOrders();\nsetConnection(false,"n8n • جاري الاتصال");\nloadLiveData(false);
-</script>
-
-<div id="malky-live-badge" style="position:fixed;left:18px;bottom:18px;z-index:99999;padding:8px 12px;border-radius:999px;font:600 12px Arial,sans-serif;background:#fff3cd;color:#856404;box-shadow:0 4px 18px rgba(0,0,0,.12)">جاري الاتصال بـ n8n…</div>
-<script>
-window.addEventListener('malky-live-data', function(e){
-  const b=document.getElementById('malky-live-badge');
-  if(b){b.textContent='● متصل بـ n8n';b.style.background='#d1fae5';b.style.color='#166534';}
-});
-window.addEventListener('malky-live-error', function(){
-  const b=document.getElementById('malky-live-badge');
-  if(b){b.textContent='● وضع Demo — لم يصل طلب للـ n8n';b.style.background='#fee2e2';b.style.color='#991b1b';}
-});
+renderHome();renderStock();renderBranches();renderCustomers();renderPayments();renderOrders();
+setConnection(false,"n8n • جاري الاتصال");
+loadLiveData(false);
 </script>
 
 </body>
