@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المالكي — Operations Dashboard</title>
+<style>
+:root{
+  --bg:#f4f7fb;--panel:#fff;--text:#142033;--muted:#718096;--line:#e7edf5;
+  --brand:#1d4ed8;--brand2:#2563eb;--success:#16a34a;--warning:#d97706;--danger:#dc2626;
+  --info:#0891b2;--shadow:0 8px 30px rgba(15,23,42,.07);--radius:18px;
+}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.sidebar{background:#101827;color:#e7eef9;padding:22px 15px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:6px 10px 25px;font-size:22px;font-weight:800}
+.logo{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#2563eb,#60a5fa);display:grid;place-items:center;color:#fff}
+.nav{display:grid;gap:7px}.nav button{background:transparent;color:#b8c5d8;text-align:right;padding:13px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;width:100%}.nav button:hover,.nav button.active{background:#1e2a3d;color:#fff}.nav .ico{width:22px;text-align:center}
+.side-bottom{position:absolute;bottom:20px;right:15px;left:15px}.connection{background:#172235;border:1px solid #263650;border-radius:14px;padding:13px;font-size:12px;color:#aebbd0}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-left:5px}
+.main{padding:22px 26px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.title h1{margin:0;font-size:27px}.title p{margin:5px 0 0;color:var(--muted)}
+.actions{display:flex;gap:9px;flex-wrap:wrap}.btn{padding:10px 14px;border-radius:11px;background:#fff;border:1px solid var(--line);color:var(--text);font-weight:700}.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}.btn.success{background:#ecfdf3;color:#15803d;border-color:#bbf7d0}.btn:active{transform:translateY(1px)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.filters input,.filters select{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 12px;outline:none}.filters input{min-width:250px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.kpi{padding:18px}.kpi-top{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.kpi .num{font-size:28px;font-weight:850;margin:8px 0}.trend{font-size:12px}.up{color:var(--success)}.down{color:var(--danger)}
+.grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}.card-head{display:flex;justify-content:space-between;align-items:center;padding:17px 18px;border-bottom:1px solid var(--line)}.card-head h2{margin:0;font-size:17px}.card-body{padding:17px 18px}
+.chart{height:235px;display:flex;align-items:end;gap:9px;padding:20px 5px 4px}.bar{flex:1;min-width:10px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#60a5fa,#2563eb);position:relative}.bar span{position:absolute;bottom:-22px;right:50%;transform:translateX(50%);font-size:10px;color:var(--muted)}
+.legend{display:flex;gap:15px;color:var(--muted);font-size:12px}.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;background:#2563eb;margin-left:5px}
+.status-list{display:grid;gap:11px}.status-row{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;background:#f8fafc;border-radius:12px}.badge{padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}.b-green{background:#dcfce7;color:#166534}.b-yellow{background:#fef3c7;color:#92400e}.b-red{background:#fee2e2;color:#991b1b}.b-blue{background:#dbeafe;color:#1e40af}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:13px 10px;text-align:right;border-bottom:1px solid var(--line);font-size:13px}.table th{color:var(--muted);font-weight:700;background:#fafbfd;position:sticky;top:0}.order-id{font-weight:850;color:#1d4ed8}.mini-actions{display:flex;gap:5px}.mini{padding:6px 8px;border-radius:8px;background:#eef2ff;color:#3730a3;font-size:11px}.mini.red{background:#fff1f2;color:#be123c}.mini.green{background:#ecfdf5;color:#047857}
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}.stock-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.stock-item:last-child{border-bottom:0}.stock-info{flex:1}.stock-info strong{display:block;font-size:13px}.stock-info small{color:var(--muted)}.progress{height:7px;background:#edf2f7;border-radius:99px;overflow:hidden;margin-top:7px}.progress b{display:block;height:100%;border-radius:99px;background:#2563eb}.progress b.warn{background:#f59e0b}.progress b.danger{background:#ef4444}
+.modal{display:none;position:fixed;inset:0;background:rgba(15,23,42,.48);z-index:20;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modal-box{width:min(650px,100%);background:#fff;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.2);overflow:hidden}.modal-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-content{padding:20px}.close{background:#f1f5f9;border-radius:10px;padding:8px 11px}
+.toast{position:fixed;left:22px;bottom:22px;background:#101827;color:#fff;padding:13px 16px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:30}.toast.show{display:block}
+.empty{padding:35px;text-align:center;color:var(--muted)}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.bottom-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:relative}.side-bottom{position:static;margin-top:15px}.nav{grid-template-columns:repeat(2,1fr)}.main{padding:15px}.kpis{grid-template-columns:repeat(2,1fr)}.top{align-items:flex-start;flex-direction:column}.bottom-grid{grid-template-columns:1fr}.filters input{min-width:0;width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">م</div><div>المالكي<br><small style="font-size:11px;color:#93a4bd">Operations Dashboard</small></div></div>
+  <nav class="nav" id="nav">
+    <button class="active" data-section="home"><span class="ico">🏠</span>الرئيسية</button>
+    <button data-section="orders"><span class="ico">🛒</span>الطلبات</button>
+    <button data-section="stock"><span class="ico">📦</span>المخزون</button>
+    <button data-section="branches"><span class="ico">🏢</span>الفروع</button>
+    <button data-section="customers"><span class="ico">👥</span>العملاء</button>
+    <button data-section="payments"><span class="ico">💰</span>المدفوعات</button>
+    <button data-section="reports"><span class="ico">📊</span>التقارير</button>
+  </nav>
+  <div class="side-bottom"><div class="connection"><span class="dot"></span><b>النظام يعمل</b><br><span>n8n • WhatsApp • Telegram</span></div></div>
+</aside>
+
+<main class="main">
+<header class="top">
+  <div class="title"><h1 id="pageTitle">لوحة التحكم</h1><p id="pageSub">ملخص التشغيل اليومي ومتابعة الطلبات والمخزون</p></div>
+  <div class="actions"><button class="btn" id="refresh">↻ تحديث البيانات</button><button class="btn primary" id="quick">＋ طلب جديد</button></div>
+</header>
+
+<div class="filters">
+  <input id="search" placeholder="ابحث برقم الطلب، اسم العميل، الهاتف..." />
+  <select id="branch"><option value="all">كل الفروع</option><option>Stock_Heliopolis</option><option>Stock_NasrCity</option><option>Stock_NewCairo</option></select>
+  <select id="status"><option value="all">كل الحالات</option><option value="pending">قيد المراجعة</option><option value="paid">مدفوع</option><option value="processing">قيد التجهيز</option><option value="done">تم التسليم</option></select>
+  <button class="btn" id="clearFilters">مسح الفلاتر</button>
+</div>
+
+<section id="home" class="section">
+<div class="kpis">
+  <div class="card kpi"><div class="kpi-top"><span>طلبات اليوم</span><span>🛒</span></div><div class="num" id="kOrders">24</div><div class="trend up">↑ 14% عن أمس</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>مبيعات اليوم</span><span>💵</span></div><div class="num" id="kSales">8,740 ج</div><div class="trend up">↑ 9.2%</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>مدفوعات مؤكدة</span><span>✅</span></div><div class="num">7,985 ج</div><div class="trend up">18 عملية</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>قيد الانتظار</span><span>⏳</span></div><div class="num" id="kPending">4</div><div class="trend down">تحتاج متابعة</div></div>
+  <div class="card kpi"><div class="kpi-top"><span>تنبيهات المخزون</span><span>⚠️</span></div><div class="num">6</div><div class="trend down">3 أصناف حرجة</div></div>
+</div>
+<div class="grid">
+  <div class="card"><div class="card-head"><h2>المبيعات خلال الأسبوع</h2><div class="legend"><span><i></i>المبيعات</span></div></div><div class="card-body"><div class="chart" id="chart"></div></div></div>
+  <div class="card"><div class="card-head"><h2>حالة التشغيل</h2><span class="badge b-green">Live</span></div><div class="card-body"><div class="status-list">
+    <div class="status-row"><span>WhatsApp</span><span class="badge b-green">متصل ●</span></div>
+    <div class="status-row"><span>Telegram</span><span class="badge b-green">متصل ●</span></div>
+    <div class="status-row"><span>n8n</span><span class="badge b-green">يعمل ●</span></div>
+    <div class="status-row"><span>Google Sheets</span><span class="badge b-yellow">محاكاة</span></div>
+    <div class="status-row"><span>آخر مزامنة</span><span id="syncTime">منذ لحظات</span></div>
+  </div></div></div>
+</div>
+<div class="grid">
+  <div class="card"><div class="card-head"><h2>آخر الطلبات</h2><button class="btn" data-go="orders">عرض الكل</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>العميل</th><th>الفرع</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th></tr></thead><tbody id="homeOrders"></tbody></table></div></div>
+  <div class="card"><div class="card-head"><h2>الفروع</h2><button class="btn" data-go="branches">التفاصيل</button></div><div class="card-body" id="branchSummary"></div></div>
+</div>
+</section>
+
+<section id="orders" class="section" hidden>
+<div class="card"><div class="card-head"><h2>إدارة الطلبات</h2><span id="orderCount" class="badge b-blue"></span></div><div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>الوقت</th><th>العميل</th><th>الفرع</th><th>الأصناف</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+</section>
+
+<section id="stock" class="section" hidden>
+<div class="bottom-grid">
+ <div class="card"><div class="card-head"><h2>أصناف حرجة</h2><span class="badge b-red">3</span></div><div class="card-body" id="criticalStock"></div></div>
+ <div class="card"><div class="card-head"><h2>أفضل الأصناف</h2></div><div class="card-body"><div class="stock-item"><div class="stock-info"><strong>مكسرة كراميل</strong><small>72 طلب</small></div><b>↑</b></div><div class="stock-item"><div class="stock-info"><strong>بليلة بالمكسرات</strong><small>58 طلب</small></div><b>↑</b></div><div class="stock-item"><div class="stock-info"><strong>أم علي سادة</strong><small>41 طلب</small></div><b>↑</b></div></div></div>
+ <div class="card"><div class="card-head"><h2>ملخص المخزون</h2></div><div class="card-body"><div class="kpi" style="box-shadow:none;padding:0"><div class="num">1,284</div><div class="trend">وحدة متاحة</div><div class="progress" style="margin-top:18px"><b style="width:68%"></b></div></div></div></div>
+</div>
+</section>
+
+<section id="branches" class="section" hidden>
+<div class="card"><div class="card-head"><h2>أداء الفروع</h2></div><div class="table-wrap"><table class="table"><thead><tr><th>الفرع</th><th>طلبات اليوم</th><th>المبيعات</th><th>قيد التجهيز</th><th>المخزون</th><th>الحالة</th></tr></thead><tbody id="branchesTable"></tbody></table></div></div>
+</section>
+
+<section id="customers" class="section" hidden>
+<div class="card"><div class="card-head"><h2>العملاء</h2><span class="badge b-blue">CRM</span></div><div class="table-wrap"><table class="table"><thead><tr><th>العميل</th><th>الهاتف</th><th>عدد الطلبات</th><th>إجمالي الإنفاق</th><th>آخر طلب</th></tr></thead><tbody id="customersTable"></tbody></table></div></div>
+</section>
+
+<section id="payments" class="section" hidden>
+<div class="bottom-grid">
+ <div class="card"><div class="card-head"><h2>حالة المدفوعات</h2></div><div class="card-body" id="paymentStats"></div></div>
+ <div class="card"><div class="card-head"><h2>عمليات تحتاج مراجعة</h2></div><div class="card-body" id="paymentPending"></div></div>
+ <div class="card"><div class="card-head"><h2>قنوات الدفع</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span>InstaPay</span><b>71%</b></div><div class="status-row"><span>Cash</span><b>21%</b></div><div class="status-row"><span>Other</span><b>8%</b></div></div></div></div>
+</div>
+</section>
+
+<section id="reports" class="section" hidden>
+<div class="grid">
+ <div class="card"><div class="card-head"><h2>ملخص الأداء</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span>متوسط قيمة الطلب</span><b>364 ج</b></div><div class="status-row"><span>معدل الدفع</span><b>91%</b></div><div class="status-row"><span>معدل الإلغاء</span><b>3.4%</b></div><div class="status-row"><span>متوسط وقت التجهيز</span><b>28 دقيقة</b></div></div></div></div>
+ <div class="card"><div class="card-head"><h2>التكاملات</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span>n8n Webhook</span><span class="badge b-blue">جاهز للربط</span></div><div class="status-row"><span>Google Sheets</span><span class="badge b-yellow">Demo</span></div><div class="status-row"><span>WhatsApp</span><span class="badge b-green">متصل</span></div><div class="status-row"><span>Telegram</span><span class="badge b-green">متصل</span></div></div></div></div>
+</div>
+<div class="card"><div class="card-head"><h2>خطة الربط الحقيقية</h2></div><div class="card-body"><ol style="line-height:2.1;margin:0;padding-right:20px"><li>Dashboard API عبر n8n Webhook.</li><li>قراءة الطلبات والمخزون والمدفوعات من Google Sheets.</li><li>Actions لتأكيد الدفع وتغيير حالة الطلب.</li><li>إرسال تحديث WhatsApp وTelegram من نفس الـworkflow.</li><li>تسجيل كل Action في سجل العمليات Audit Log.</li></ol></div></div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><b id="modalTitle">تفاصيل الطلب</b><button class="close" id="close">✕</button></div><div class="modal-content" id="modalContent"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================
+   EL MALKY LIVE API CONFIG
+   ========================= */
+const API = {
+  data: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-data",
+  action: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-action",
+  timeout: 9000
+};
+let apiOnline = false;
+let lastSync = null;
+
+let orders=[
+ {id:"ELM-1012",time:"20:56",name:"احمد بدري",phone:"201101216597",branch:"Stock_Heliopolis",items:"مكسرة كراميل ×3",total:395,payment:"cash",status:"processing"},
+ {id:"ELM-1011",time:"20:31",name:"محمد علي",phone:"201155889922",branch:"Stock_NasrCity",items:"بليلة بالمكسرات ×2",total:310,payment:"instapay",status:"paid"},
+ {id:"ELM-1010",time:"19:48",name:"احمد بدري",phone:"201101216597",branch:"Stock_Heliopolis",items:"بليلة بالمكسرات ×3",total:395,payment:"instapay",status:"pending"},
+ {id:"ELM-1009",time:"19:22",name:"سارة محمود",phone:"201222334455",branch:"Stock_NewCairo",items:"أم علي ×2",total:260,payment:"cash",status:"done"},
+ {id:"ELM-1008",time:"18:55",name:"محمود رضا",phone:"201111223344",branch:"Stock_NasrCity",items:"مكسرة كراميل ×1",total:135,payment:"instapay",status:"processing"},
+ {id:"ELM-1007",time:"18:20",name:"نور خالد",phone:"201100556677",branch:"Stock_NewCairo",items:"بليلة ×4",total:430,payment:"instapay",status:"done"}
+];
+const stock=[
+ {name:"مكسرة كراميل",qty:8,max:100},{name:"بليلة بالمكسرات",qty:14,max:100},{name:"أم علي سادة",qty:32,max:100},{name:"أرز باللبن",qty:71,max:100}
+];
+const branches=[
+ ["Stock_Heliopolis",9,"3,240 ج",3,"جيد","green"],["Stock_NasrCity",8,"2,780 ج",2,"جيد","green"],["Stock_NewCairo",7,"2,720 ج",1,"تنبيه مخزون","yellow"]
+];
+const customers=[
+ ["احمد بدري","201101216597",12,"4,850 ج","ELM-1012"],["محمد علي","201155889922",7,"2,430 ج","ELM-1011"],["سارة محمود","201222334455",5,"1,820 ج","ELM-1009"],["محمود رضا","201111223344",4,"1,260 ج","ELM-1008"]
+];
+
+const demoOrders = orders.map(x=>({...x}));
+const labels={pending:["قيد المراجعة","yellow"],paid:["مدفوع","blue"],processing:["قيد التجهيز","blue"],done:["تم التسليم","green"]};
+
+function setConnection(online, message){
+  apiOnline=online;
+  const box=document.querySelector(".connection");
+  if(!box) return;
+  box.innerHTML=`<span class="dot" style="background:${online?'#22c55e':'#f59e0b'}"></span><b>${online?'النظام متصل':'وضع تجريبي'}</b><br><span>${message||'n8n • WhatsApp • Telegram'}</span>`;
+  const gs=[...document.querySelectorAll(".status-row")].find(x=>x.textContent.includes("Google Sheets"));
+  if(gs){ const b=gs.querySelector(".badge"); if(b){b.textContent=online?"متصل":"محاكاة"; b.className=`badge ${online?'b-green':'b-yellow'}`; } }
+  const n8=[...document.querySelectorAll(".status-row")].find(x=>x.textContent.trim().startsWith("n8n"));
+  if(n8){ const b=n8.querySelector(".badge"); if(b){b.textContent=online?"يعمل ●":"غير متصل"; b.className=`badge ${online?'b-green':'b-red'}`; } }
+}
+
+async function fetchJson(url, options={}){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(), API.timeout);
+  try{
+    const res=await fetch(url,{...options,signal:controller.signal,headers:{'Accept':'application/json',...((options.body && !(options.body instanceof URLSearchParams))?{'Content-Type':'application/json'}:{}),...(options.headers||{})}});
+    const text=await res.text();
+    let data={}; try{data=text?JSON.parse(text):{};}catch{throw new Error("استجابة n8n ليست JSON");}
+    if(!res.ok) throw new Error(data.message||`HTTP ${res.status}`);
+    return data;
+  } finally { clearTimeout(timer); }
+}
+
+function normalizeApiPayload(data){
+  const src=data?.data||data?.body||data;
+  if(Array.isArray(src)) return {orders:src};
+  return src||{};
+}
+
+function applyLiveData(data){
+  const d=normalizeApiPayload(data);
+  if(Array.isArray(d.orders)) orders=d.orders.map(o=>({
+    id:o.id||o.order_id||o.orderId||"",
+    time:o.time||o.created_time||o.createdAt||"",
+    name:o.name||o.customer_name||o.customer||"",
+    phone:o.phone||o.customer_phone||"",
+    branch:o.branch||o.branch_name||"",
+    items:o.items||o.order_items||"",
+    total:Number(o.total??o.amount??0),
+    payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
+    status:o.status||"pending"
+  }));
+  if(Array.isArray(d.stock)) stock.splice(0,stock.length,...d.stock);
+  if(Array.isArray(d.branches)) branches.splice(0,branches.length,...d.branches);
+  if(Array.isArray(d.customers)) customers.splice(0,customers.length,...d.customers);
+  if(d.kpis){
+    if(d.kpis.orders_today!=null) $("#kOrders").textContent=d.kpis.orders_today;
+    if(d.kpis.sales_today!=null) $("#kSales").textContent=Number(d.kpis.sales_today).toLocaleString("en-US")+" ج";
+    if(d.kpis.pending!=null) $("#kPending").textContent=d.kpis.pending;
+  }
+  renderHome(); renderStock(); renderBranches(); renderCustomers(); renderPayments(); renderOrders();
+}
+
+async function loadLiveData(showToast=false){
+  try{
+    const data=await fetchJson(API.data);
+    applyLiveData(data);
+    apiOnline=true; lastSync=new Date();
+    setConnection(true,"n8n • API مباشر");
+    $("#syncTime").textContent="الآن";
+    if(showToast) toast("تم جلب البيانات من n8n");
+    return true;
+  }catch(err){
+    apiOnline=false; setConnection(false,"n8n • وضع تجريبي");
+    $("#syncTime").textContent="تعذر الاتصال — Demo";
+    if(showToast) toast("تعذر الاتصال بـ n8n — تم إبقاء بيانات العرض");
+    return false;
+  }
+}
+
+async function sendAction(action, orderId, extra={}){
+  try{
+    const form=new URLSearchParams({action,order_id:orderId,...Object.fromEntries(Object.entries(extra).map(([k,v])=>[k,String(v)]))});
+    const data=await fetchJson(API.action,{method:"POST",body:form});
+    if(data?.ok===false) throw new Error(data.message||"فشل تنفيذ العملية");
+    setConnection(true,"n8n • API مباشر");
+    return data;
+  }catch(err){
+    toast("تعذر تنفيذ العملية على n8n");
+    return null;
+  }
+}
+
+const $=s=>document.querySelector(s);
+function badgeStatus(s){let [t,c]=labels[s]||[s,"blue"];return `<span class="badge b-${c}">${t}</span>`}
+function renderChart(){let vals=[44,62,51,78,66,91,84], days=["س","ح","ن","ث","ر","خ","ج"],max=Math.max(...vals);$("#chart").innerHTML=vals.map((v,i)=>`<div class="bar" style="height:${35+v/max*55}%"><span>${days[i]}</span></div>`).join("")}
+function renderHome(){
+ $("#homeOrders").innerHTML=orders.slice(0,5).map(o=>`<tr><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${o.branch}</td><td>${o.total} ج</td><td>${o.payment==="instapay"?"InstaPay":"كاش"}</td><td>${badgeStatus(o.status)}</td></tr>`).join("");
+ $("#branchSummary").innerHTML=branches.map(b=>`<div class="status-row"><span>${b[0]}</span><span><b>${b[1]}</b> طلب • ${b[5]==="yellow"?'<span class="badge b-yellow">تنبيه</span>':'<span class="badge b-green">جيد</span>'}</span></div>`).join("");
+ renderChart();
+}
+function filteredOrders(){
+ const q=$("#search").value.trim().toLowerCase(), br=$("#branch").value, st=$("#status").value;
+ return orders.filter(o=>(!q||[o.id,o.name,o.phone,o.branch,o.items].join(" ").toLowerCase().includes(q))&&(br==="all"||o.branch===br)&&(st==="all"||o.status===st));
+}
+function renderOrders(){
+ const arr=filteredOrders();$("#orderCount").textContent=`${arr.length} طلب`;
+ $("#ordersTable").innerHTML=arr.map(o=>`<tr><td><span class="order-id">${o.id}</span></td><td>${o.time}</td><td>${o.name}<br><small style="color:var(--muted)">${o.phone}</small></td><td>${o.branch}</td><td>${o.items}</td><td><b>${o.total} ج</b></td><td>${o.payment==="instapay"?"InstaPay":"كاش"}</td><td>${badgeStatus(o.status)}</td><td><div class="mini-actions"><button class="mini" data-view="${o.id}">تفاصيل</button>${o.status==="pending"?`<button class="mini green" data-confirm="${o.id}">تأكيد</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${o.id}">التالي</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="9" class="empty">لا توجد طلبات مطابقة</td></tr>`;
+}
+function renderStock(){ $("#criticalStock").innerHTML=stock.map(s=>{let p=s.qty/s.max*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} وحدة متاحة</small><div class="progress"><b class="${c}" style="width:${Math.max(p,3)}%"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("")}
+function renderBranches(){$("#branchesTable").innerHTML=branches.map(b=>`<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td>${b[2]}</td><td>${b[3]}</td><td>${b[4]}</td><td><span class="badge b-${b[5]}">${b[5]==="green"?"متصل":"تنبيه"}</span></td></tr>`).join("")}
+function renderCustomers(){$("#customersTable").innerHTML=customers.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td></tr>`).join("")}
+function renderPayments(){$("#paymentStats").innerHTML=`<div class="status-list"><div class="status-row"><span>إجمالي المدفوع</span><b>7,985 ج</b></div><div class="status-row"><span>مؤكد</span><span class="badge b-green">18</span></div><div class="status-row"><span>قيد المراجعة</span><span class="badge b-yellow">4</span></div><div class="status-row"><span>فشل</span><span class="badge b-red">1</span></div></div>`;$("#paymentPending").innerHTML=orders.filter(o=>o.status==="pending").map(o=>`<div class="status-row" style="margin-bottom:8px"><span><b>${o.id}</b><br><small>${o.name} • ${o.total} ج</small></span><button class="mini green" data-confirm="${o.id}">تأكيد</button></div>`).join("")}
+function showSection(id){
+ document.querySelectorAll(".section").forEach(x=>x.hidden=x.id!==id);
+ document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("active",x.dataset.section===id));
+ const titles={home:["لوحة التحكم","ملخص التشغيل اليومي ومتابعة الطلبات والمخزون"],orders:["الطلبات","إدارة ومتابعة جميع الطلبات"],stock:["المخزون","مراقبة الكميات والتنبيهات"],branches:["الفروع","مقارنة أداء الفروع وحالة التشغيل"],customers:["العملاء","سجل العملاء والطلبات"],payments:["المدفوعات","مراجعة وتأكيد التحويلات"],reports:["التقارير","مؤشرات الأداء والتكاملات"]};
+ $("#pageTitle").textContent=titles[id][0];$("#pageSub").textContent=titles[id][1];
+ if(id==="orders")renderOrders();
+}
+function toast(t){$("#toast").textContent=t;$("#toast").classList.add("show");setTimeout(()=>$("#toast").classList.remove("show"),2200)}
+function openOrder(id){const o=orders.find(x=>x.id===id);if(!o)return;$("#modalTitle").textContent=`تفاصيل ${o.id}`;$("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span>العميل</span><b>${o.name}</b></div><div class="status-row"><span>الهاتف</span><b>${o.phone}</b></div><div class="status-row"><span>الفرع</span><b>${o.branch}</b></div><div class="status-row"><span>الأصناف</span><b>${o.items}</b></div><div class="status-row"><span>الإجمالي</span><b>${o.total} ج</b></div><div class="status-row"><span>الدفع</span><b>${o.payment==="instapay"?"InstaPay":"كاش"}</b></div><div class="status-row"><span>الحالة</span>${badgeStatus(o.status)}</div></div><div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${o.id}">✅ تأكيد الفلوس وصلت</button>`:""}<button class="btn" data-next="${o.id}">تغيير الحالة</button></div>`;$("#modal").classList.add("open")}
+async function updateStatus(id,next){
+ const o=orders.find(x=>x.id===id); if(!o)return;
+ const seq=["pending","paid","processing","done"]; let i=seq.indexOf(o.status);
+ const target=next||seq[Math.min(i+1,3)];
+ const action=target==="paid"?"confirm_payment":"change_status";
+ const result=await sendAction(action,id,{status:target});
+ if(result){
+   o.status=target;
+   toast(`${o.id} → ${labels[o.status]?.[0]||o.status}`);
+   renderHome();renderOrders();renderPayments();
+   // Re-read from n8n when available so the dashboard stays authoritative.
+   if(apiOnline) setTimeout(()=>loadLiveData(false),250);
+ }
+}
+$("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-section]");if(b)showSection(b.dataset.section)});
+document.addEventListener("click",e=>{
+ const go=e.target.closest("[data-go]");if(go)showSection(go.dataset.go);
+ const v=e.target.closest("[data-view]");if(v)openOrder(v.dataset.view);
+ const c=e.target.closest("[data-confirm]");if(c){updateStatus(c.dataset.confirm,"paid");if($("#modal").classList.contains("open"))$("#modal").classList.remove("open")}
+ const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
+});
+$("#close").onclick=()=>$("#modal").classList.remove("open");$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")});
+["search","branch","status"].forEach(id=>$( "#"+id).addEventListener("input",renderOrders));
+$("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderOrders();toast("تم مسح الفلاتر")};
+$("#refresh").onclick=()=>loadLiveData(true);
+$("#quick").onclick=()=>{showSection("orders");toast("من هنا نقدر لاحقًا نربط إنشاء الطلب بـn8n")};
+renderHome();renderStock();renderBranches();renderCustomers();renderPayments();renderOrders();
+setConnection(false,"n8n • جاري الاتصال");
+loadLiveData(false);
+</script>
+</body>
+</html>
