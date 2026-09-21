@@ -451,6 +451,7 @@ const I18N = {
   orderDetailsPrefix:"تفاصيل", confirmPaymentBtn:"تأكيد الفلوس وصلت", changeStatusBtn:"تغيير الحالة",
   toastLiveDataFetched:"تم جلب البيانات من n8n", toastCantConnect:"تعذر الاتصال بـ n8n", toastActionFailed:"تعذر تنفيذ العملية على n8n",
   toastFiltersCleared:"تم مسح الفلاتر", toastQuickAdd:"من هنا نقدر لاحقًا نربط إنشاء الطلب بـn8n",
+  newOrderToast:"طلب جديد", newOrderNotifTitle:"طلب جديد — المالكي", enableNotifsToast:"فعّلنا تنبيهات الطلبات الجديدة",
   cash:"كاش", currency:"ج",
   themeToDark:"تفعيل الوضع الليلي", themeToLight:"تفعيل الوضع النهاري"
  },
@@ -491,6 +492,7 @@ const I18N = {
   orderDetailsPrefix:"Details for", confirmPaymentBtn:"Confirm payment received", changeStatusBtn:"Change status",
   toastLiveDataFetched:"Data fetched from n8n", toastCantConnect:"Couldn't connect to n8n", toastActionFailed:"Couldn't complete the action on n8n",
   toastFiltersCleared:"Filters cleared", toastQuickAdd:"This is where creating an order will connect to n8n",
+  newOrderToast:"New order", newOrderNotifTitle:"New order — El Malky", enableNotifsToast:"New-order alerts enabled",
   cash:"Cash", currency:"EGP",
   themeToDark:"Switch to dark mode", themeToLight:"Switch to light mode"
  }
@@ -546,6 +548,7 @@ let weekly=[];      // [{idx,total}] — populated from n8n only
 let topItems=[];    // [{name,count}] — populated from n8n only
 let agentLog=[];    // [{time,title,detail}] — populated from n8n only
 let kpiState={orders:null,sales:null,confirmed:null,pending:null,stockAlerts:null};
+let seenOrderIds=null; // null until first load; after that, used to detect new orders
 
 const stock=[
  {name:"مكسرة كراميل",qty:8,max:100},{name:"بليلة بالمكسرات",qty:14,max:100},{name:"أم علي سادة",qty:32,max:100},{name:"أرز باللبن",qty:71,max:100}
@@ -647,19 +650,59 @@ function formatMoneyish(v){
   return s;
 }
 
+/* ---------- new-order alerts ---------- */
+function ensureNotificationPermission(){
+  if(!("Notification" in window)) return;
+  if(Notification.permission==="default") Notification.requestPermission();
+}
+function playNewOrderSound(){
+  try{
+    const Ctx=window.AudioContext||window.webkitAudioContext; if(!Ctx) return;
+    const ctx=new Ctx();
+    const beep=(freq,start,dur)=>{
+      const osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.type="sine"; osc.frequency.value=freq;
+      gain.gain.setValueAtTime(0.0001,ctx.currentTime+start);
+      gain.gain.exponentialRampToValueAtTime(0.35,ctx.currentTime+start+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+start+dur);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(ctx.currentTime+start); osc.stop(ctx.currentTime+start+dur+0.02);
+    };
+    beep(880,0,0.16); beep(1175,0.18,0.2);
+    setTimeout(()=>ctx.close(),700);
+  }catch(e){}
+}
+function notifyNewOrder(o){
+  playNewOrderSound();
+  toast(`🛎️ ${t('newOrderToast')} — ${o.id}${o.name?" • "+o.name:""}`);
+  if("Notification" in window && Notification.permission==="granted"){
+    try{ new Notification(t('newOrderNotifTitle'),{body:`${o.id} • ${o.name||""} • ${money(o.total)}`}); }catch(e){}
+  }
+}
+
 function applyLiveData(data){
   const d=normalizeApiPayload(data);
-  if(Array.isArray(d.orders)) orders=d.orders.map(o=>({
-    id:o.id||o.order_id||o.orderId||"",
-    time:o.time||o.created_time||o.createdAt||"",
-    name:o.name||o.customer_name||o.customer||"",
-    phone:o.phone||o.customer_phone||"",
-    branch:o.branch||o.branch_name||"",
-    items:o.items||o.order_items||"",
-    total:Number(o.total??o.amount??0),
-    payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
-    status:o.status||"pending"
-  }));
+  if(Array.isArray(d.orders)){
+    const mapped=d.orders.map(o=>({
+      id:o.id||o.order_id||o.orderId||"",
+      time:o.time||o.created_time||o.createdAt||"",
+      name:o.name||o.customer_name||o.customer||"",
+      phone:o.phone||o.customer_phone||"",
+      branch:o.branch||o.branch_name||"",
+      items:o.items||o.order_items||"",
+      total:Number(o.total??o.amount??0),
+      payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
+      status:o.status||"pending"
+    }));
+    if(seenOrderIds===null){
+      seenOrderIds=new Set(mapped.map(o=>o.id).filter(Boolean));
+    }else{
+      const newOnes=mapped.filter(o=>o.id && !seenOrderIds.has(o.id));
+      newOnes.forEach(notifyNewOrder);
+      mapped.forEach(o=>{ if(o.id) seenOrderIds.add(o.id); });
+    }
+    orders=mapped;
+  }
   if(Array.isArray(d.stock)) stock.splice(0,stock.length,...d.stock);
   if(Array.isArray(d.branches)) branches.splice(0,branches.length,...normalizeBranches(d.branches));
   if(Array.isArray(d.customers)) customers.splice(0,customers.length,...d.customers);
@@ -761,7 +804,20 @@ function renderTopItems(){
   box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${it.name}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
 function renderBranches(){const br=$("#branch").value;const list=br==="all"?branches:branches.filter(b=>b.name===br);$("#branchesTable").innerHTML=list.map(b=>`<tr><td><b>${b.name}</b></td><td>${b.orders}</td><td>${formatMoneyish(b.sales)}</td><td>${b.pending}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
-function renderCustomers(){$("#customersTable").innerHTML=customers.map(c=>{const name=c.name??c[0]??"—",phone=c.phone??c[1]??"—",ordersCount=c.orders??c[2]??0,spend=c.spending??c[3],lastOrder=c.last_order??c[4]??"—";const spendCell=typeof spend==="number"?money(spend):(spend??"—");return `<tr><td><b>${name}</b></td><td>${phone}</td><td>${ordersCount}</td><td>${spendCell}</td><td>${lastOrder}</td></tr>`}).join("")}
+function renderCustomers(){
+  const scoped=filteredOrders();
+  const map={};
+  scoped.forEach(o=>{
+    const key=o.phone||o.name;
+    if(!key)return;
+    if(!map[key]) map[key]={name:o.name,phone:o.phone,orders:0,spending:0,last_order:o.id};
+    map[key].orders+=1;
+    map[key].spending+=Number(o.total)||0;
+    map[key].last_order=o.id;
+  });
+  const list=Object.values(map);
+  $("#customersTable").innerHTML=list.length?list.map(c=>`<tr><td><b>${c.name||"—"}</b></td><td>${c.phone||"—"}</td><td>${c.orders}</td><td>${money(c.spending)}</td><td>${c.last_order}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">${t('noMatchingOrders')}</td></tr>`;
+}
 function renderPayments(){
   const scoped=filteredOrders();
   const paidLike=scoped.filter(o=>o.status!=="pending");
@@ -852,7 +908,7 @@ $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").cl
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#modal").classList.remove("open")});
 ["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderAll));
 $("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderAll();toast(t('toastFiltersCleared'))};
-$("#refresh").onclick=()=>{$("#refreshIco").classList.add("spin");loadLiveData(true).finally(()=>$("#refreshIco").classList.remove("spin"))};
+$("#refresh").onclick=()=>{ensureNotificationPermission();$("#refreshIco").classList.add("spin");loadLiveData(true).finally(()=>$("#refreshIco").classList.remove("spin"))};
 $("#quick").onclick=()=>{showSection("orders");toast(t('toastQuickAdd'))};
 
 /* ---------- boot ---------- */
@@ -860,7 +916,9 @@ applyTheme(document.documentElement.getAttribute('data-theme')||'light');
 applyLanguage(LANG);
 renderAll();
 setConnection("connecting");
+ensureNotificationPermission();
 loadLiveData(false);
+setInterval(()=>{ if(document.visibilityState!=="hidden") loadLiveData(false); }, 20000);
 </script>
 </body>
 </html>
