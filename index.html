@@ -727,8 +727,11 @@ function renderAgentFeed(){
   box.innerHTML=agentLog.slice(0,6).map((a,i)=>`<div class="agent-feed-item" style="animation-delay:${i*40}ms"><div class="agent-feed-ico"><svg><use href="#i-bot"/></svg></div><div class="agent-feed-body"><b>${a.title}</b><span>${a.detail}${a.time?" • "+a.time:""}</span></div></div>`).join("");
 }
 function renderHome(){
- $("#homeOrders").innerHTML=orders.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${o.branch}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
- $("#branchSummary").innerHTML=branches.map(b=>`<div class="status-row"><span class="who">${b.name}</span><span><b>${b.orders}</b> ${t('ordersUnit')} • <span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></span></div>`).join("");
+ const br=$("#branch").value;
+ const homeArr=filteredOrders();
+ $("#homeOrders").innerHTML=homeArr.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${o.branch}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
+ const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
+ $("#branchSummary").innerHTML=branchList.map(b=>`<div class="status-row"><span class="who">${b.name}</span><span><b>${b.orders}</b> ${t('ordersUnit')} • <span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></span></div>`).join("");
  renderChart();
  renderAgentFeed();
 }
@@ -741,11 +744,14 @@ function renderOrders(){
  $("#ordersTable").innerHTML=arr.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${o.id}</span></td><td>${o.time}</td><td>${o.name}<br><small style="color:var(--muted)">${o.phone}</small></td><td>${o.branch}</td><td>${o.items}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td><td><div class="mini-actions"><button class="mini" data-view="${o.id}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${o.id}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="9" class="empty">${t('noMatchingOrders')}</td></tr>`;
 }
 function renderStock(){
-  const crit=stock.filter(s=>s.qty/s.max*100<35);
+  const br=$("#branch").value;
+  const list = br==="all" ? stock : stock.filter(s=>s.branch===br);
+  const maxOf = s => s.max || s.received || Math.max(s.qty,1);
+  const crit=list.filter(s=>s.qty/maxOf(s)*100<35);
   $("#criticalCount").textContent=crit.length;
-  $("#criticalStock").innerHTML=stock.map(s=>{let p=s.qty/s.max*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} ${t('unitsAvailable')}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("");
+  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} ${t('unitsAvailable')}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("");
   requestAnimationFrame(()=>document.querySelectorAll("#criticalStock .progress b").forEach(b=>b.style.width=b.dataset.w+"%"));
-  const total=stock.reduce((s,x)=>s+x.qty,0), maxTotal=stock.reduce((s,x)=>s+x.max,0)||1;
+  const total=list.reduce((s,x)=>s+x.qty,0), maxTotal=list.reduce((s,x)=>s+maxOf(x),0)||1;
   $("#stockSummary").innerHTML=`<div class="kpi" style="box-shadow:none;padding:0"><div class="num">${total.toLocaleString("en-US")}</div><div class="trend">${t('unitsAvailable')}</div><div class="progress" style="margin-top:18px"><b data-w="${Math.round(total/maxTotal*100)}"></b></div></div>`;
   requestAnimationFrame(()=>{const b=document.querySelector("#stockSummary .progress b");if(b)b.style.width=b.dataset.w+"%"});
 }
@@ -754,15 +760,16 @@ function renderTopItems(){
   if(!topItems.length){ box.innerHTML=`<div class="panel-empty"><svg><use href="#i-star"/></svg>${t('topItemsEmpty')}</div>`; return; }
   box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${it.name}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
-function renderBranches(){$("#branchesTable").innerHTML=branches.map(b=>`<tr><td><b>${b.name}</b></td><td>${b.orders}</td><td>${formatMoneyish(b.sales)}</td><td>${b.pending}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
-function renderCustomers(){$("#customersTable").innerHTML=customers.map(c=>`<tr><td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${money(c[3])}</td><td>${c[4]}</td></tr>`).join("")}
+function renderBranches(){const br=$("#branch").value;const list=br==="all"?branches:branches.filter(b=>b.name===br);$("#branchesTable").innerHTML=list.map(b=>`<tr><td><b>${b.name}</b></td><td>${b.orders}</td><td>${formatMoneyish(b.sales)}</td><td>${b.pending}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
+function renderCustomers(){$("#customersTable").innerHTML=customers.map(c=>{const name=c.name??c[0]??"—",phone=c.phone??c[1]??"—",ordersCount=c.orders??c[2]??0,spend=c.spending??c[3],lastOrder=c.last_order??c[4]??"—";const spendCell=typeof spend==="number"?money(spend):(spend??"—");return `<tr><td><b>${name}</b></td><td>${phone}</td><td>${ordersCount}</td><td>${spendCell}</td><td>${lastOrder}</td></tr>`}).join("")}
 function renderPayments(){
-  const paidLike=orders.filter(o=>o.status!=="pending");
-  const pending=orders.filter(o=>o.status==="pending");
+  const scoped=filteredOrders();
+  const paidLike=scoped.filter(o=>o.status!=="pending");
+  const pending=scoped.filter(o=>o.status==="pending");
   const totalPaid=paidLike.reduce((s,o)=>s+(Number(o.total)||0),0);
-  $("#paymentStats").innerHTML=orders.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
+  $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
   $("#paymentPending").innerHTML=pending.length?pending.map(o=>`<div class="status-row" style="margin-bottom:8px"><span class="who"><b>${o.id}</b><br><small style="font-weight:400">${o.name} • ${money(o.total)}</small></span><button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button></div>`).join(""):`<div class="panel-empty" style="padding:14px"><svg><use href="#i-check"/></svg>${t('noPendingReview')}</div>`;
-  const insta=orders.filter(o=>o.payment==="instapay").length, cash=orders.filter(o=>o.payment==="cash").length, tot=orders.length;
+  const insta=scoped.filter(o=>o.payment==="instapay").length, cash=scoped.filter(o=>o.payment==="cash").length, tot=scoped.length;
   if(!tot){ $("#paymentChannels").innerHTML=`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('channelsEmpty')}</div>`; return; }
   const pi=Math.round(insta/tot*100), pc=Math.round(cash/tot*100);
   $("#paymentChannels").innerHTML=`
@@ -771,8 +778,9 @@ function renderPayments(){
   requestAnimationFrame(()=>document.querySelectorAll("#paymentChannels .channel-bar b").forEach(b=>b.style.width=b.dataset.w+"%"));
 }
 function renderReports(){
-  const total=orders.length, done=orders.filter(o=>o.status==="done").length, paid=orders.filter(o=>o.status!=="pending").length;
-  const aov=total?Math.round(orders.reduce((s,o)=>s+(Number(o.total)||0),0)/total):0;
+  const scoped=filteredOrders();
+  const total=scoped.length, done=scoped.filter(o=>o.status==="done").length, paid=scoped.filter(o=>o.status!=="pending").length;
+  const aov=total?Math.round(scoped.reduce((s,o)=>s+(Number(o.total)||0),0)/total):0;
   $("#repAov").textContent=total?money(aov):"—";
   $("#repPayRate").textContent=total?Math.round(paid/total*100)+"%":"—";
   $("#repTotalOrders").textContent=total.toLocaleString("en-US");
@@ -842,8 +850,8 @@ document.addEventListener("click",e=>{
 $("#close").onclick=()=>$("#modal").classList.remove("open");
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#modal").classList.remove("open")});
-["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderOrders));
-$("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderOrders();toast(t('toastFiltersCleared'))};
+["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderAll));
+$("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderAll();toast(t('toastFiltersCleared'))};
 $("#refresh").onclick=()=>{$("#refreshIco").classList.add("spin");loadLiveData(true).finally(()=>$("#refreshIco").classList.remove("spin"))};
 $("#quick").onclick=()=>{showSection("orders");toast(t('toastQuickAdd'))};
 
