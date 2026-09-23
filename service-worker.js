@@ -1,4 +1,4 @@
-const CACHE_NAME = "malky-dashboard-v1";
+const CACHE_NAME = "malky-dashboard-v2";
 const SHELL_ASSETS = [
   "./",
   "./index.html",
