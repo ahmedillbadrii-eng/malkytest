@@ -72,6 +72,7 @@ html[data-theme="dark"]{
   --sh-lg:0 24px 56px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;transition:background-color .25s ease,color .25s ease;font-size:14px;line-height:1.5}
 button,input,select{font:inherit;color:inherit}
@@ -265,7 +266,8 @@ html[data-theme="dark"] .btn.primary:hover{color:var(--accent-ink)}
 .empty{padding:36px;text-align:center;color:var(--muted);font-size:13px}
 
 /* ---------- login ---------- */
-.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100}
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;justify-content:center;padding:24px 16px;z-index:100;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.login-screen .login-card{margin:auto}
 .login-card{width:min(380px,100%);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-lg);padding:36px 30px;text-align:center}
 .login-card .logo-chip.lg{width:64px;height:64px;margin:0 auto 16px;border-radius:14px;border:1px solid var(--line)}
 .login-card .brand-word{font-size:20px;color:var(--ink)}
@@ -526,7 +528,7 @@ html[data-theme="dark"] .btn.primary:hover{color:var(--accent-ink)}
 const API = {
   data: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-data",
   action: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-action",
-  auth: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-auth", // NOT LIVE YET — see setup notes
+  auth: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-auth",
   timeout: 9000
 };
 let apiOnline = false;
@@ -585,7 +587,7 @@ const I18N = {
   installApp:"تثبيت التطبيق", iosInstallHint:"لتثبيت التطبيق على آيفون: اضغط زر المشاركة ثم \"إضافة إلى الشاشة الرئيسية\"",
   loginSub:"سجّل الدخول للوصول للوحة التشغيل", fieldUsername:"اسم المستخدم", fieldPassword:"كلمة المرور",
   rememberMe:"تذكرني على هذا الجهاز", signIn:"تسجيل الدخول", loginFailed:"البريد الإلكتروني أو كلمة المرور غير صحيحة",
-  loginConnFailed:"تعذر الاتصال بخادم تسجيل الدخول", tabSignIn:"تسجيل الدخول", tabSignUp:"إنشاء حساب", fieldEmail:"البريد الإلكتروني", fieldName:"الاسم", fieldConfirmPassword:"تأكيد كلمة المرور", createAccount:"إنشاء الحساب", pwTooShort:"كلمة المرور لازم تكون 8 حروف على الأقل", pwMismatch:"كلمتا المرور غير متطابقتين", signupPending:"تم إنشاء الحساب — في انتظار موافقة الإدارة قبل الدخول", accountPending:"حسابك لسه في انتظار موافقة الإدارة", signupFailed:"تعذر إنشاء الحساب", sessionExpired:"انتهت الجلسة، سجّل الدخول من جديد", logout:"تسجيل الخروج"
+  loginConnFailed:"تعذر الاتصال بخادم تسجيل الدخول", tabSignIn:"تسجيل الدخول", tabSignUp:"إنشاء حساب", fieldEmail:"البريد الإلكتروني", fieldName:"الاسم", fieldConfirmPassword:"تأكيد كلمة المرور", createAccount:"إنشاء الحساب", pwTooShort:"كلمة المرور لازم تكون 8 حروف على الأقل", pwMismatch:"كلمتا المرور غير متطابقتين", signupPending:"تم إنشاء الحساب — في انتظار موافقة الإدارة قبل الدخول", accountPending:"حسابك لسه في انتظار موافقة الإدارة", signupFailed:"تعذر إنشاء الحساب", accountDisabled:"الحساب ده موقوف — كلّم الإدارة", emailTaken:"الإيميل ده مسجل قبل كده — سجّل دخول بدل ما تعمل حساب جديد", invalidEmail:"البريد الإلكتروني مش صحيح", invalidName:"اكتب اسمك (80 حرف بحد أقصى)", sessionExpired:"انتهت الجلسة، سجّل الدخول من جديد", logout:"تسجيل الخروج"
  },
  en:{
   brandWord:"El Malky", brandTag:"Since 1917",
@@ -632,7 +634,7 @@ const I18N = {
   installApp:"Install app", iosInstallHint:"To install on iPhone: tap the Share button, then \"Add to Home Screen\"",
   loginSub:"Sign in to access the dashboard", fieldUsername:"Username", fieldPassword:"Password",
   rememberMe:"Remember me on this device", signIn:"Sign in", loginFailed:"Incorrect email or password",
-  loginConnFailed:"Couldn't reach the login server", tabSignIn:"Sign in", tabSignUp:"Create account", fieldEmail:"Email", fieldName:"Name", fieldConfirmPassword:"Confirm password", createAccount:"Create account", pwTooShort:"Password must be at least 8 characters", pwMismatch:"Passwords don't match", signupPending:"Account created — waiting for admin approval before you can sign in", accountPending:"Your account is still waiting for admin approval", signupFailed:"Couldn't create the account", sessionExpired:"Your session expired, please sign in again", logout:"Log out"
+  loginConnFailed:"Couldn't reach the login server", tabSignIn:"Sign in", tabSignUp:"Create account", fieldEmail:"Email", fieldName:"Name", fieldConfirmPassword:"Confirm password", createAccount:"Create account", pwTooShort:"Password must be at least 8 characters", pwMismatch:"Passwords don't match", signupPending:"Account created — waiting for admin approval before you can sign in", accountPending:"Your account is still waiting for admin approval", signupFailed:"Couldn't create the account", accountDisabled:"This account is disabled — contact the admin", emailTaken:"This email is already registered — sign in instead", invalidEmail:"That email address isn't valid", invalidName:"Enter your name (80 characters max)", sessionExpired:"Your session expired, please sign in again", logout:"Log out"
  }
 };
 function t(key){ return (I18N[LANG]&&I18N[LANG][key]) || I18N.ar[key] || key; }
@@ -778,8 +780,7 @@ async function fetchJson(url, options={}){
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(), API.timeout);
   try{
-    const token=getToken();
-    const res=await fetch(url,{...options,signal:controller.signal,headers:{'Accept':'application/json',...(token?{'Authorization':'Bearer '+token}:{}),...((options.body && !(options.body instanceof URLSearchParams))?{'Content-Type':'application/json'}:{}),...(options.headers||{})}});
+    const res=await fetch(url,{...options,signal:controller.signal,headers:{'Accept':'application/json',...((options.body && !(options.body instanceof URLSearchParams))?{'Content-Type':'application/json'}:{}),...(options.headers||{})}});
     const text=await res.text();
     let data={}; try{data=text?JSON.parse(text):{};}catch{throw new Error("Invalid JSON from n8n");}
     if(!res.ok) throw new Error(data.message||`HTTP ${res.status}`);
@@ -893,7 +894,8 @@ function applyLiveData(data){
 
 async function loadLiveData(showToast=false){
   try{
-    const data=await fetchJson(API.data);
+    const tk=getToken();
+    const data=await fetchJson(API.data+(tk?('?token='+encodeURIComponent(tk)):''));
     if(data?.auth===false){ clearToken(); setUser(null); showLogin(t('sessionExpired')); return false; }
     applyLiveData(data);
     lastSync=new Date();
@@ -909,7 +911,7 @@ async function loadLiveData(showToast=false){
 
 async function sendAction(action, orderId, extra={}){
   try{
-    const form=new URLSearchParams({action,order_id:orderId,...Object.fromEntries(Object.entries(extra).map(([k,v])=>[k,String(v)]))});
+    const form=new URLSearchParams({action,order_id:orderId,token:getToken()||'',...Object.fromEntries(Object.entries(extra).map(([k,v])=>[k,String(v)]))});
     const data=await fetchJson(API.action,{method:"POST",body:form});
     if(data?.auth===false){ clearToken(); setUser(null); showLogin(t('sessionExpired')); return null; }
     if(data?.ok===false) throw new Error(data.message||"action failed");
@@ -1137,6 +1139,8 @@ function renderUserChip(){
   $("#userEmail").textContent=u.email||"";
   $("#userAvatar").textContent=(u.name||u.email||"?").trim().charAt(0).toUpperCase();
 }
+const AUTH_CODES={bad_credentials:'loginFailed',pending:'accountPending',disabled:'accountDisabled',email_taken:'emailTaken',invalid_email:'invalidEmail',weak_password:'pwTooShort',invalid_name:'invalidName'};
+function authErr(data, fallback){ const k=data&&AUTH_CODES[data.code]; return k?t(k):(data&&data.message)||t(fallback); }
 function authMsg(el, text, ok){ el.hidden=false; el.textContent=text; el.classList.toggle("login-ok", !!ok); }
 function switchAuthTab(tab){
   document.querySelectorAll(".auth-tab").forEach(b=>b.classList.toggle("active", b.dataset.authTab===tab));
@@ -1161,7 +1165,7 @@ $("#loginForm").addEventListener("submit", async (e)=>{
     } else if(data?.status==="pending"){
       authMsg($("#loginError"), t('accountPending'));
     } else {
-      authMsg($("#loginError"), data?.message || t('loginFailed'));
+      authMsg($("#loginError"), authErr(data,'loginFailed'));
     }
   }catch(err){
     authMsg($("#loginError"), t('loginConnFailed'));
@@ -1189,7 +1193,7 @@ $("#signupForm").addEventListener("submit", async (e)=>{
       authMsg(msg, t('signupPending'), true);
       $("#signupForm").reset();
     } else {
-      authMsg(msg, data?.message || t('signupFailed'));
+      authMsg(msg, authErr(data,'signupFailed'));
     }
   }catch(err){
     authMsg(msg, t('loginConnFailed'));
