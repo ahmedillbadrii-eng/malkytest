@@ -643,6 +643,36 @@ img,svg{max-width:100%}
 .splash-name{animation-delay:.15s}.splash-bar{animation-delay:.25s}.splash-tag{animation-delay:.3s}
 .splash-stars svg:nth-child(1){animation-delay:.25s}.splash-stars svg:nth-child(2){animation-delay:.35s}.splash-stars svg:nth-child(3){animation-delay:.45s}
 .splash{transition:opacity .35s ease,visibility .35s ease}
+
+/* ================= stock editing (v11) ================= */
+.stock-item.low strong{color:var(--danger-ink)}
+.stock-edit{display:inline-flex;align-items:center;gap:6px;flex:none;padding:8px 12px;border-radius:12px;background:var(--blue-soft);color:var(--blue);font-weight:800;font-size:12.5px;transition:transform .15s,background .15s}
+.stock-edit svg{width:15px;height:15px}
+.stock-edit:hover{transform:translateY(-1px);background:var(--blue);color:#fff}
+.sm-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.sm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sm-stats>div{background:var(--bg);border:1px solid var(--line-soft);border-radius:13px;padding:10px;text-align:center}
+.sm-stats small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.sm-stats b{font-size:19px;font-weight:800}
+.sm-stats .hl{background:var(--blue-soft);border-color:transparent}
+.sm-stats .hl b{color:var(--blue)}
+.sm-mode{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:14px}
+.sm-mode-btn{padding:10px;border-radius:10px;font-weight:800;font-size:13.5px;color:var(--muted)}
+.sm-mode-btn.active[data-sm-mode="add"]{background:var(--success-bg);color:var(--success-ink)}
+.sm-mode-btn.active[data-sm-mode="sub"]{background:var(--danger-bg);color:var(--danger-ink)}
+.sm-stepper{display:grid;grid-template-columns:54px 1fr 54px;gap:8px;margin-bottom:10px}
+.sm-stepper button{height:54px;border-radius:15px;background:var(--bg);border:1px solid var(--line);font-size:24px;font-weight:700;color:var(--ink)}
+.sm-stepper button:active{transform:scale(.96)}
+.sm-stepper input{height:54px;border-radius:15px;border:1px solid var(--line);background:var(--panel);text-align:center;font-size:24px!important;font-weight:800;color:var(--ink);-moz-appearance:textfield}
+.sm-stepper input::-webkit-outer-spin-button,.sm-stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.sm-chips{display:flex;gap:8px;margin-bottom:14px}
+.sm-chips button{flex:1;padding:9px;border-radius:11px;border:1px solid var(--line);background:var(--panel);font-weight:800;font-size:13px;color:var(--muted)}
+.sm-chips button:hover{color:var(--blue);border-color:var(--blue-light)}
+.sm-preview{text-align:center;font-size:14px;font-weight:700;padding:11px;border-radius:12px;background:var(--bg);margin-bottom:12px}
+.sm-preview b{font-size:17px}
+.sm-preview.bad{background:var(--danger-bg);color:var(--danger-ink)}
+#smError{margin-bottom:12px}
+@media(max-width:860px){.stock-edit span{display:none}.stock-edit{padding:10px}}
 </style>
 </head>
 <body>
@@ -697,6 +727,30 @@ img,svg{max-width:100%}
   <button class="ib-close" id="installClose" aria-label="close"><svg><use href="#i-x"/></svg></button>
 </div>
 
+<div class="modal" id="stockModal"><div class="modal-box">
+  <div class="modal-head"><div><b id="smTitle"></b><div class="sm-sub" id="smSub"></div></div><button class="close" id="smClose"><svg><use href="#i-x"/></svg></button></div>
+  <div class="modal-content">
+    <div class="sm-stats">
+      <div><small data-i18n="stReceived">الوارد</small><b id="smReceived">0</b></div>
+      <div><small data-i18n="stReserved">محجوز</small><b id="smReserved">0</b></div>
+      <div><small data-i18n="stSold">مباع</small><b id="smSold">0</b></div>
+      <div class="hl"><small data-i18n="stAvailable">المتاح</small><b id="smAvail">0</b></div>
+    </div>
+    <div class="sm-mode" role="tablist">
+      <button type="button" class="sm-mode-btn active" data-sm-mode="add" data-i18n="modeAdd">إضافة للمخزون</button>
+      <button type="button" class="sm-mode-btn" data-sm-mode="sub" data-i18n="modeSub">خصم من المخزون</button>
+    </div>
+    <div class="sm-stepper">
+      <button type="button" id="smMinus" aria-label="-">−</button>
+      <input id="smQty" type="number" inputmode="numeric" min="1" max="1000" value="1">
+      <button type="button" id="smPlus" aria-label="+">+</button>
+    </div>
+    <div class="sm-chips"><button type="button" data-sm-chip="5">5</button><button type="button" data-sm-chip="10">10</button><button type="button" data-sm-chip="20">20</button><button type="button" data-sm-chip="50">50</button></div>
+    <div class="sm-preview" id="smPreview"></div>
+    <div class="login-error" id="smError" hidden></div>
+    <button type="button" class="btn primary auth-submit" id="smSave"><svg><use href="#i-check"/></svg><span data-i18n="saveStock">حفظ في الشيت</span></button>
+  </div>
+</div></div>
 <div class="modal" id="iosSheet"><div class="modal-box">
   <div class="modal-head"><b data-i18n="iosSheetTitle">تثبيت التطبيق على آيفون</b><button class="close" id="iosSheetClose"><svg><use href="#i-x"/></svg></button></div>
   <div class="modal-content">
@@ -940,7 +994,7 @@ const I18N = {
   cash:"كاش", currency:"ج",
   themeToDark:"تفعيل الوضع الليلي", themeToLight:"تفعيل الوضع النهاري",
   kickerOperations:"العمليات", kickerInsights:"التحليلات", navMore:"المزيد",
-  offlineShort:"غير متصل", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي 7 أيام", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
+  offlineShort:"غير متصل", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي 7 أيام", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
   installTitle:"ثبّت تطبيق المالكي", installSub:"افتح اللوحة بلمسة من الشاشة الرئيسية", installBtn:"تثبيت",
   iosSheetTitle:"تثبيت التطبيق على آيفون", iosStep1:"اضغط زر المشاركة في شريط Safari", iosStep2:"اختار «إضافة إلى الشاشة الرئيسية»", iosStep3:"اضغط «إضافة» — والتطبيق هيظهر مع باقي تطبيقاتك", gotIt:"تمام",
   loginSub:"سجّل الدخول للوصول للوحة التشغيل", tabSignIn:"تسجيل الدخول", tabSignUp:"إنشاء حساب", fieldEmail:"البريد الإلكتروني", fieldPassword:"كلمة المرور", fieldName:"الاسم", fieldConfirmPassword:"تأكيد كلمة المرور",
@@ -991,7 +1045,7 @@ const I18N = {
   cash:"Cash", currency:"EGP",
   themeToDark:"Switch to dark mode", themeToLight:"Switch to light mode",
   kickerOperations:"Operations", kickerInsights:"Insights", navMore:"More",
-  offlineShort:"Offline", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Last 7 days", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
+  offlineShort:"Offline", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Last 7 days", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
   installTitle:"Install the El Malky app", installSub:"Open the dashboard in one tap from your home screen", installBtn:"Install",
   iosSheetTitle:"Install on iPhone", iosStep1:"Tap the Share button in Safari's toolbar", iosStep2:"Choose “Add to Home Screen”", iosStep3:"Tap “Add” — the app appears with your other apps", gotIt:"Got it",
   loginSub:"Sign in to access the dashboard", tabSignIn:"Sign in", tabSignUp:"Create account", fieldEmail:"Email", fieldPassword:"Password", fieldName:"Name", fieldConfirmPassword:"Confirm password",
@@ -1412,7 +1466,7 @@ function renderStock(){
   const maxOf = s => s.max || s.received || Math.max(s.qty,1);
   const crit=list.filter(s=>s.qty/maxOf(s)*100<35);
   $("#criticalCount").textContent=crit.length;
-  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";return `<div class="stock-item"><div class="stock-info"><strong>${s.name}</strong><small>${s.qty} ${t('unitsAvailable')}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div><b>${s.qty<15?"⚠️":""}</b></div>`}).join("");
+  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";const canEdit=!!(s.item_id&&s.branch);return `<div class="stock-item${s.qty<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${s.qty} ${t('unitsAvailable')}${br==="all"&&s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`}).join("");
   requestAnimationFrame(()=>document.querySelectorAll("#criticalStock .progress b").forEach(b=>b.style.width=b.dataset.w+"%"));
   const total=list.reduce((s,x)=>s+x.qty,0), maxTotal=list.reduce((s,x)=>s+maxOf(x),0)||1;
   $("#stockSummary").innerHTML=`<div class="kpi" style="box-shadow:none;padding:0"><div class="num">${total.toLocaleString("en-US")}</div><div class="trend">${t('unitsAvailable')}</div><div class="progress" style="margin-top:18px"><b data-w="${Math.round(total/maxTotal*100)}"></b></div></div>`;
@@ -1542,7 +1596,7 @@ document.addEventListener("click",e=>{
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){$("#modal").classList.remove("open");closeIosSheet();closeDrawer();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof closeStockModal==="function"&&$("#stockModal").classList.contains("open"))closeStockModal();$("#modal").classList.remove("open");closeIosSheet();closeDrawer();}});
 ["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderAll));
 $("#search").addEventListener("input",renderSearchPop);
 $("#search").addEventListener("focus",renderSearchPop);
@@ -1667,6 +1721,59 @@ $("#logoutBtn").addEventListener("click", ()=>{
   clearToken();
   setUser(null);
   showLogin();
+});
+
+
+/* ---------- stock adjust ---------- */
+let smItem=null, smMode='add';
+function smQty(){ return Math.max(1,Math.min(1000,Math.trunc(Number($("#smQty").value)||0))); }
+function smRender(){
+  if(!smItem) return;
+  const q=smQty(), delta=smMode==='add'?q:-q, after=(Number(smItem.qty)||0)+delta;
+  const pv=$("#smPreview");
+  pv.classList.toggle('bad',after<0);
+  pv.innerHTML = after<0 ? t('stockWouldBeNegative') : `${t('availableWillBe')} <b>${after}</b> (${delta>0?'+':''}${delta})`;
+  $("#smSave").disabled = after<0;
+  document.querySelectorAll('.sm-mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.smMode===smMode));
+}
+function openStockModal(itemId, branch){
+  const s=stock.find(x=>String(x.item_id)===String(itemId) && x.branch===branch); if(!s) return;
+  smItem=s; smMode='add';
+  $("#smTitle").textContent=s.name;
+  $("#smSub").textContent=prettyBranch(s.branch)+' · '+s.item_id;
+  $("#smReceived").textContent=Number(s.received)||0;
+  $("#smReserved").textContent=Number(s.reserved)||0;
+  $("#smSold").textContent=Number(s.sold)||0;
+  $("#smAvail").textContent=Number(s.qty)||0;
+  $("#smQty").value=1; $("#smError").hidden=true; $("#smSave").disabled=false;
+  smRender();
+  $("#stockModal").classList.add("open");
+}
+function closeStockModal(){ $("#stockModal").classList.remove("open"); smItem=null; }
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-stock-edit]"); if(b) openStockModal(b.dataset.stockEdit,b.dataset.stockBranch); });
+$("#smClose").addEventListener("click",closeStockModal);
+$("#stockModal").addEventListener("click",e=>{ if(e.target.id==="stockModal") closeStockModal(); });
+document.querySelectorAll('.sm-mode-btn').forEach(b=>b.addEventListener('click',()=>{ smMode=b.dataset.smMode; smRender(); }));
+$("#smMinus").addEventListener("click",()=>{ $("#smQty").value=Math.max(1,smQty()-1); smRender(); });
+$("#smPlus").addEventListener("click",()=>{ $("#smQty").value=Math.min(1000,smQty()+1); smRender(); });
+$("#smQty").addEventListener("input",smRender);
+document.querySelectorAll('[data-sm-chip]').forEach(b=>b.addEventListener('click',()=>{ $("#smQty").value=b.dataset.smChip; smRender(); }));
+$("#smSave").addEventListener("click",async ()=>{
+  if(!smItem) return;
+  const q=smQty(), delta=smMode==='add'?q:-q, item=smItem;
+  const btn=$("#smSave"); btn.disabled=true; $("#smError").hidden=true;
+  try{
+    const form=new URLSearchParams({action:'adjust_stock',branch:item.branch,item_id:item.item_id,delta:String(delta),token:getToken()||''});
+    const data=await fetchJson(API.action,{method:"POST",body:form});
+    if(data?.auth===false){ closeStockModal(); clearToken(); setUser(null); showLogin(t('sessionExpired')); return; }
+    if(!data?.ok) throw new Error(data?.message||t('stockSaveFailed'));
+    item.received=Number(data.received); item.qty=Number(data.remaining);
+    closeStockModal(); renderStock();
+    toast(`${item.name} · ${t('availableNow')} ${data.remaining}`);
+    loadLiveData(false);
+  }catch(err){
+    const el=$("#smError"); el.hidden=false; el.textContent=err.message||t('stockSaveFailed'); btn.disabled=false;
+  }
 });
 
 /* ---------- splash ---------- */
