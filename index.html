@@ -225,6 +225,7 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 /* ---------- modal / toast ---------- */
 .modal{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);backdrop-filter:blur(3px);z-index:40;align-items:center;justify-content:center;padding:20px}
 .modal.open{display:flex}
+#stockModal{z-index:70}
 .modal-box{width:min(640px,100%);background:var(--panel);border-radius:22px;box-shadow:var(--sh-lg);overflow:hidden;animation:popIn .22s cubic-bezier(.2,.8,.2,1)}
 @keyframes popIn{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 .modal-head{padding:17px 20px;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center}
@@ -360,8 +361,12 @@ body.has-banner .app{padding-top:var(--banner-h,64px)}
   .m-bottomnav button.active{color:var(--blue);background:var(--blue-soft)}
 
   .toast{left:14px;right:14px;inset-inline-start:14px;bottom:calc(96px + env(safe-area-inset-bottom));justify-content:center}
-  .modal{align-items:flex-end;padding:0}
-  .modal-box{width:100%;border-radius:24px 24px 0 0;max-height:88dvh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom);animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
+  .modal{align-items:flex-end;padding:0;z-index:100}
+  #stockModal{z-index:110}
+  .modal-box{width:100%;border-radius:24px 24px 0 0;max-height:calc(100dvh - 8px);overflow:hidden;padding-bottom:env(safe-area-inset-bottom);display:flex;flex-direction:column;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
+  .modal-box .modal-head{flex:none}
+  .modal-box .modal-content{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+  #stockModal #smSave{position:sticky;bottom:0;z-index:3;margin-top:12px;box-shadow:0 -8px 18px rgba(255,255,255,.92)}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 }
 
@@ -673,6 +678,23 @@ img,svg{max-width:100%}
 .sm-preview.bad{background:var(--danger-bg);color:var(--danger-ink)}
 #smError{margin-bottom:12px}
 @media(max-width:860px){.stock-edit span{display:none}.stock-edit{padding:10px}}
+
+/* ================= password reset (v12) ================= */
+.remember-line{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.link-btn{color:var(--blue);font-weight:700;font-size:13px;padding:4px 2px}
+.link-btn:hover{text-decoration:underline}
+.link-btn.center{display:block;margin:12px auto 0}
+.link-btn:disabled{color:var(--muted);text-decoration:none;cursor:default}
+#resetBox{text-align:start;animation:fadeUp .25s ease}
+.rs-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.rs-title{font-size:16px;font-weight:800}
+.rs-steps{display:flex;gap:5px}
+.rs-steps i{width:22px;height:5px;border-radius:9px;background:var(--line);transition:background .2s}
+.rs-steps i.on{background:var(--blue)}
+.rs-sub{margin:0 0 4px;color:var(--muted);font-size:13px;line-height:1.7}
+.rs-sub b{color:var(--ink);direction:ltr;unicode-bidi:embed}
+.code-input{text-align:center;font-size:26px!important;font-weight:800;letter-spacing:.5em}
+#rsMsg{margin-top:12px}
 </style>
 </head>
 <body>
@@ -776,7 +798,7 @@ img,svg{max-width:100%}
     <form id="loginForm" class="auth-form" autocomplete="on">
       <div class="auth-field"><label for="loginEmail" data-i18n="fieldEmail">البريد الإلكتروني</label><input id="loginEmail" name="email" type="email" autocomplete="email" dir="ltr" required></div>
       <div class="auth-field"><label for="loginPass" data-i18n="fieldPassword">كلمة المرور</label><input id="loginPass" name="password" type="password" autocomplete="current-password" required></div>
-      <label class="remember-row"><input type="checkbox" id="rememberMe" checked> <span data-i18n="rememberMe">تذكرني على هذا الجهاز</span></label>
+      <div class="remember-line"><label class="remember-row"><input type="checkbox" id="rememberMe" checked> <span data-i18n="rememberMe">تذكرني على هذا الجهاز</span></label><button type="button" class="link-btn" id="forgotLink" data-i18n="forgotLink">نسيت كلمة المرور؟</button></div>
       <div id="loginError" class="login-error" hidden></div>
       <button type="submit" class="btn primary auth-submit" id="loginSubmit"><svg><use href="#i-lock"/></svg><span data-i18n="signIn">تسجيل الدخول</span></button>
     </form>
@@ -788,6 +810,28 @@ img,svg{max-width:100%}
       <div id="signupMsg" class="login-error" hidden></div>
       <button type="submit" class="btn primary auth-submit" id="signupSubmit"><svg><use href="#i-plus"/></svg><span data-i18n="createAccount">إنشاء الحساب</span></button>
     </form>
+    <div id="resetBox" hidden>
+      <div class="rs-head"><div class="rs-title" data-i18n="resetTitle">استعادة كلمة المرور</div><div class="rs-steps"><i class="on"></i><i></i><i></i></div></div>
+      <form id="rsForm1" class="auth-form">
+        <p class="rs-sub" data-i18n="resetSub1">اكتب إيميلك وهنبعتلك كود من 6 أرقام</p>
+        <div class="auth-field"><label for="rsEmail" data-i18n="fieldEmail">البريد الإلكتروني</label><input id="rsEmail" type="email" autocomplete="email" dir="ltr" required></div>
+        <button type="submit" class="btn primary auth-submit" id="rsSend"><span data-i18n="sendCode">ابعت الكود</span></button>
+      </form>
+      <form id="rsForm2" class="auth-form" hidden>
+        <p class="rs-sub" id="rsSentTo"></p>
+        <div class="auth-field"><label for="rsCode" data-i18n="fieldCode">الكود</label><input id="rsCode" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" dir="ltr" required></div>
+        <button type="submit" class="btn primary auth-submit" id="rsVerify"><span data-i18n="verifyCode">تأكيد الكود</span></button>
+        <button type="button" class="link-btn center" id="rsResend"></button>
+      </form>
+      <form id="rsForm3" class="auth-form" hidden>
+        <p class="rs-sub" data-i18n="resetSub3">اختار كلمة مرور جديدة (8 حروف على الأقل)</p>
+        <div class="auth-field"><label for="rsPass" data-i18n="fieldNewPassword">كلمة المرور الجديدة</label><input id="rsPass" type="password" autocomplete="new-password" minlength="8" required></div>
+        <div class="auth-field"><label for="rsPass2" data-i18n="fieldConfirmPassword">تأكيد كلمة المرور</label><input id="rsPass2" type="password" autocomplete="new-password" minlength="8" required></div>
+        <button type="submit" class="btn primary auth-submit" id="rsSave"><svg><use href="#i-check"/></svg><span data-i18n="saveNewPassword">حفظ كلمة المرور</span></button>
+      </form>
+      <div id="rsMsg" class="login-error" hidden></div>
+      <button type="button" class="link-btn center" id="rsBack" data-i18n="backToLogin">رجوع لتسجيل الدخول</button>
+    </div>
   </div>
 </div>
 
@@ -940,6 +984,7 @@ const API = {
   data: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-data",
   action: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-action",
   auth: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-auth",
+  reset: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-password-reset",
   timeout: 9000
 };
 let apiOnline = false;
@@ -994,7 +1039,7 @@ const I18N = {
   cash:"كاش", currency:"ج",
   themeToDark:"تفعيل الوضع الليلي", themeToLight:"تفعيل الوضع النهاري",
   kickerOperations:"العمليات", kickerInsights:"التحليلات", navMore:"المزيد",
-  offlineShort:"غير متصل", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي 7 أيام", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
+  offlineShort:"غير متصل", forgotLink:"نسيت كلمة المرور؟", resetTitle:"استعادة كلمة المرور", resetSub1:"اكتب إيميلك وهنبعتلك كود من 6 أرقام", sendCode:"ابعت الكود", codeSentTo:"لو الإيميل {e} مسجل عندنا، هيوصلك كود خلال دقيقة. شوف الـ Spam لو ملقتوش.", fieldCode:"الكود", verifyCode:"تأكيد الكود", resendCode:"ابعت الكود تاني", resendIn:"إعادة الإرسال بعد {n} ث", resetSub3:"اختار كلمة مرور جديدة (8 حروف على الأقل)", fieldNewPassword:"كلمة المرور الجديدة", saveNewPassword:"حفظ كلمة المرور", backToLogin:"رجوع لتسجيل الدخول", resetDone:"تم تغيير كلمة المرور — سجّل دخول بالكلمة الجديدة", errInvalidCode:"الكود غلط", errCodeExpired:"الكود انتهت صلاحيته — اطلب كود جديد", errTooMany:"محاولات كتير غلط — اطلب كود جديد", errVerificationRequired:"لازم تأكد الكود الأول — ابدأ من جديد", errGeneric:"حصلت مشكلة، جرب تاني", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي 7 أيام", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
   installTitle:"ثبّت تطبيق المالكي", installSub:"افتح اللوحة بلمسة من الشاشة الرئيسية", installBtn:"تثبيت",
   iosSheetTitle:"تثبيت التطبيق على آيفون", iosStep1:"اضغط زر المشاركة في شريط Safari", iosStep2:"اختار «إضافة إلى الشاشة الرئيسية»", iosStep3:"اضغط «إضافة» — والتطبيق هيظهر مع باقي تطبيقاتك", gotIt:"تمام",
   loginSub:"سجّل الدخول للوصول للوحة التشغيل", tabSignIn:"تسجيل الدخول", tabSignUp:"إنشاء حساب", fieldEmail:"البريد الإلكتروني", fieldPassword:"كلمة المرور", fieldName:"الاسم", fieldConfirmPassword:"تأكيد كلمة المرور",
@@ -1045,7 +1090,7 @@ const I18N = {
   cash:"Cash", currency:"EGP",
   themeToDark:"Switch to dark mode", themeToLight:"Switch to light mode",
   kickerOperations:"Operations", kickerInsights:"Insights", navMore:"More",
-  offlineShort:"Offline", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Last 7 days", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
+  offlineShort:"Offline", forgotLink:"Forgot password?", resetTitle:"Reset password", resetSub1:"Enter your email and we'll send you a 6-digit code", sendCode:"Send code", codeSentTo:"If {e} is registered, a code will arrive within a minute. Check spam if you don't see it.", fieldCode:"Code", verifyCode:"Verify code", resendCode:"Resend code", resendIn:"Resend in {n}s", resetSub3:"Choose a new password (at least 8 characters)", fieldNewPassword:"New password", saveNewPassword:"Save password", backToLogin:"Back to sign in", resetDone:"Password changed — sign in with your new password", errInvalidCode:"Incorrect code", errCodeExpired:"This code expired — request a new one", errTooMany:"Too many wrong attempts — request a new code", errVerificationRequired:"Verify the code first — start again", errGeneric:"Something went wrong, try again", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Last 7 days", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
   installTitle:"Install the El Malky app", installSub:"Open the dashboard in one tap from your home screen", installBtn:"Install",
   iosSheetTitle:"Install on iPhone", iosStep1:"Tap the Share button in Safari's toolbar", iosStep2:"Choose “Add to Home Screen”", iosStep3:"Tap “Add” — the app appears with your other apps", gotIt:"Got it",
   loginSub:"Sign in to access the dashboard", tabSignIn:"Sign in", tabSignUp:"Create account", fieldEmail:"Email", fieldPassword:"Password", fieldName:"Name", fieldConfirmPassword:"Confirm password",
@@ -1422,7 +1467,8 @@ function renderHome(){
  const homeArr=filteredOrders();
  $("#homeOrders").innerHTML=homeArr.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
  const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
- $("#branchSummary").innerHTML=branchList.map(b=>{ const cls=b.status_class||'green'; const label=b.status||(cls==='green'?t('goodStatus'):t('alertStatus')); return `<div class="branch-tile"><div class="bt-ico"><svg><use href="#i-building"/></svg></div><div class="bt-meta"><b>${prettyBranch(b.name)}</b><small>${Number(b.orders)||0} ${t('ordersUnit')} · ${formatMoneyish(b.sales)}</small></div><span class="badge b-${cls}">${label}</span></div>`; }).join("");
+ const branchView=br==="all"?[{name:"__all__",orders:branchList.reduce((n,b)=>n+(Number(b.orders)||0),0),sales:branchList.reduce((n,b)=>{const v=typeof b.sales==="number"?b.sales:Number(String(b.sales||0).replace(/[^0-9.-]/g,""));return n+(Number.isFinite(v)?v:0)},0),pending:branchList.reduce((n,b)=>n+(Number(b.pending)||0),0),status_class:branchList.some(b=>(b.status_class||"").toLowerCase()==="red")?"red":branchList.some(b=>(b.status_class||"").toLowerCase()==="yellow")?"yellow":"green"}]:branchList;
+ $("#branchSummary").innerHTML=branchView.map(b=>{const cls=b.status_class||'green';const label=br==="all"?t('allBranches'):(b.status||(cls==='green'?t('goodStatus'):t('alertStatus')));return `<div class="branch-tile"><div class="bt-ico"><svg><use href="#i-building"/></svg></div><div class="bt-meta"><b>${br==="all"?t('allBranches'):prettyBranch(b.name)}</b><small>${Number(b.orders)||0} ${t('ordersUnit')} · ${formatMoneyish(b.sales)}${Number(b.pending)?` · ${Number(b.pending)} ${t('statusPending')}`:''}</small></div><span class="badge b-${cls}">${label}</span></div>`}).join("");
  renderChart();
  renderAgentFeed();
 }
@@ -1460,13 +1506,15 @@ function renderOrders(){
  const arr=filteredOrders();$("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
  $("#ordersTable").innerHTML=arr.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${o.id}</span></td><td>${o.time}</td><td>${o.name}<br><small style="color:var(--muted)">${o.phone}</small></td><td>${prettyBranch(o.branch)}</td><td>${o.items}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td><td><div class="mini-actions"><button class="mini" data-view="${o.id}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${o.id}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="9" class="empty">${t('noMatchingOrders')}</td></tr>`;
 }
+function aggregateStock(items){const map=new Map();items.forEach(s=>{const key=String(s.item_id??s.name??"").trim();if(!key)return;if(!map.has(key))map.set(key,{...s,branch:"__all__",received:0,reserved:0,sold:0,qty:0,max:0});const a=map.get(key);a.received+=Number(s.received)||0;a.reserved+=Number(s.reserved)||0;a.sold+=Number(s.sold)||0;a.qty+=Number(s.qty??s.remaining)||0;a.max+=Number(s.max)||0});return [...map.values()];}
 function renderStock(){
   const br=$("#branch").value;
-  const list = br==="all" ? stock : stock.filter(s=>s.branch===br);
+  const source = br==="all" ? stock : stock.filter(s=>s.branch===br);
+  const list = br==="all" ? aggregateStock(source) : source;
   const maxOf = s => s.max || s.received || Math.max(s.qty,1);
   const crit=list.filter(s=>s.qty/maxOf(s)*100<35);
   $("#criticalCount").textContent=crit.length;
-  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";const canEdit=!!(s.item_id&&s.branch);return `<div class="stock-item${s.qty<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${s.qty} ${t('unitsAvailable')}${br==="all"&&s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`}).join("");
+  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";const canEdit=!!(s.item_id&&s.branch&&s.branch!=="__all__");return `<div class="stock-item${s.qty<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${s.qty} ${t('unitsAvailable')}${br==="all"&&s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`}).join("");
   requestAnimationFrame(()=>document.querySelectorAll("#criticalStock .progress b").forEach(b=>b.style.width=b.dataset.w+"%"));
   const total=list.reduce((s,x)=>s+x.qty,0), maxTotal=list.reduce((s,x)=>s+maxOf(x),0)||1;
   $("#stockSummary").innerHTML=`<div class="kpi" style="box-shadow:none;padding:0"><div class="num">${total.toLocaleString("en-US")}</div><div class="trend">${t('unitsAvailable')}</div><div class="progress" style="margin-top:18px"><b data-w="${Math.round(total/maxTotal*100)}"></b></div></div>`;
@@ -1477,7 +1525,11 @@ function renderTopItems(){
   if(!topItems.length){ box.innerHTML=`<div class="panel-empty"><svg><use href="#i-star"/></svg>${t('topItemsEmpty')}</div>`; return; }
   box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${it.name}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
-function renderBranches(){const br=$("#branch").value;const list=br==="all"?branches:branches.filter(b=>b.name===br);$("#branchesTable").innerHTML=list.map(b=>`<tr><td><b>${b.name}</b></td><td>${b.orders}</td><td>${formatMoneyish(b.sales)}</td><td>${b.pending}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
+function renderBranches(){
+ const br=$("#branch").value;
+ const list=br==="all"?branches:branches.filter(b=>b.name===br);
+ const rows=br==="all"?[{name:"__all__",orders:list.reduce((n,b)=>n+(Number(b.orders)||0),0),sales:list.reduce((n,b)=>{const v=typeof b.sales==="number"?b.sales:Number(String(b.sales||0).replace(/[^0-9.-]/g,""));return n+(Number.isFinite(v)?v:0)},0),pending:list.reduce((n,b)=>n+(Number(b.pending)||0),0),status_class:list.some(b=>(b.status_class||"").toLowerCase()==="red")?"red":list.some(b=>(b.status_class||"").toLowerCase()==="yellow")?"yellow":"green",status:t('allBranches')}]:list;
+ $("#branchesTable").innerHTML=rows.map(b=>`<tr><td><b>${b.name==="__all__"?t('allBranches'):prettyBranch(b.name)}</b></td><td>${Number(b.orders)||0}</td><td>${formatMoneyish(b.sales)}</td><td>${Number(b.pending)||0}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
 function renderCustomers(){
   const scoped=filteredOrders();
   const map={};
@@ -1774,6 +1826,72 @@ $("#smSave").addEventListener("click",async ()=>{
   }catch(err){
     const el=$("#smError"); el.hidden=false; el.textContent=err.message||t('stockSaveFailed'); btn.disabled=false;
   }
+});
+
+
+/* ---------- forgot password (OTP) ---------- */
+const RESET_CODES={invalid_code:'errInvalidCode',code_expired:'errCodeExpired',too_many_attempts:'errTooMany',verification_required:'errVerificationRequired',weak_password:'pwTooShort',disabled:'accountDisabled',invalid_email:'invalidEmail'};
+let rsEmailVal='', rsCooldownT=null;
+function rsErr(data){ const k=data&&RESET_CODES[data.code]; return k?t(k):t('errGeneric'); }
+function rsShow(step){
+  [1,2,3].forEach(n=>$("#rsForm"+n).hidden=(n!==step));
+  document.querySelectorAll('.rs-steps i').forEach((d,i)=>d.classList.toggle('on',i<step));
+  $("#rsMsg").hidden=true;
+  const f=$("#rsForm"+step).querySelector('input'); if(f) setTimeout(()=>f.focus(),50);
+}
+function rsMsg(text,ok){ const m=$("#rsMsg"); m.hidden=false; m.textContent=text; m.classList.toggle('login-ok',!!ok); }
+function openReset(){
+  $(".auth-tabs").hidden=true; $("#loginForm").hidden=true; $("#signupForm").hidden=true; $("#loginError").hidden=true;
+  $("#resetBox").hidden=false; $("#rsEmail").value=$("#loginEmail").value.trim();
+  rsShow(1);
+}
+function closeReset(okMsg){
+  $("#resetBox").hidden=true; $(".auth-tabs").hidden=false; clearInterval(rsCooldownT);
+  switchAuthTab('login');
+  if(rsEmailVal) $("#loginEmail").value=rsEmailVal;
+  if(okMsg){ authMsg($("#loginError"),okMsg,true); $("#loginPass").value=''; $("#loginPass").focus(); }
+}
+async function rsCall(params){ return fetchJson(API.reset,{method:"POST",body:new URLSearchParams(params)}); }
+function rsStartCooldown(){
+  let s=60; const b=$("#rsResend"); b.disabled=true; b.textContent=t('resendIn').replace('{n}',s);
+  clearInterval(rsCooldownT);
+  rsCooldownT=setInterval(()=>{ s--; if(s<=0){ clearInterval(rsCooldownT); b.disabled=false; b.textContent=t('resendCode'); } else b.textContent=t('resendIn').replace('{n}',s); },1000);
+}
+async function rsSendCode(btn){
+  btn.disabled=true;
+  try{
+    const d=await rsCall({action:'forgot',email:rsEmailVal});
+    if(!d?.ok) throw d;
+    $("#rsSentTo").innerHTML=t('codeSentTo').replace('{e}','<b>'+escHtml(rsEmailVal)+'</b>');
+    rsShow(2); $("#rsCode").value=''; rsStartCooldown();
+  }catch(e){ rsMsg(e&&e.code?rsErr(e):t('loginConnFailed')); }
+  btn.disabled=false;
+}
+$("#forgotLink").addEventListener("click",openReset);
+$("#rsBack").addEventListener("click",()=>closeReset());
+$("#rsForm1").addEventListener("submit",e=>{ e.preventDefault(); rsEmailVal=$("#rsEmail").value.trim().toLowerCase(); rsSendCode($("#rsSend")); });
+$("#rsResend").addEventListener("click",()=>rsSendCode($("#rsResend")));
+$("#rsCode").addEventListener("input",e=>{ e.target.value=e.target.value.replace(/[^0-9٠-٩]/g,'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).slice(0,6); });
+$("#rsForm2").addEventListener("submit",async e=>{
+  e.preventDefault(); const btn=$("#rsVerify"); const code=$("#rsCode").value.trim();
+  if(code.length!==6){ rsMsg(t('errInvalidCode')); return; }
+  btn.disabled=true;
+  try{ const d=await rsCall({action:'verify_code',email:rsEmailVal,code}); if(!d?.ok) throw d; rsShow(3); }
+  catch(err){ rsMsg(err&&err.code?rsErr(err):t('loginConnFailed')); if(err&&(err.code==='code_expired'||err.code==='too_many_attempts')) $("#rsCode").value=''; }
+  btn.disabled=false;
+});
+$("#rsForm3").addEventListener("submit",async e=>{
+  e.preventDefault(); const p1=$("#rsPass").value, p2=$("#rsPass2").value;
+  if(p1.length<8){ rsMsg(t('pwTooShort')); return; }
+  if(p1!==p2){ rsMsg(t('pwMismatch')); return; }
+  const btn=$("#rsSave"); btn.disabled=true;
+  try{
+    const d=await rsCall({action:'reset_password',email:rsEmailVal,password:p1});
+    if(!d?.ok) throw d;
+    $("#rsPass").value=''; $("#rsPass2").value='';
+    closeReset(t('resetDone'));
+  }catch(err){ rsMsg(err&&err.code?rsErr(err):t('loginConnFailed')); if(err&&err.code==='verification_required') rsShow(1); }
+  btn.disabled=false;
 });
 
 /* ---------- splash ---------- */
