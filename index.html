@@ -175,6 +175,7 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 .status-row .who{display:flex;align-items:center;gap:9px;font-weight:700;font-size:13.5px}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800}
 .status-click{cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s}.status-click:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.status-select{appearance:none;-webkit-appearance:none;border:0;outline:0;cursor:pointer;font:inherit;font-size:11px;font-weight:800;line-height:1.2;padding:8px 26px 8px 11px;border-radius:999px;min-width:112px;text-align:center;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 12px) 50%,calc(100% - 8px) 50%;background-size:4px 4px,4px 4px;background-repeat:no-repeat}.status-select:hover{filter:brightness(.97);box-shadow:0 4px 12px rgba(0,0,0,.08)}.status-select:focus{box-shadow:0 0 0 3px var(--blue-soft)}.status-select.b-yellow{background-color:var(--yellow-soft);color:#7a5b00}.status-select.b-blue{background-color:var(--blue-soft);color:var(--blue)}.status-select.b-green{background-color:var(--green-soft);color:var(--green)}
 .b-green{background:var(--success-bg);color:var(--success-ink)}
 .b-yellow{background:var(--warning-bg);color:var(--warning-ink)}
 .b-red{background:var(--danger-bg);color:var(--danger-ink)}
@@ -1125,7 +1126,16 @@ function statusMeta(s){
   };
   return map[s] || {c:"blue", label:s};
 }
-function badgeStatus(s,id=""){ const m=statusMeta(s); return `<span class="badge b-${m.c} status-click" ${id?`data-status="${escHtml(id)}"`:""} title="${t('changeStatusBtn')}">${m.label}</span>`; }
+function badgeStatus(s,id=""){
+  const m=statusMeta(s);
+  const options=[
+    ["pending",t("statusPending")],
+    ["paid",t("statusPaid")],
+    ["processing",t("statusProcessing")],
+    ["done",t("statusDone")]
+  ];
+  return `<select class="status-select b-${m.c}" ${id?`data-status-select="${escHtml(id)}"`:""} value="${escHtml(s)}" aria-label="${escHtml(t("changeStatusBtn"))}">${options.map(([v,l])=>`<option value="${v}" ${v===s?"selected":""}>${escHtml(l)}</option>`).join("")}</select>`;
+}
 
 function applyLanguage(lang){
   LANG = lang;
@@ -1661,7 +1671,13 @@ document.addEventListener("click",e=>{
  const go=e.target.closest("[data-go]");if(go)showSection(go.dataset.go);
  const v=e.target.closest("[data-view]");if(v)openOrder(v.dataset.view);
  const c=e.target.closest("[data-confirm]");if(c){updateStatus(c.dataset.confirm,"paid");if($("#modal").classList.contains("open"))$("#modal").classList.remove("open")}
- const st=e.target.closest("[data-status]");if(st){updateStatus(st.dataset.status);return;}
+ const st=e.target.closest("[data-status-select]");if(st){
+   const id=st.dataset.statusSelect;
+   const next=st.value;
+   const o=orders.find(x=>x.id===id);
+   if(o && o.status!==next) updateStatus(id,next);
+   return;
+ }
  const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
