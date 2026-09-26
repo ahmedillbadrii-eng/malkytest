@@ -174,6 +174,7 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 .status-row{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--bg);border-radius:12px;border:1px solid var(--line-soft)}
 .status-row .who{display:flex;align-items:center;gap:9px;font-weight:700;font-size:13.5px}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:800}
+.status-click{cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s}.status-click:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 .b-green{background:var(--success-bg);color:var(--success-ink)}
 .b-yellow{background:var(--warning-bg);color:var(--warning-ink)}
 .b-red{background:var(--danger-bg);color:var(--danger-ink)}
@@ -225,7 +226,6 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 /* ---------- modal / toast ---------- */
 .modal{display:none;position:fixed;inset:0;background:rgba(10,20,40,.5);backdrop-filter:blur(3px);z-index:40;align-items:center;justify-content:center;padding:20px}
 .modal.open{display:flex}
-#stockModal{z-index:70}
 .modal-box{width:min(640px,100%);background:var(--panel);border-radius:22px;box-shadow:var(--sh-lg);overflow:hidden;animation:popIn .22s cubic-bezier(.2,.8,.2,1)}
 @keyframes popIn{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
 .modal-head{padding:17px 20px;border-bottom:1px solid var(--line-soft);display:flex;justify-content:space-between;align-items:center}
@@ -361,12 +361,8 @@ body.has-banner .app{padding-top:var(--banner-h,64px)}
   .m-bottomnav button.active{color:var(--blue);background:var(--blue-soft)}
 
   .toast{left:14px;right:14px;inset-inline-start:14px;bottom:calc(96px + env(safe-area-inset-bottom));justify-content:center}
-  .modal{align-items:flex-end;padding:0;z-index:100}
-  #stockModal{z-index:110}
-  .modal-box{width:100%;border-radius:24px 24px 0 0;max-height:calc(100dvh - 8px);overflow:hidden;padding-bottom:env(safe-area-inset-bottom);display:flex;flex-direction:column;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
-  .modal-box .modal-head{flex:none}
-  .modal-box .modal-content{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
-  #stockModal #smSave{position:sticky;bottom:0;z-index:3;margin-top:12px;box-shadow:0 -8px 18px rgba(255,255,255,.92)}
+  .modal{align-items:flex-end;padding:0}
+  .modal-box{width:100%;border-radius:24px 24px 0 0;max-height:88dvh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom);animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
   @keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
 }
 
@@ -922,7 +918,7 @@ img,svg{max-width:100%}
 </section>
 
 <section id="orders" class="section" hidden>
-<div class="card"><div class="card-head"><h2 data-i18n="ordersManageTitle">إدارة الطلبات</h2><span id="orderCount" class="badge b-blue"></span></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colTime">الوقت</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colItems">الأصناف</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colAction">إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-head"><h2 data-i18n="ordersManageTitle">إدارة الطلبات</h2><span id="orderCount" class="badge b-blue"></span></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colTime">التاريخ والوقت</th><th data-i18n="colChannel">القناة</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colItems">الأصناف</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colAction">إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
 </section>
 
 <section id="stock" class="section" hidden>
@@ -1020,7 +1016,7 @@ const I18N = {
   opStatusTitle:"حالة التشغيل", connected:"متصل", connecting:"جاري الاتصال", working:"يعمل", simulated:"محاكاة", lastSyncLabel:"آخر مزامنة",
   recentOrdersTitle:"آخر الطلبات", viewAll:"عرض الكل", details:"التفاصيل", goodStatus:"جيد", alertStatus:"تنبيه", ordersUnit:"طلب", noOrdersToday:"لسه مفيش طلبات النهاردة",
   agentActivityTitle:"نشاط الوكيل الذكي", agentActivityEmpty:"لسه مفيش نشاط مسجل للوكيل الذكي — هيظهر هنا أول ما يبدأ يرد على العملاء عبر n8n",
-  ordersManageTitle:"إدارة الطلبات", colOrder:"الطلب", colTime:"الوقت", colCustomer:"العميل", colBranch:"الفرع", colItems:"الأصناف", colTotal:"الإجمالي", colPayment:"الدفع", colStatus:"الحالة", colAction:"إجراء",
+  ordersManageTitle:"إدارة الطلبات", colOrder:"الطلب", colTime:"التاريخ والوقت", colChannel:"القناة", colCustomer:"العميل", colBranch:"الفرع", colItems:"الأصناف", colTotal:"الإجمالي", colPayment:"الدفع", colStatus:"الحالة", colAction:"إجراء",
   actionDetails:"تفاصيل", actionConfirm:"تأكيد", actionNext:"التالي", noMatchingOrders:"لا توجد طلبات مطابقة",
   criticalItemsTitle:"أصناف حرجة", topItemsTitle:"أفضل الأصناف", stockSummaryTitle:"ملخص المخزون", unitsAvailable:"وحدة متاحة", topItemsEmpty:"الأصناف الأكثر طلبًا هتظهر هنا بعد أول تحديث من n8n",
   branchPerformanceTitle:"أداء الفروع", colOrdersToday:"طلبات اليوم", colSales:"المبيعات", colProcessing:"قيد التجهيز",
@@ -1071,7 +1067,7 @@ const I18N = {
   opStatusTitle:"Operational status", connected:"Connected", connecting:"Connecting", working:"Working", simulated:"Simulated", lastSyncLabel:"Last sync",
   recentOrdersTitle:"Recent orders", viewAll:"View all", details:"Details", goodStatus:"Good", alertStatus:"Alert", ordersUnit:"orders", noOrdersToday:"No orders yet today",
   agentActivityTitle:"AI agent activity", agentActivityEmpty:"No agent activity logged yet — it'll appear here once it starts replying to customers via n8n",
-  ordersManageTitle:"Manage orders", colOrder:"Order", colTime:"Time", colCustomer:"Customer", colBranch:"Branch", colItems:"Items", colTotal:"Total", colPayment:"Payment", colStatus:"Status", colAction:"Action",
+  ordersManageTitle:"Manage orders", colOrder:"Order", colTime:"Date & time", colChannel:"Channel", colCustomer:"Customer", colBranch:"Branch", colItems:"Items", colTotal:"Total", colPayment:"Payment", colStatus:"Status", colAction:"Action",
   actionDetails:"Details", actionConfirm:"Confirm", actionNext:"Next", noMatchingOrders:"No matching orders",
   criticalItemsTitle:"Critical items", topItemsTitle:"Top items", stockSummaryTitle:"Stock summary", unitsAvailable:"units available", topItemsEmpty:"Most-ordered items will appear here after the first update from n8n",
   branchPerformanceTitle:"Branch performance", colOrdersToday:"Orders today", colSales:"Sales", colProcessing:"Processing",
@@ -1104,6 +1100,24 @@ const I18N = {
 function t(key){ return (I18N[LANG]&&I18N[LANG][key]) || I18N.ar[key] || key; }
 function money(n){ return Number(n||0).toLocaleString("en-US")+" "+t('currency'); }
 function paymentLabel(p){ return p==="instapay" ? "InstaPay" : t('cash'); }
+function channelLabel(c){
+  const v=String(c||'').trim().toLowerCase();
+  if(v==='whatsapp'||v==='wa') return 'WhatsApp';
+  if(v==='telegram'||v==='tg') return 'Telegram';
+  if(v==='website'||v==='web'||v==='site') return LANG==='ar'?'الموقع':'Website';
+  if(v==='phone'||v==='call') return LANG==='ar'?'مكالمة':'Phone';
+  if(v==='manual') return LANG==='ar'?'يدوي':'Manual';
+  return c ? String(c) : '—';
+}
+function displayOrderDate(o){
+  const raw=String(o.created_at||o.createdAt||'').trim();
+  if(!raw) return String(o.time||'—');
+  const d=new Date(raw);
+  if(!Number.isNaN(d.getTime()) && /[-T:]/.test(raw)){
+    return d.toLocaleString(LANG==='ar'?'ar-EG':'en-US',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  }
+  return raw;
+}
 function statusMeta(s){
   const map={
    pending:{c:"yellow", label:t('statusPending')}, paid:{c:"blue", label:t('statusPaid')},
@@ -1111,7 +1125,7 @@ function statusMeta(s){
   };
   return map[s] || {c:"blue", label:s};
 }
-function badgeStatus(s){ const m=statusMeta(s); return `<span class="badge b-${m.c}">${m.label}</span>`; }
+function badgeStatus(s,id=""){ const m=statusMeta(s); return `<span class="badge b-${m.c} status-click" ${id?`data-status="${escHtml(id)}"`:""} title="${t('changeStatusBtn')}">${m.label}</span>`; }
 
 function applyLanguage(lang){
   LANG = lang;
@@ -1332,14 +1346,24 @@ function applyLiveData(data){
     const mapped=d.orders.map(o=>({
       id:o.id||o.order_id||o.orderId||"",
       time:o.time||o.created_time||o.createdAt||"",
-      created_at:o.created_at||"",
+      created_at:o.created_at||o.createdAt||o.created_time||"",
+      channel:o.channel||o.order_channel||o.source||"",
       name:o.name||o.customer_name||o.customer||"",
       phone:o.phone||o.customer_phone||"",
       branch:o.branch||o.branch_name||"",
       items:o.items||o.order_items||"",
       total:Number(o.total??o.amount??0),
       payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
-      status:o.status||"pending"
+      payment_status:String(o.payment_status||o.paymentStatus||""),
+      order_status:String(o.order_status||o.orderStatus||""),
+      status:(()=>{
+        const os=String(o.order_status||o.orderStatus||"").trim().toLowerCase();
+        const ps=String(o.payment_status||o.paymentStatus||"").trim().toLowerCase();
+        if(os==="delivered" || os==="done") return "done";
+        if(["preparing","processing"].includes(os)) return "processing";
+        if(ps==="paid" && ["awaiting_payment","confirmed","pending",""].includes(os)) return "paid";
+        return "pending";
+      })()
     }));
     if(seenOrderIds===null){
       seenOrderIds=new Set(mapped.map(o=>o.id).filter(Boolean));
@@ -1467,8 +1491,7 @@ function renderHome(){
  const homeArr=filteredOrders();
  $("#homeOrders").innerHTML=homeArr.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
  const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
- const branchView=br==="all"?[{name:"__all__",orders:branchList.reduce((n,b)=>n+(Number(b.orders)||0),0),sales:branchList.reduce((n,b)=>{const v=typeof b.sales==="number"?b.sales:Number(String(b.sales||0).replace(/[^0-9.-]/g,""));return n+(Number.isFinite(v)?v:0)},0),pending:branchList.reduce((n,b)=>n+(Number(b.pending)||0),0),status_class:branchList.some(b=>(b.status_class||"").toLowerCase()==="red")?"red":branchList.some(b=>(b.status_class||"").toLowerCase()==="yellow")?"yellow":"green"}]:branchList;
- $("#branchSummary").innerHTML=branchView.map(b=>{const cls=b.status_class||'green';const label=br==="all"?t('allBranches'):(b.status||(cls==='green'?t('goodStatus'):t('alertStatus')));return `<div class="branch-tile"><div class="bt-ico"><svg><use href="#i-building"/></svg></div><div class="bt-meta"><b>${br==="all"?t('allBranches'):prettyBranch(b.name)}</b><small>${Number(b.orders)||0} ${t('ordersUnit')} · ${formatMoneyish(b.sales)}${Number(b.pending)?` · ${Number(b.pending)} ${t('statusPending')}`:''}</small></div><span class="badge b-${cls}">${label}</span></div>`}).join("");
+ $("#branchSummary").innerHTML=branchList.map(b=>{ const cls=b.status_class||'green'; const label=b.status||(cls==='green'?t('goodStatus'):t('alertStatus')); return `<div class="branch-tile"><div class="bt-ico"><svg><use href="#i-building"/></svg></div><div class="bt-meta"><b>${prettyBranch(b.name)}</b><small>${Number(b.orders)||0} ${t('ordersUnit')} · ${formatMoneyish(b.sales)}</small></div><span class="badge b-${cls}">${label}</span></div>`; }).join("");
  renderChart();
  renderAgentFeed();
 }
@@ -1500,21 +1523,19 @@ function renderSearchPop(){
 function closeSearchPop(){ const p=$("#searchPop"); if(p) p.hidden=true; }
 function filteredOrders(){
  const q=normAr($("#search").value.trim()), br=$("#branch").value, st=$("#status").value;
- return orders.filter(o=>(!q||normAr([o.id,o.name,o.phone,o.branch,prettyBranch(o.branch),o.items].join(" ")).includes(q))&&(br==="all"||o.branch===br)&&(st==="all"||o.status===st));
+ return orders.filter(o=>(!q||normAr([o.id,o.name,o.phone,o.branch,prettyBranch(o.branch),o.items,o.channel,channelLabel(o.channel)].join(" ")).includes(q))&&(br==="all"||o.branch===br)&&(st==="all"||o.status===st));
 }
 function renderOrders(){
  const arr=filteredOrders();$("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
- $("#ordersTable").innerHTML=arr.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${o.id}</span></td><td>${o.time}</td><td>${o.name}<br><small style="color:var(--muted)">${o.phone}</small></td><td>${prettyBranch(o.branch)}</td><td>${o.items}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td><td><div class="mini-actions"><button class="mini" data-view="${o.id}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${o.id}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="9" class="empty">${t('noMatchingOrders')}</td></tr>`;
+ $("#ordersTable").innerHTML=arr.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
 }
-function aggregateStock(items){const map=new Map();items.forEach(s=>{const key=String(s.item_id??s.name??"").trim();if(!key)return;if(!map.has(key))map.set(key,{...s,branch:"__all__",received:0,reserved:0,sold:0,qty:0,max:0});const a=map.get(key);a.received+=Number(s.received)||0;a.reserved+=Number(s.reserved)||0;a.sold+=Number(s.sold)||0;a.qty+=Number(s.qty??s.remaining)||0;a.max+=Number(s.max)||0});return [...map.values()];}
 function renderStock(){
   const br=$("#branch").value;
-  const source = br==="all" ? stock : stock.filter(s=>s.branch===br);
-  const list = br==="all" ? aggregateStock(source) : source;
+  const list = br==="all" ? stock : stock.filter(s=>s.branch===br);
   const maxOf = s => s.max || s.received || Math.max(s.qty,1);
   const crit=list.filter(s=>s.qty/maxOf(s)*100<35);
   $("#criticalCount").textContent=crit.length;
-  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";const canEdit=!!(s.item_id&&s.branch&&s.branch!=="__all__");return `<div class="stock-item${s.qty<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${s.qty} ${t('unitsAvailable')}${br==="all"&&s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`}).join("");
+  $("#criticalStock").innerHTML=list.map(s=>{let p=s.qty/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";const canEdit=!!(s.item_id&&s.branch);return `<div class="stock-item${s.qty<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${s.qty} ${t('unitsAvailable')}${br==="all"&&s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`}).join("");
   requestAnimationFrame(()=>document.querySelectorAll("#criticalStock .progress b").forEach(b=>b.style.width=b.dataset.w+"%"));
   const total=list.reduce((s,x)=>s+x.qty,0), maxTotal=list.reduce((s,x)=>s+maxOf(x),0)||1;
   $("#stockSummary").innerHTML=`<div class="kpi" style="box-shadow:none;padding:0"><div class="num">${total.toLocaleString("en-US")}</div><div class="trend">${t('unitsAvailable')}</div><div class="progress" style="margin-top:18px"><b data-w="${Math.round(total/maxTotal*100)}"></b></div></div>`;
@@ -1525,11 +1546,7 @@ function renderTopItems(){
   if(!topItems.length){ box.innerHTML=`<div class="panel-empty"><svg><use href="#i-star"/></svg>${t('topItemsEmpty')}</div>`; return; }
   box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${it.name}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
-function renderBranches(){
- const br=$("#branch").value;
- const list=br==="all"?branches:branches.filter(b=>b.name===br);
- const rows=br==="all"?[{name:"__all__",orders:list.reduce((n,b)=>n+(Number(b.orders)||0),0),sales:list.reduce((n,b)=>{const v=typeof b.sales==="number"?b.sales:Number(String(b.sales||0).replace(/[^0-9.-]/g,""));return n+(Number.isFinite(v)?v:0)},0),pending:list.reduce((n,b)=>n+(Number(b.pending)||0),0),status_class:list.some(b=>(b.status_class||"").toLowerCase()==="red")?"red":list.some(b=>(b.status_class||"").toLowerCase()==="yellow")?"yellow":"green",status:t('allBranches')}]:list;
- $("#branchesTable").innerHTML=rows.map(b=>`<tr><td><b>${b.name==="__all__"?t('allBranches'):prettyBranch(b.name)}</b></td><td>${Number(b.orders)||0}</td><td>${formatMoneyish(b.sales)}</td><td>${Number(b.pending)||0}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
+function renderBranches(){const br=$("#branch").value;const list=br==="all"?branches:branches.filter(b=>b.name===br);$("#branchesTable").innerHTML=list.map(b=>`<tr><td><b>${b.name}</b></td><td>${b.orders}</td><td>${formatMoneyish(b.sales)}</td><td>${b.pending}</td><td>—</td><td><span class="badge b-${b.status_class||'green'}">${b.status||(b.status_class==='green'?t('goodStatus'):t('alertStatus'))}</span></td></tr>`).join("")}
 function renderCustomers(){
   const scoped=filteredOrders();
   const map={};
@@ -1615,7 +1632,7 @@ function openOrder(id){
   const o=orders.find(x=>x.id===id);if(!o)return;
   $("#modal").dataset.orderId=id;
   $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
-  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${o.name}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${o.phone}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${o.branch}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${o.items}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status)}</div></div><div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${o.id}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${o.id}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button></div>`;
+  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button></div>`;
   $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
@@ -1644,6 +1661,7 @@ document.addEventListener("click",e=>{
  const go=e.target.closest("[data-go]");if(go)showSection(go.dataset.go);
  const v=e.target.closest("[data-view]");if(v)openOrder(v.dataset.view);
  const c=e.target.closest("[data-confirm]");if(c){updateStatus(c.dataset.confirm,"paid");if($("#modal").classList.contains("open"))$("#modal").classList.remove("open")}
+ const st=e.target.closest("[data-status]");if(st){updateStatus(st.dataset.status);return;}
  const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
