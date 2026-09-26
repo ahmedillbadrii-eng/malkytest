@@ -1034,8 +1034,8 @@ img,svg{max-width:100%}
   <div class="card"><div class="card-head"><h2 data-i18n="weeklySalesTitle">المبيعات خلال الأسبوع</h2><div class="week-total"><small data-i18n="weekTotalLabel">إجمالي 7 أيام</small><b id="weekTotal">—</b></div></div><div class="card-body"><div class="chart" id="chart"></div></div></div>
   <div class="card integ-card"><div class="card-head"><h2 data-i18n="opStatusTitle">حالة التشغيل</h2><span class="live-pill warn" id="livePill"><i></i><span id="livePillText">…</span></span></div><div class="card-body">
     <div class="integ-grid">
-      <div class="integ"><div class="integ-ico wa"><svg><use href="#b-chat"/></svg></div><div class="integ-meta"><b>WhatsApp</b><small data-i18n="integWaSub">استقبال الطلبات</small></div><span class="integ-state warn"><i></i><span data-i18n="notVerified">غير متحقق</span></span></div>
-      <div class="integ"><div class="integ-ico tg"><svg><use href="#b-plane"/></svg></div><div class="integ-meta"><b>Telegram</b><small data-i18n="integTgSub">تنبيهات الفريق</small></div><span class="integ-state warn"><i></i><span data-i18n="notVerified">غير متحقق</span></span></div>
+      <div class="integ"><div class="integ-ico wa"><svg><use href="#b-chat"/></svg></div><div class="integ-meta"><b>WhatsApp</b><small data-i18n="integWaSub">استقبال الطلبات عبر Ordering Bot</small></div><span class="integ-state warn" id="waState"><i></i><span data-i18n="connecting">جاري الاتصال</span></span></div>
+      <div class="integ"><div class="integ-ico tg"><svg><use href="#b-plane"/></svg></div><div class="integ-meta"><b>Telegram</b><small data-i18n="integTgSub">تنبيهات الفريق عبر Ordering Bot</small></div><span class="integ-state warn" id="tgState"><i></i><span data-i18n="connecting">جاري الاتصال</span></span></div>
       <div class="integ"><div class="integ-ico n8"><svg><use href="#b-flow"/></svg></div><div class="integ-meta"><b data-i18n="agentTitle">وكيل n8n الذكي</b><small data-i18n="integN8nSub">أتمتة وردود ذكية</small></div><span class="integ-state warn" id="n8nState"><i></i><span data-i18n="connecting">جاري الاتصال</span></span></div>
       <div class="integ"><div class="integ-ico gs"><svg><use href="#b-grid"/></svg></div><div class="integ-meta"><b>Google Sheets</b><small data-i18n="integGsSub">الطلبات والمخزون</small></div><span class="integ-state warn" id="gsState"><i></i><span data-i18n="connecting">جاري الاتصال</span></span></div>
     </div>
@@ -1431,6 +1431,11 @@ function setConnection(state){
   const lp=$("#livePill"); if(lp) lp.className='live-pill '+cls;
   const lpt=$("#livePillText"); if(lpt) lpt.textContent= state==="online"?"Live":short;
   renderSyncAgo();
+  // WhatsApp + Telegram are handled by the same live Ordering Bot workflow.
+  // Their dashboard state follows the verified n8n connection state instead of
+  // showing a hard-coded "غير متحقق".
+  setIntegState($("#waState"), cls, state==="online"?t('connectedWorking'):short);
+  setIntegState($("#tgState"), cls, state==="online"?t('connectedWorking'):short);
   setIntegState($("#n8nState"), cls, state==="online"?t('working'):short);
   setIntegState($("#gsState"), cls, short);
   const rn=$("#repN8n"); if(rn){ rn.className="badge "+(state==="online"?"b-green":"b-blue"); rn.textContent=state==="online"?t('connectedWorking'):t('readyToConnect'); }
