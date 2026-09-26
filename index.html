@@ -743,6 +743,67 @@ img,svg{max-width:100%}
 .rs-sub b{color:var(--ink);direction:ltr;unicode-bidi:embed}
 .code-input{text-align:center;font-size:26px!important;font-weight:800;letter-spacing:.5em}
 #rsMsg{margin-top:12px}
+
+/* ===== Enterprise layer ===== */
+.enterprise-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.enterprise-toolbar .btn{padding:9px 12px;font-size:12.5px}
+.icon-btn-wrap{position:relative}
+.notif-dot{position:absolute;top:-3px;inset-inline-end:-3px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--pink);color:#fff;font-size:9px;font-weight:900;display:grid;place-items:center;border:2px solid var(--panel)}
+.enterprise-pop{position:absolute;top:calc(100% + 9px);inset-inline-end:0;width:min(380px,calc(100vw - 28px));background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-lg);z-index:80;overflow:hidden}
+.enterprise-pop-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line-soft);font-size:12px;font-weight:900}
+.enterprise-pop-list{max-height:360px;overflow:auto}
+.enterprise-pop-item{display:flex;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-soft);cursor:pointer}
+.enterprise-pop-item:hover{background:var(--bg)}
+.enterprise-pop-item:last-child{border-bottom:0}
+.epi-ico{width:30px;height:30px;border-radius:9px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;flex:none}
+.epi-main{min-width:0;display:grid;gap:3px}
+.epi-main b{font-size:12px}
+.epi-main small{color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.advanced-filters{display:none;grid-template-columns:repeat(4,minmax(140px,1fr));gap:10px;width:100%;padding-top:10px;border-top:1px solid var(--line-soft)}
+.advanced-filters.open{display:grid}
+.advanced-field{display:grid;gap:5px}
+.advanced-field label{font-size:10.5px;font-weight:800;color:var(--muted)}
+.advanced-field input,.advanced-field select{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:9px 10px;color:var(--ink);font:inherit}
+.orders-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-top:1px solid var(--line-soft)}
+.pagination-actions{display:flex;gap:6px}
+.pagination-actions .btn{padding:7px 10px;font-size:11px}
+.pagination-info{font-size:11px;color:var(--muted);font-weight:700}
+.audit-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.audit-list{max-height:520px;overflow:auto}
+.audit-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.audit-item:last-child{border-bottom:0}
+.audit-ico{width:32px;height:32px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center}
+.audit-main{min-width:0;display:grid;gap:3px}
+.audit-main b{font-size:12px}
+.audit-main small{font-size:10.5px;color:var(--muted)}
+.audit-time{font-size:10px;color:var(--muted);white-space:nowrap}
+.timeline{display:grid;gap:0;margin-top:8px}
+.timeline-item{position:relative;display:grid;grid-template-columns:22px 1fr;gap:10px;padding-bottom:16px}
+.timeline-item:not(:last-child)::before{content:"";position:absolute;top:22px;bottom:0;inset-inline-start:9px;width:2px;background:var(--line)}
+.timeline-dot{width:20px;height:20px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;z-index:1}
+.timeline-item.done .timeline-dot{background:var(--success-bg);color:var(--success-ink)}
+.timeline-item.active .timeline-dot{background:var(--warning-bg);color:var(--warning-ink)}
+.timeline-body{display:grid;gap:3px}
+.timeline-body b{font-size:12px}
+.timeline-body small{font-size:10.5px;color:var(--muted)}
+.role-chip{font-size:10px;padding:4px 8px;border-radius:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#b9c7db}
+.enterprise-note{font-size:11px;color:var(--muted);background:var(--bg);border:1px dashed var(--line);padding:10px 12px;border-radius:11px;margin-top:10px}
+.confirm-box{width:min(460px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh-lg);padding:22px}
+.confirm-icon{width:44px;height:44px;border-radius:13px;background:var(--warning-bg);color:var(--warning-ink);display:grid;place-items:center;margin-bottom:12px}
+.confirm-box h3{margin:0 0 6px;font-size:17px}
+.confirm-box p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+.confirm-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+@media(max-width:900px){
+  .advanced-filters{grid-template-columns:1fr 1fr}
+  .audit-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .enterprise-toolbar .enterprise-label{display:none}
+  .advanced-filters{grid-template-columns:1fr}
+  .orders-pagination{position:sticky;bottom:74px;background:color-mix(in srgb,var(--panel) 94%,transparent);backdrop-filter:blur(10px);z-index:20}
+  .enterprise-pop{inset-inline-start:8px;inset-inline-end:8px;width:auto}
+}
+
 </style>
 </head>
 <body>
@@ -787,6 +848,9 @@ img,svg{max-width:100%}
 <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m7.5 7.5 4.5-4.5 4.5 4.5"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></symbol>
 <symbol id="i-plus-square" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></symbol>
 <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.3M12 19.2v2.3M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.4 19.6 6 18M18 6l1.6-1.6"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 20h16"/></symbol>
+<symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></symbol>
 <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></symbol>
 </svg>
 
@@ -903,6 +967,7 @@ img,svg{max-width:100%}
     <div class="nav-group-label" data-i18n="kickerInsights">التحليلات</div>
     <button data-section="payments"><svg><use href="#i-wallet"/></svg><span data-i18n="navPayments">المدفوعات</span></button>
     <button data-section="reports"><svg><use href="#i-chart"/></svg><span data-i18n="navReports">التقارير</span></button>
+    <button data-section="activity"><svg><use href="#i-history"/></svg><span data-i18n="navActivity">سجل النشاط</span></button>
   </nav>
   <div class="side-spacer"></div>
   <div class="side-lang lang-switch"><button class="lang-btn" data-lang="ar">AR</button><button class="lang-btn" data-lang="en">EN</button></div>
@@ -925,8 +990,15 @@ img,svg{max-width:100%}
       <button class="lang-btn" data-lang="en" id="langEn">EN</button>
     </div>
     <button class="btn icon-only ghost theme-toggle" id="themeToggle"><svg id="themeIcon"><use class="theme-use" href="#i-moon"/></svg></button>
-    <button class="btn sync-btn" id="refresh"><span class="conn-dot warn"></span><svg id="refreshIco"><use href="#i-refresh"/></svg><span data-i18n="btnSync">مزامنة الآن</span></button>
-    <button class="btn primary" id="quick"><svg><use href="#i-plus"/></svg><span data-i18n="btnAddOrder">إضافة طلب</span></button>
+    <div class="enterprise-toolbar">
+      <div class="icon-btn-wrap">
+        <button class="btn ghost" id="notifBtn" type="button" aria-label="notifications"><svg><use href="#i-bell"/></svg><span class="enterprise-label" data-i18n="notifications">التنبيهات</span><b class="notif-dot" id="notifCount" hidden>0</b></button>
+        <div class="enterprise-pop" id="notifPop" hidden></div>
+      </div>
+      <button class="btn ghost" id="exportBtn" type="button"><svg><use href="#i-download"/></svg><span class="enterprise-label" data-i18n="export">تصدير</span></button>
+      <button class="btn sync-btn" id="refresh"><span class="conn-dot warn"></span><svg id="refreshIco"><use href="#i-refresh"/></svg><span data-i18n="btnSync">مزامنة الآن</span></button>
+      <button class="btn primary" id="quick"><svg><use href="#i-plus"/></svg><span data-i18n="btnAddOrder">إضافة طلب</span></button>
+    </div>
   </div>
 </header>
 
@@ -941,6 +1013,13 @@ img,svg{max-width:100%}
     <option value="done" data-i18n="statusDone">تم التسليم</option>
   </select>
   <button class="btn ghost" id="clearFilters" data-i18n="btnClearFilters">مسح الفلاتر</button>
+  <button class="btn ghost" id="advancedToggle" type="button"><svg><use href="#i-sliders"/></svg><span data-i18n="advancedFilters">فلاتر متقدمة</span></button>
+  <div class="advanced-filters" id="advancedFilters">
+    <div class="advanced-field"><label data-i18n="fromDate">من تاريخ</label><input id="dateFrom" type="date"></div>
+    <div class="advanced-field"><label data-i18n="toDate">إلى تاريخ</label><input id="dateTo" type="date"></div>
+    <div class="advanced-field"><label data-i18n="channelFilter">القناة</label><select id="channelFilter"><option value="all" data-i18n="allChannels">كل القنوات</option><option value="whatsapp">WhatsApp</option><option value="telegram">Telegram</option><option value="manual" data-i18n="manualChannel">يدوي</option></select></div>
+    <div class="advanced-field"><label data-i18n="paymentFilter">طريقة الدفع</label><select id="paymentFilter"><option value="all" data-i18n="allPayments">كل طرق الدفع</option><option value="instapay">InstaPay</option><option value="cash" data-i18n="cash">كاش</option></select></div>
+  </div>
 </div>
 
 <section id="home" class="section">
@@ -970,7 +1049,7 @@ img,svg{max-width:100%}
 </section>
 
 <section id="orders" class="section" hidden>
-<div class="card"><div class="card-head"><h2 data-i18n="ordersManageTitle">إدارة الطلبات</h2><span id="orderCount" class="badge b-blue"></span></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colTime">التاريخ والوقت</th><th data-i18n="colChannel">القناة</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colItems">الأصناف</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colAction">إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+<div class="card"><div class="card-head"><h2 data-i18n="ordersManageTitle">إدارة الطلبات</h2><span id="orderCount" class="badge b-blue"></span></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colTime">التاريخ والوقت</th><th data-i18n="colChannel">القناة</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colItems">الأصناف</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th><th data-i18n="colAction">إجراء</th></tr></thead><tbody id="ordersTable"></tbody></table></div><div class="orders-pagination"><span class="pagination-info" id="ordersPageInfo"></span><div class="pagination-actions"><button class="btn" id="ordersPrev" type="button" data-i18n="previous">السابق</button><button class="btn" id="ordersNext" type="button" data-i18n="next">التالي</button></div></div></div>
 </section>
 
 <section id="stock" class="section" hidden>
@@ -995,6 +1074,30 @@ img,svg{max-width:100%}
  <div class="card"><div class="card-head"><h2 data-i18n="needsReviewTitle">عمليات تحتاج مراجعة</h2></div><div class="card-body" id="paymentPending"></div></div>
  <div class="card"><div class="card-head"><h2 data-i18n="channelsTitle">قنوات الدفع</h2></div><div class="card-body" id="paymentChannels"></div></div>
 </div>
+</section>
+
+
+<section id="activity" class="section" hidden>
+  <div class="audit-grid">
+    <div class="card">
+      <div class="card-head"><h2 data-i18n="activityTitle">سجل النشاط</h2><button class="btn" id="clearActivity" type="button" data-i18n="clearActivity">مسح السجل</button></div>
+      <div class="card-body">
+        <div class="audit-list" id="activityList"></div>
+        <div class="enterprise-note" data-i18n="activityNote">هذا السجل المحلي للواجهة الحالية. السجل المؤسسي الدائم يحتاج Audit Log في الـbackend.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2 data-i18n="securityOverview">الأمان والصلاحيات</h2><span class="role-chip" id="roleChip">—</span></div>
+      <div class="card-body">
+        <div class="status-list">
+          <div class="status-row"><span class="who" data-i18n="sessionState">حالة الجلسة</span><span class="badge b-green" id="sessionState">نشطة</span></div>
+          <div class="status-row"><span class="who" data-i18n="permissionModel">نموذج الصلاحيات</span><b data-i18n="frontendOnly">واجهة فقط — يحتاج RBAC في backend</b></div>
+          <div class="status-row"><span class="who">n8n</span><span class="badge b-blue" id="activityN8n">—</span></div>
+          <div class="status-row"><span class="who">Google Sheets</span><span class="badge b-blue" id="activityGs">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="reports" class="section" hidden>
@@ -1022,6 +1125,14 @@ img,svg{max-width:100%}
 </div>
 
 <div class="modal" id="modal"><div class="modal-box"><div class="modal-head"><b id="modalTitle">تفاصيل الطلب</b><button class="close" id="close"><svg><use href="#i-x"/></svg></button></div><div class="modal-content" id="modalContent"></div></div></div>
+
+<div class="modal" id="confirmModal"><div class="confirm-box">
+  <div class="confirm-icon"><svg><use href="#i-alert"/></svg></div>
+  <h3 id="confirmTitle">تأكيد التغيير</h3>
+  <p id="confirmText"></p>
+  <div class="confirm-actions"><button class="btn" id="confirmCancel" type="button" data-i18n="cancel">إلغاء</button><button class="btn primary" id="confirmOk" type="button" data-i18n="confirm">تأكيد</button></div>
+</div></div>
+
 <div class="toast" id="toast"><svg><use href="#i-check"/></svg><span id="toastText"></span></div>
 
 <script>
@@ -1048,7 +1159,7 @@ const DAYS = { ar:["س","ح","ن","ث","ر","خ","ج"], en:["Sat","Sun","Mon","T
 const I18N = {
  ar:{
   brandWord:"المالكي", brandTag:"الأساسي · منذ 1917",
-  navHome:"الرئيسية", navOrders:"الطلبات", navStock:"المخزون", navBranches:"الفروع", navCustomers:"العملاء", navPayments:"المدفوعات", navReports:"التقارير",
+  navHome:"الرئيسية", navOrders:"الطلبات", navStock:"المخزون", navBranches:"الفروع", navCustomers:"العملاء", navPayments:"المدفوعات", navReports:"التقارير", navActivity:"سجل النشاط", notifications:"التنبيهات", export:"تصدير", advancedFilters:"فلاتر متقدمة", fromDate:"من تاريخ", toDate:"إلى تاريخ", channelFilter:"القناة", allChannels:"كل القنوات", manualChannel:"يدوي", paymentFilter:"طريقة الدفع", allPayments:"كل طرق الدفع", previous:"السابق", next:"التالي", activityTitle:"سجل النشاط", clearActivity:"مسح السجل", activityNote:"هذا السجل المحلي للواجهة الحالية. السجل المؤسسي الدائم يحتاج Audit Log في الـbackend.", securityOverview:"الأمان والصلاحيات", sessionState:"حالة الجلسة", permissionModel:"نموذج الصلاحيات", frontendOnly:"واجهة فقط — يحتاج RBAC في backend", cancel:"إلغاء", confirm:"تأكيد",
   agentTitle:"وكيل n8n الذكي", agentWaiting:"جاري الاتصال بالوكيل…", agentOnline:"متصل ويستقبل الطلبات لحظيًا", agentOffline:"بانتظار أول استجابة من n8n",
   liveConnecting:"جاري الاتصال بـ n8n…", liveOnline:"متصل بـ n8n — بيانات مباشرة", liveOffline:"تعذر الاتصال بـ n8n — لا توجد بيانات تجريبية معروضة",
   btnSync:"مزامنة الآن", btnAddOrder:"إضافة طلب", searchPlaceholder:"ابحث برقم الطلب، اسم العميل، الهاتف...",
@@ -1099,7 +1210,7 @@ const I18N = {
  },
  en:{
   brandWord:"El Malky", brandTag:"Since 1917",
-  navHome:"Home", navOrders:"Orders", navStock:"Stock", navBranches:"Branches", navCustomers:"Customers", navPayments:"Payments", navReports:"Reports",
+  navHome:"Home", navOrders:"Orders", navStock:"Stock", navBranches:"Branches", navCustomers:"Customers", navPayments:"Payments", navReports:"Reports", navActivity:"Activity Log", notifications:"Notifications", export:"Export", advancedFilters:"Advanced filters", fromDate:"From date", toDate:"To date", channelFilter:"Channel", allChannels:"All channels", manualChannel:"Manual", paymentFilter:"Payment method", allPayments:"All payment methods", previous:"Previous", next:"Next", activityTitle:"Activity log", clearActivity:"Clear log", activityNote:"This is a local UI session log. Persistent enterprise audit logging requires a backend Audit Log.", securityOverview:"Security & permissions", sessionState:"Session state", permissionModel:"Permission model", frontendOnly:"Frontend only — backend RBAC required", cancel:"Cancel", confirm:"Confirm",
   agentTitle:"n8n AI Agent", agentWaiting:"Connecting to the agent…", agentOnline:"Connected — receiving orders live", agentOffline:"Waiting for the first response from n8n",
   liveConnecting:"Connecting to n8n…", liveOnline:"Connected to n8n — live data", liveOffline:"Couldn't connect to n8n — no demo data is shown",
   btnSync:"Sync now", btnAddOrder:"Add order", searchPlaceholder:"Search by order ID, customer name, phone...",
@@ -1276,6 +1387,11 @@ let topItems=[];    // [{name,count}] — populated from n8n only
 let agentLog=[];    // [{time,title,detail}] — populated from n8n only
 let kpiState={orders:null,sales:null,confirmed:null,pending:null,stockAlerts:null};
 let seenOrderIds=null; // null until first load; after that, used to detect new orders
+let ordersPage=1;
+const ORDERS_PAGE_SIZE=25;
+let confirmPending=null;
+let activityLog=JSON.parse(sessionStorage.getItem("malky-activity-log")||"[]");
+let notifItems=JSON.parse(sessionStorage.getItem("malky-notifications")||"[]");
 
 const stock=[];
 const branches=[];
@@ -1394,7 +1510,7 @@ function playNewOrderSound(){
 }
 function notifyNewOrder(o){
   playNewOrderSound();
-  toast(`🛎️ ${t('newOrderToast')} — ${o.id}${o.name?" • "+o.name:""}`);
+  toast(`🛎️ ${t('newOrderToast')} — ${o.id}${o.name?" • "+o.name:""}`); pushNotification({title:t("newOrderNotifTitle"),detail:`${o.id} • ${o.name||""} • ${money(o.total)}`,orderId:o.id});
   if((typeof Notification!=="undefined" && Notification) && Notification.permission==="granted"){
     try{ new Notification(t('newOrderNotifTitle'),{body:`${o.id} • ${o.name||""} • ${money(o.total)}`}); }catch(e){}
   }
@@ -1450,7 +1566,7 @@ function applyLiveData(data){
     if(d.kpis.stock_alerts!=null) kpiState.stockAlerts=Number(d.kpis.stock_alerts);
   }
   renderKpis(true);
-  renderAll();
+  renderAll(); renderNotifications(); renderActivity();
 }
 
 let liveLoading=null;
@@ -1488,6 +1604,7 @@ async function sendAction(action, orderId, extra={}){
     if(data?.auth===false){ clearToken(); setUser(null); showLogin(t('sessionExpired')); return null; }
     if(data?.ok===false) throw new Error(data.message||"action failed");
     setConnection("online");
+    saveActivity({title:action==="confirm_payment"?(LANG==="ar"?"تأكيد دفع":"Payment confirmed"):(LANG==="ar"?"تغيير حالة":"Status changed"),detail:`${orderId} → ${extra.status||""}`,orderId});
     return data;
   }catch(err){
     toast(t('toastActionFailed'),true);
@@ -1601,13 +1718,36 @@ function renderSearchPop(){
   pop.hidden=false;
 }
 function closeSearchPop(){ const p=$("#searchPop"); if(p) p.hidden=true; }
+function orderDateValue(o){
+  const raw=String(o.created_at||"").trim();
+  const m=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})/);
+  if(m) return new Date(Number(m[3]),Number(m[2])-1,Number(m[1]),Number(m[4]),Number(m[5])).getTime();
+  const d=new Date(raw); return Number.isNaN(d.getTime())?0:d.getTime();
+}
 function filteredOrders(){
  const q=normAr($("#search").value.trim()), br=$("#branch").value, st=$("#status").value;
- return orders.filter(o=>(!q||normAr([o.id,o.name,o.phone,o.branch,prettyBranch(o.branch),o.items,o.channel,channelLabel(o.channel)].join(" ")).includes(q))&&(br==="all"||o.branch===br)&&(st==="all"||o.status===st));
+ const df=$("#dateFrom")?.value||"", dt=$("#dateTo")?.value||"";
+ const ch=$("#channelFilter")?.value||"all", pm=$("#paymentFilter")?.value||"all";
+ const from=df?new Date(df+"T00:00:00").getTime():0;
+ const to=dt?new Date(dt+"T23:59:59").getTime():Infinity;
+ return orders.filter(o=>{
+   const oq=!q||normAr([o.id,o.name,o.phone,o.branch,prettyBranch(o.branch),o.items,o.channel,channelLabel(o.channel)].join(" ")).includes(q);
+   const d=orderDateValue(o);
+   const oc=!ch||ch==="all"||String(o.channel||"").toLowerCase().includes(ch);
+   const op=!pm||pm==="all"||o.payment===pm;
+   return oq&&(br==="all"||o.branch===br)&&(st==="all"||o.status===st)&&(!df||d>=from)&&(!dt||d<=to)&&oc&&op;
+ });
 }
 function renderOrders(){
- const arr=filteredOrders();$("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
- $("#ordersTable").innerHTML=arr.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
+ const arr=filteredOrders();
+ const totalPages=Math.max(1,Math.ceil(arr.length/ORDERS_PAGE_SIZE));
+ if(ordersPage>totalPages) ordersPage=totalPages;
+ const start=(ordersPage-1)*ORDERS_PAGE_SIZE;
+ const page=arr.slice(start,start+ORDERS_PAGE_SIZE);
+ $("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
+ $("#ordersTable").innerHTML=page.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
+ $("#ordersPageInfo").textContent=`${arr.length?start+1:0}–${Math.min(start+page.length,arr.length)} / ${arr.length}`;
+ $("#ordersPrev").disabled=ordersPage<=1; $("#ordersNext").disabled=ordersPage>=totalPages;
 }
 function renderStock(){
   const br=$("#branch").value;
@@ -1731,6 +1871,58 @@ function refreshSectionTitle(){
   $("#pageTitle").textContent=tt[0]; $("#pageSub").textContent=tt[1];
   const mt=$("#mTitle"); if(mt) mt.textContent=tt[0];
 }
+
+function saveActivity(entry){
+  const u=getUser()||{};
+  activityLog.unshift({time:new Date().toISOString(),user:u.name||u.email||"—",...entry});
+  activityLog=activityLog.slice(0,100);
+  sessionStorage.setItem("malky-activity-log",JSON.stringify(activityLog));
+  renderActivity();
+}
+function renderActivity(){
+  const box=$("#activityList"); if(!box)return;
+  if(!activityLog.length){box.innerHTML=`<div class="panel-empty"><svg><use href="#i-history"/></svg>${LANG==="ar"?"لا توجد أنشطة في الجلسة الحالية":"No activity in this session"}</div>`;return;}
+  box.innerHTML=activityLog.map(a=>`<div class="audit-item"><span class="audit-ico"><svg><use href="#i-history"/></svg></span><div class="audit-main"><b>${escHtml(a.title||"Activity")}</b><small>${escHtml(a.detail||"")} · ${escHtml(a.user||"—")}</small></div><span class="audit-time">${escHtml(new Date(a.time).toLocaleString(LANG==="ar"?"ar-EG":"en-US",{dateStyle:"short",timeStyle:"short"}))}</span></div>`).join("");
+  const u=getUser()||{}; $("#roleChip").textContent=u.role||u.role_name||(LANG==="ar"?"غير محدد":"Not assigned");
+  $("#activityN8n").textContent=apiOnline?(LANG==="ar"?"متصل":"Online"):(LANG==="ar"?"غير متصل":"Offline");
+  $("#activityGs").textContent=apiOnline?(LANG==="ar"?"متصل":"Online"):(LANG==="ar"?"غير متصل":"Offline");
+}
+function pushNotification(item){
+  notifItems.unshift({id:Date.now()+"-"+Math.random().toString(36).slice(2),time:new Date().toISOString(),read:false,...item});
+  notifItems=notifItems.slice(0,50);
+  sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));
+  renderNotifications();
+}
+function renderNotifications(){
+  const pop=$("#notifPop"), count=$("#notifCount"); if(!pop||!count)return;
+  const unread=notifItems.filter(x=>!x.read).length;
+  count.textContent=unread; count.hidden=!unread;
+  pop.innerHTML=`<div class="enterprise-pop-head"><span>${t('notifications')}</span><button class="btn" id="markNotifsRead" type="button">${LANG==="ar"?"تحديد الكل كمقروء":"Mark all read"}</button></div><div class="enterprise-pop-list">`+
+    (notifItems.length?notifItems.slice(0,12).map(n=>`<div class="enterprise-pop-item" data-notif-id="${escHtml(n.id)}"><span class="epi-ico"><svg><use href="#i-bell"/></svg></span><span class="epi-main"><b>${escHtml(n.title||"")}</b><small>${escHtml(n.detail||"")} · ${escHtml(new Date(n.time).toLocaleString(LANG==="ar"?"ar-EG":"en-US",{dateStyle:"short",timeStyle:"short"}))}</small></span></div>`).join(""):`<div class="panel-empty" style="padding:25px"><svg><use href="#i-bell"/></svg>${LANG==="ar"?"لا توجد تنبيهات":"No notifications"}</div>`)+`</div>`;
+}
+function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"';}
+function exportOrdersCsv(){
+  const arr=filteredOrders();
+  const headers=["order_id","created_at","channel","customer_name","phone","branch","items","total","payment","payment_status","order_status","status"];
+  const rows=[headers,...arr.map(o=>headers.map(k=>k==="customer_name"?o.name:k==="branch"?prettyBranch(o.branch):k==="payment"?paymentLabel(o.payment):o[k]??""))];
+  const csv="\uFEFF"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`malky-orders-${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(url);
+  saveActivity({title:LANG==="ar"?"تصدير الطلبات":"Orders export",detail:`${arr.length} ${t('ordersUnit')}`});
+  toast(LANG==="ar"?"تم تصدير الطلبات":"Orders exported");
+}
+function openConfirmStatus(id,next){
+  const o=orders.find(x=>x.id===id); if(!o||o.status===next)return;
+  confirmPending={id,next};
+  $("#confirmTitle").textContent=LANG==="ar"?"تأكيد تغيير الحالة":"Confirm status change";
+  $("#confirmText").textContent=LANG==="ar"?`${o.id}: تغيير الحالة من «${statusMeta(o.status).label}» إلى «${statusMeta(next).label}»؟`:`${o.id}: change from "${statusMeta(o.status).label}" to "${statusMeta(next).label}"?`;
+  $("#confirmModal").classList.add("open");
+}
+function renderOrderTimeline(o){
+  const seq=["pending","paid","processing","done"], idx=Math.max(0,seq.indexOf(o.status));
+  return `<div class="timeline">${seq.map((st,i)=>`<div class="timeline-item ${i<idx?"done":i===idx?"active":""}"><span class="timeline-dot"><svg><use href="#i-check"/></svg></span><div class="timeline-body"><b>${statusMeta(st).label}</b><small>${i===idx?(LANG==="ar"?"الحالة الحالية":"Current status"):(i<idx?(LANG==="ar"?"تم اجتيازها":"Completed"):(LANG==="ar"?"بانتظارها":"Pending"))}</small></div></div>`).join("")}</div>`;
+}
+
 function showSection(id){
  const next=document.getElementById(id); if(!next) return;
  currentSection=id;
@@ -1743,7 +1935,7 @@ function showSection(id){
  if(id==="orders")renderOrders();
  if(id==="stock"){renderStock();renderTopItems();}
  if(id==="payments")renderPayments();
- if(id==="reports")renderReports();
+ if(id==="reports")renderReports(); if(id==="activity")renderActivity();
 }
 function toast(msg,isError){
   const box=$("#toast");
@@ -1757,7 +1949,7 @@ function openOrder(id){
   const o=orders.find(x=>x.id===id);if(!o)return;
   $("#modal").dataset.orderId=id;
   $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
-  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button></div>`;
+  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button></div>`;
   $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
@@ -1786,6 +1978,9 @@ $("#mMoreBtn").addEventListener("click", openDrawer);
 $("#drawerBackdrop").addEventListener("click", closeDrawer);
 $("#mBottomNav").addEventListener("click", e=>{ const b=e.target.closest("button[data-section]"); if(b){ showSection(b.dataset.section); window.scrollTo({top:0,behavior:'smooth'}); } });
 document.addEventListener("click",e=>{
+ const nbtn=e.target.closest("#notifBtn"); if(nbtn){ const p=$("#notifPop"); p.hidden=!p.hidden; renderNotifications(); return; }
+ const mark=e.target.closest("#markNotifsRead"); if(mark){ notifItems=notifItems.map(x=>({...x,read:true})); sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems)); renderNotifications(); return; }
+ const ni=e.target.closest("[data-notif-id]"); if(ni){ const n=notifItems.find(x=>x.id===ni.dataset.notifId); if(n){n.read=true;sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));renderNotifications(); if(n.orderId)openOrder(n.orderId);} return; }
  const go=e.target.closest("[data-go]");if(go)showSection(go.dataset.go);
  const v=e.target.closest("[data-view]");if(v)openOrder(v.dataset.view);
  const c=e.target.closest("[data-confirm]");if(c){updateStatus(c.dataset.confirm,"paid");if($("#modal").classList.contains("open"))$("#modal").classList.remove("open")}
@@ -1793,14 +1988,14 @@ document.addEventListener("click",e=>{
    const id=st.dataset.statusSelect;
    const next=st.value;
    const o=orders.find(x=>x.id===id);
-   if(o && o.status!==next) updateStatus(id,next);
+   if(o && o.status!==next) openConfirmStatus(id,next);
    return;
  }
  const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
-$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof closeStockModal==="function"&&$("#stockModal").classList.contains("open"))closeStockModal();$("#modal").classList.remove("open");closeIosSheet();closeDrawer();}});
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")}); $("#confirmModal").addEventListener("click",e=>{if(e.target.id==="confirmModal"){confirmPending=null;$("#confirmModal").classList.remove("open")}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof closeStockModal==="function"&&$("#stockModal").classList.contains("open"))closeStockModal();$("#modal").classList.remove("open");$("#confirmModal").classList.remove("open");confirmPending=null;closeIosSheet();closeDrawer();}});
 ["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderAll));
 $("#search").addEventListener("input",renderSearchPop);
 $("#search").addEventListener("focus",renderSearchPop);
@@ -1826,7 +2021,15 @@ if(!reduced && matchMedia('(hover:hover) and (pointer:fine)').matches){
     card.addEventListener('mouseleave',()=>{ card.style.transform=''; card.classList.remove('tilting'); });
   });
 }
-$("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";renderAll();toast(t('toastFiltersCleared'))};
+$("#advancedToggle").onclick=()=>$("#advancedFilters").classList.toggle("open");
+["dateFrom","dateTo","channelFilter","paymentFilter"].forEach(id=>$("#"+id)?.addEventListener("input",()=>{ordersPage=1;renderAll();}));
+$("#ordersPrev").onclick=()=>{if(ordersPage>1){ordersPage--;renderOrders();}};
+$("#ordersNext").onclick=()=>{const pages=Math.max(1,Math.ceil(filteredOrders().length/ORDERS_PAGE_SIZE));if(ordersPage<pages){ordersPage++;renderOrders();}};
+$("#exportBtn").onclick=exportOrdersCsv;
+$("#confirmCancel").onclick=()=>{confirmPending=null;$("#confirmModal").classList.remove("open");};
+$("#confirmOk").onclick=async()=>{if(!confirmPending)return;const c=confirmPending;confirmPending=null;$("#confirmModal").classList.remove("open");await updateStatus(c.id,c.next);};
+$("#clearActivity").onclick=()=>{activityLog=[];sessionStorage.removeItem("malky-activity-log");renderActivity();};
+$("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";$("#dateFrom").value="";$("#dateTo").value="";$("#channelFilter").value="all";$("#paymentFilter").value="all";ordersPage=1;renderAll();toast(t('toastFiltersCleared'))};
 $("#refresh").onclick=()=>{ensureNotificationPermission();$("#refreshIco").classList.add("spin");loadLiveData(true).finally(()=>$("#refreshIco").classList.remove("spin"))};
 $("#quick").onclick=()=>{showSection("orders");toast(t('toastQuickAdd'))};
 
@@ -1856,7 +2059,7 @@ function renderUserChip(){
   if(!u||!(u.name||u.email)){ $("#userChip").hidden=true; return; }
   $("#userChip").hidden=false;
   $("#userName").textContent=u.name||u.email;
-  $("#userEmail").textContent=u.email||"";
+  $("#userEmail").textContent=u.email||""; if($("#roleChip")) $("#roleChip").textContent=u.role||u.role_name||(LANG==="ar"?"غير محدد":"Not assigned");
   $("#userAvatar").textContent=(u.name||u.email||"?").trim().charAt(0).toUpperCase();
 }
 const AUTH_CODES={bad_credentials:'loginFailed',pending:'accountPending',disabled:'accountDisabled',email_taken:'emailTaken',invalid_email:'invalidEmail',weak_password:'pwTooShort',invalid_name:'invalidName'};
