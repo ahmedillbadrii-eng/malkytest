@@ -175,6 +175,12 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 .status-row .who{display:flex;align-items:center;gap:9px;font-weight:700;font-size:13.5px}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.05px}
 .status-click{cursor:pointer;user-select:none;transition:transform .12s,box-shadow .12s}.status-click:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+/* ---------- STATUS ACTION MENU ---------- */
+.status-action{appearance:none;-webkit-appearance:none;border:1px solid var(--status-border,#d9e0ea);min-width:118px;min-height:34px;padding:7px 10px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:800 11px/1.2 var(--font);cursor:pointer;transition:box-shadow .15s,transform .12s,filter .15s;box-shadow:0 1px 2px rgba(18,32,54,.04),inset 0 1px 0 rgba(255,255,255,.55)}
+.status-chevron{font-size:15px;line-height:1;opacity:.72;transition:transform .15s}.status-action[aria-expanded="true"] .status-chevron{transform:rotate(180deg)}.status-action:hover{filter:brightness(.98);transform:translateY(-1px);box-shadow:0 3px 10px rgba(18,32,54,.09)}
+.status-action.b-yellow{background:#fff8e9;color:#8a6518;border-color:#ead7ad}.status-action.b-blue{background:#f0f5fb;color:#345a91;border-color:#cad8ea}.status-action.b-green{background:#eefaf3;color:#237a4a;border-color:#c8e7d4}.status-action.b-red{background:#fff0f0;color:#b42f35;border-color:#f1c9cb}
+.status-action-menu{position:fixed;z-index:99999;min-width:190px;padding:6px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 16px 40px rgba(18,32,54,.16);opacity:0;transform:translateY(-4px) scale(.98);pointer-events:none;transition:opacity .12s,transform .12s}
+.status-action-menu.open{opacity:1;transform:none;pointer-events:auto}.status-menu-item{width:100%;border:0;background:transparent;border-radius:10px;padding:10px 11px;display:flex;align-items:center;gap:9px;text-align:start;font:800 12px/1.2 var(--font);color:var(--ink);cursor:pointer}.status-menu-item:hover{background:var(--soft)}.status-menu-dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}.status-menu-item.b-yellow{color:#8a6518}.status-menu-item.b-blue{color:#345a91}.status-menu-item.b-green{color:#237a4a}.status-menu-item.b-red{color:#b42f35}@media(max-width:860px){.status-action{min-width:108px}.status-action-menu{min-width:180px}}
 .status-select{appearance:none;-webkit-appearance:none;border:0;outline:0;cursor:pointer;font:inherit;font-size:11px;font-weight:800;line-height:1.2;padding:8px 30px 8px 12px;border-radius:999px;min-width:118px;text-align:center;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 13px) 50%,calc(100% - 9px) 50%;background-size:4px 4px,4px 4px;background-repeat:no-repeat;transition:filter .15s,box-shadow .15s,transform .12s}.status-select:hover{filter:brightness(.97);box-shadow:0 4px 12px rgba(0,0,0,.08);transform:translateY(-1px)}.status-select:focus{box-shadow:0 0 0 3px var(--blue-soft)}.status-select.b-yellow{background-color:var(--warning-bg);color:var(--warning-ink)}.status-select.b-blue{background-color:var(--blue-soft);color:var(--blue-ink)}.status-select.b-green{background-color:var(--success-bg);color:var(--success-ink)}.status-select option{font-weight:800;background:#fff;color:#16243a}.status-select.b-yellow option[value="pending"]{color:var(--warning-ink)}.status-select.b-blue option[value="paid"],.status-select.b-blue option[value="processing"]{color:var(--blue-ink)}.status-select.b-green option[value="done"]{color:var(--success-ink)}
 
 /* ---------- ENTERPRISE STATUS SYSTEM ---------- */
@@ -1041,6 +1047,8 @@ img,svg{max-width:100%}
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiSalesToday">مبيعات اليوم</span><span class="kpi-ico pink"><svg><use href="#i-trend"/></svg></span></div><div class="num" id="kSales" data-val="0">—</div><div class="trend" id="kSalesTrend" data-i18n="waitingData">بانتظار البيانات</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiConfirmedPayments">مدفوعات مؤكدة</span><span class="kpi-ico green"><svg><use href="#i-check"/></svg></span></div><div class="num" id="kConfirmed" data-val="0">0</div><div class="trend up" id="kConfirmedCount">0</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiPending">قيد الانتظار</span><span class="kpi-ico amber"><svg><use href="#i-clock"/></svg></span></div><div class="num" id="kPending" data-val="0">—</div><div class="trend" id="kPendingTrend" data-i18n="waitingData">بانتظار البيانات</div></div>
+  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiCancelled">طلبات ملغاة</span><span class="kpi-ico red"><svg><use href="#i-x"/></svg></span></div><div class="num" id="kCancelled" data-val="0">0</div><div class="trend down" id="kCancelledTrend" data-i18n="allTimeMetric">إجمالي حالي</div></div>
+  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiRefundedAmount">إجمالي المسترد</span><span class="kpi-ico pink"><svg><use href="#i-refresh"/></svg></span></div><div class="num" id="kRefundedAmount" data-val="0">0 ج</div><div class="trend" id="kRefundedTrend" data-i18n="allTimeMetric">إجمالي حالي</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiStockAlerts">تنبيهات المخزون</span><span class="kpi-ico red"><svg><use href="#i-alert"/></svg></span></div><div class="num" id="kStockAlerts" data-val="0">0</div><div class="trend down" data-i18n="currentAlerts">تنبيهات حالية</div></div>
 </div>
 <div class="grid">
@@ -1115,7 +1123,7 @@ img,svg{max-width:100%}
 
 <section id="reports" class="section" hidden>
 <div class="grid">
- <div class="card"><div class="card-head"><h2 data-i18n="perfSummaryTitle">ملخص الأداء</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who" data-i18n="avgOrderValue">متوسط قيمة الطلب</span><b id="repAov">—</b></div><div class="status-row"><span class="who" data-i18n="paymentRate">معدل الدفع</span><b id="repPayRate">—</b></div><div class="status-row"><span class="who" data-i18n="totalOrders">إجمالي الطلبات</span><b id="repTotalOrders">—</b></div><div class="status-row"><span class="who" data-i18n="delivered">تم التسليم</span><b id="repDone">—</b></div></div></div></div>
+ <div class="card"><div class="card-head"><h2 data-i18n="perfSummaryTitle">ملخص الأداء</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who" data-i18n="avgOrderValue">متوسط قيمة الطلب</span><b id="repAov">—</b></div><div class="status-row"><span class="who" data-i18n="paymentRate">معدل الدفع</span><b id="repPayRate">—</b></div><div class="status-row"><span class="who" data-i18n="totalOrders">إجمالي الطلبات</span><b id="repTotalOrders">—</b></div><div class="status-row"><span class="who" data-i18n="delivered">تم التسليم</span><b id="repDone">—</b></div><div class="status-row"><span class="who" data-i18n="cancelledOrders">طلبات ملغاة</span><b id="repCancelled">—</b></div><div class="status-row"><span class="who" data-i18n="refundedTotal">إجمالي المسترد</span><b id="repRefundedAmount">—</b></div></div></div></div>
  <div class="card"><div class="card-head"><h2 data-i18n="integrationsTitle">التكاملات</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who">n8n Webhook</span><span class="badge b-blue" id="repN8n" data-i18n="readyToConnect">جاهز للربط</span></div><div class="status-row"><span class="who">Google Sheets</span><span class="badge b-blue" id="repGs" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">WhatsApp</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">Telegram</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div></div></div></div>
 </div>
 <div class="card"><div class="card-head"><h2 data-i18n="realConnectionPlanTitle">خطة الربط الحقيقية</h2></div><div class="card-body"><ol style="line-height:2.1;margin:0;padding-inline-start:20px;font-size:13.5px">
@@ -1185,8 +1193,8 @@ const I18N = {
   titleCustomers:"العملاء", subCustomers:"سجل العملاء والطلبات",
   titlePayments:"المدفوعات", subPayments:"مراجعة وتأكيد التحويلات",
   titleReports:"التقارير", subReports:"مؤشرات الأداء والتكاملات",
-  kpiOrdersToday:"طلبات اليوم", kpiSalesToday:"مبيعات اليوم", kpiConfirmedPayments:"مدفوعات مؤكدة", kpiPending:"قيد الانتظار", kpiStockAlerts:"تنبيهات المخزون",
-  waitingData:"بانتظار البيانات", fromN8n:"من n8n", needsFollowUp:"تحتاج متابعة", currentAlerts:"تنبيهات حالية",
+  kpiOrdersToday:"طلبات اليوم", kpiSalesToday:"مبيعات اليوم", kpiConfirmedPayments:"مدفوعات مؤكدة", kpiPending:"قيد الانتظار", kpiCancelled:"طلبات ملغاة", kpiRefundedAmount:"إجمالي المسترد", kpiStockAlerts:"تنبيهات المخزون",
+  waitingData:"بانتظار البيانات", fromN8n:"من n8n", needsFollowUp:"تحتاج متابعة", allTimeMetric:"إجمالي حالي", currentAlerts:"تنبيهات حالية",
   unitTxn:"عملية", unitTxnConfirmed:"عملية مؤكدة",
   weeklySalesTitle:"المبيعات خلال الأسبوع", legendSales:"المبيعات", chartEmpty:"بيانات المبيعات الأسبوعية هتظهر هنا أول ما يوصل تحديث من n8n",
   opStatusTitle:"حالة التشغيل", connected:"متصل", connecting:"جاري الاتصال", working:"يعمل", simulated:"محاكاة", lastSyncLabel:"آخر مزامنة",
@@ -1199,7 +1207,7 @@ const I18N = {
   colPhone:"الهاتف", colOrderCount:"عدد الطلبات", colTotalSpend:"إجمالي الإنفاق", colLastOrder:"آخر طلب",
   paymentStatusTitle:"حالة المدفوعات", totalPaid:"إجمالي المدفوع", confirmedLabel:"مؤكد", pendingReviewLabel:"قيد المراجعة", paymentsEmpty:"هتظهر هنا حالة المدفوعات أول ما يوصل أول طلب من n8n",
   needsReviewTitle:"عمليات تحتاج مراجعة", noPendingReview:"مفيش عمليات محتاجة مراجعة دلوقتي", channelsTitle:"قنوات الدفع", channelsEmpty:"توزيع قنوات الدفع هيظهر هنا بعد أول طلب",
-  perfSummaryTitle:"ملخص الأداء", avgOrderValue:"متوسط قيمة الطلب", paymentRate:"معدل الدفع", totalOrders:"إجمالي الطلبات", delivered:"تم التسليم",
+  perfSummaryTitle:"ملخص الأداء", avgOrderValue:"متوسط قيمة الطلب", paymentRate:"معدل الدفع", totalOrders:"إجمالي الطلبات", delivered:"تم التسليم", cancelledOrders:"طلبات ملغاة", refundedTotal:"إجمالي المسترد",
   integrationsTitle:"التكاملات", readyToConnect:"جاهز للربط", connectedWorking:"متصل ويعمل", notVerified:"غير متحقق",
   realConnectionPlanTitle:"خطة الربط الحقيقية",
   plan1:"Dashboard API عبر n8n Webhook.", plan2:"قراءة الطلبات والمخزون والمدفوعات من Google Sheets.", plan3:"Actions لتأكيد الدفع وتغيير حالة الطلب.", plan4:"إرسال تحديث WhatsApp وTelegram من نفس الـworkflow.", plan5:"تسجيل كل Action في سجل العمليات Audit Log.",
@@ -1236,8 +1244,8 @@ const I18N = {
   titleCustomers:"Customers", subCustomers:"Customer records and order history",
   titlePayments:"Payments", subPayments:"Review and confirm transfers",
   titleReports:"Reports", subReports:"Performance metrics and integrations",
-  kpiOrdersToday:"Orders today", kpiSalesToday:"Sales today", kpiConfirmedPayments:"Confirmed payments", kpiPending:"Pending", kpiStockAlerts:"Stock alerts",
-  waitingData:"Waiting for data", fromN8n:"from n8n", needsFollowUp:"needs follow-up", currentAlerts:"current alerts",
+  kpiOrdersToday:"Orders today", kpiSalesToday:"Sales today", kpiConfirmedPayments:"Confirmed payments", kpiPending:"Pending", kpiCancelled:"Cancelled orders", kpiRefundedAmount:"Total refunded", kpiStockAlerts:"Stock alerts",
+  waitingData:"Waiting for data", fromN8n:"from n8n", needsFollowUp:"needs follow-up", allTimeMetric:"Current total", currentAlerts:"current alerts",
   unitTxn:"txns", unitTxnConfirmed:"confirmed",
   weeklySalesTitle:"Sales this week", legendSales:"Sales", chartEmpty:"Weekly sales will appear here once n8n sends an update",
   opStatusTitle:"Operational status", connected:"Connected", connecting:"Connecting", working:"Working", simulated:"Simulated", lastSyncLabel:"Last sync",
@@ -1250,7 +1258,7 @@ const I18N = {
   colPhone:"Phone", colOrderCount:"Orders", colTotalSpend:"Total spend", colLastOrder:"Last order",
   paymentStatusTitle:"Payment status", totalPaid:"Total paid", confirmedLabel:"Confirmed", pendingReviewLabel:"Pending review", paymentsEmpty:"Payment status will appear here once the first order arrives from n8n",
   needsReviewTitle:"Needs review", noPendingReview:"Nothing needs review right now", channelsTitle:"Payment channels", channelsEmpty:"Payment channel breakdown will appear here after the first order",
-  perfSummaryTitle:"Performance summary", avgOrderValue:"Average order value", paymentRate:"Payment rate", totalOrders:"Total orders", delivered:"Delivered",
+  perfSummaryTitle:"Performance summary", avgOrderValue:"Average order value", paymentRate:"Payment rate", totalOrders:"Total orders", delivered:"Delivered", cancelledOrders:"Cancelled orders", refundedTotal:"Total refunded",
   integrationsTitle:"Integrations", readyToConnect:"Ready to connect", connectedWorking:"Connected & working", notVerified:"Not verified",
   realConnectionPlanTitle:"Real integration plan",
   plan1:"Dashboard API through an n8n Webhook.", plan2:"Read orders, stock and payments from Google Sheets.", plan3:"Actions to confirm payment and change order status.", plan4:"Send WhatsApp and Telegram updates from the same workflow.", plan5:"Log every action in an audit trail.",
@@ -1317,15 +1325,31 @@ function normalizedStatus(o){
 }
 function badgeStatus(s,id=""){
   const m=statusMeta(s);
-  if(!id) return `<span class="badge b-${m.c}">${escHtml(m.label)}</span>`;
-  const options=[
-    ["pending",statusMeta("pending").label],["paid",statusMeta("paid").label],
-    ["processing",statusMeta("processing").label],["done",statusMeta("done").label],
-    ["cancelled",statusMeta("cancelled").label],["refunded",statusMeta("refunded").label]
-  ];
-  return `<select class="status-select b-${m.c}" data-status-select="${escHtml(id)}" aria-label="${escHtml(LANG==="ar"?"تغيير حالة الطلب":"Change order status")}">${options.map(([v,l])=>`<option value="${v}" ${v===s?"selected":""}>${escHtml(l)}</option>`).join("")}</select>`;
+  if(!id)return `<span class="badge b-${m.c}">${escHtml(m.label)}</span>`;
+  return `<button type="button" class="status-action b-${m.c}" data-status-action="${escHtml(id)}" aria-haspopup="menu" aria-expanded="false" title="${escHtml(LANG==="ar"?"اضغط لتغيير الحالة":"Click to change status")}"><span>${escHtml(m.label)}</span><span class="status-chevron" aria-hidden="true">⌄</span></button>`;
 }
-
+function statusTransitions(current,o){
+  const map={pending:["paid","cancelled"],paid:["processing","cancelled","refunded"],processing:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
+  const choices=[...(map[current]||[])];
+  if(current==="cancelled" && String(o?.payment_status||"").toLowerCase()!=="paid") return [];
+  return choices;
+}
+function closeStatusMenu(){
+  const menu=$("#statusActionMenu");if(menu)menu.remove();
+  document.querySelectorAll("[data-status-action][aria-expanded='true']").forEach(b=>b.setAttribute("aria-expanded","false"));
+}
+function openStatusMenu(id,anchor){
+  const o=orders.find(x=>x.id===id);if(!o)return;
+  closeStatusMenu();
+  const choices=statusTransitions(o.status,o);
+  if(!choices.length){toast(LANG==="ar"?"لا توجد حالات متاحة لهذا الطلب":"No available status changes");return;}
+  const menu=document.createElement("div");menu.id="statusActionMenu";menu.className="status-action-menu";menu.setAttribute("role","menu");
+  menu.innerHTML=choices.map(v=>{const m=statusMeta(v);return `<button type="button" role="menuitem" class="status-menu-item b-${m.c}" data-menu-status="${v}" data-menu-order="${escHtml(id)}"><span class="status-menu-dot"></span><span>${escHtml(m.label)}</span></button>`;}).join("");
+  document.body.appendChild(menu);anchor.setAttribute("aria-expanded","true");
+  const r=anchor.getBoundingClientRect(),mw=menu.offsetWidth||190,mh=menu.offsetHeight||180;let left=Math.min(Math.max(8,r.left),window.innerWidth-mw-8),top=r.bottom+8;
+  if(top+mh>window.innerHeight-8)top=Math.max(8,r.top-mh-8);menu.style.left=left+"px";menu.style.top=top+"px";requestAnimationFrame(()=>menu.classList.add("open"));
+  menu.querySelectorAll("[data-menu-status]").forEach(btn=>btn.addEventListener("click",()=>{const next=btn.dataset.menuStatus,oid=btn.dataset.menuOrder;closeStatusMenu();openConfirmStatus(oid,next);}));
+}
 function applyLanguage(lang){
   LANG = lang;
   localStorage.setItem('malky-lang', lang);
@@ -1411,7 +1435,7 @@ let orders=[];
 let weekly=[];      // [{idx,total}] — populated from n8n only
 let topItems=[];    // [{name,count}] — populated from n8n only
 let agentLog=[];    // [{time,title,detail}] — populated from n8n only
-let kpiState={orders:null,sales:null,confirmed:null,pending:null,stockAlerts:null};
+let kpiState={orders:null,sales:null,confirmed:null,pending:null,cancelled:null,refundedAmount:null,stockAlerts:null};
 let seenOrderIds=null; // null until first load; after that, used to detect new orders
 let ordersPage=1;
 const ORDERS_PAGE_SIZE=25;
@@ -1436,12 +1460,14 @@ function animateNumber(el,value,suffix=""){
   requestAnimationFrame(tick);
 }
 function renderKpis(animate){
-  const set=(id,val,suf)=>{ if(animate) animateNumber($(id),val,suf); else { $(id).textContent=val.toLocaleString("en-US")+suf; $(id).dataset.val=val; } };
-  if(kpiState.orders!=null){ set("#kOrders",kpiState.orders,""); $("#kOrdersTrend").textContent=t('fromN8n'); } else { $("#kOrders").textContent="—"; $("#kOrdersTrend").textContent=t('waitingData'); }
-  if(kpiState.sales!=null){ set("#kSales",kpiState.sales," "+t('currency')); $("#kSalesTrend").textContent=t('fromN8n'); } else { $("#kSales").textContent="—"; $("#kSalesTrend").textContent=t('waitingData'); }
-  if(kpiState.confirmed!=null){ set("#kConfirmed",kpiState.confirmed," "+t('unitTxn')); $("#kConfirmedCount").textContent=kpiState.confirmed.toLocaleString("en-US")+" "+t('unitTxnConfirmed'); } else { $("#kConfirmed").textContent="0 "+t('unitTxn'); $("#kConfirmedCount").textContent="0 "+t('unitTxnConfirmed'); }
-  if(kpiState.pending!=null){ set("#kPending",kpiState.pending,""); $("#kPendingTrend").textContent=t('needsFollowUp'); } else { $("#kPending").textContent="—"; $("#kPendingTrend").textContent=t('waitingData'); }
-  if(kpiState.stockAlerts!=null){ set("#kStockAlerts",kpiState.stockAlerts,""); } else { $("#kStockAlerts").textContent="0"; }
+  const set=(id,val,suf)=>{ const el=$(id); if(!el)return; if(animate)animateNumber(el,val,suf); else {el.textContent=val.toLocaleString("en-US")+suf;el.dataset.val=val;} };
+  if(kpiState.orders!=null){set("#kOrders",kpiState.orders,"");$("#kOrdersTrend").textContent=t('fromN8n');}else{$("#kOrders").textContent="—";$("#kOrdersTrend").textContent=t('waitingData');}
+  if(kpiState.sales!=null){set("#kSales",kpiState.sales," "+t('currency'));$("#kSalesTrend").textContent=t('fromN8n');}else{$("#kSales").textContent="—";$("#kSalesTrend").textContent=t('waitingData');}
+  if(kpiState.confirmed!=null){set("#kConfirmed",kpiState.confirmed," "+t('unitTxn'));$("#kConfirmedCount").textContent=kpiState.confirmed.toLocaleString("en-US")+" "+t('unitTxnConfirmed');}else{$("#kConfirmed").textContent="0 "+t('unitTxn');$("#kConfirmedCount").textContent="0 "+t('unitTxnConfirmed');}
+  if(kpiState.pending!=null){set("#kPending",kpiState.pending,"");$("#kPendingTrend").textContent=t('needsFollowUp');}else{$("#kPending").textContent="—";$("#kPendingTrend").textContent=t('waitingData');}
+  if(kpiState.cancelled!=null){set("#kCancelled",kpiState.cancelled,"");$("#kCancelledTrend").textContent=t('allTimeMetric');}else{$("#kCancelled").textContent="0";$("#kCancelledTrend").textContent=t('waitingData');}
+  if(kpiState.refundedAmount!=null){set("#kRefundedAmount",kpiState.refundedAmount," "+t('currency'));$("#kRefundedTrend").textContent=t('allTimeMetric');}else{$("#kRefundedAmount").textContent="0 "+t('currency');$("#kRefundedTrend").textContent=t('waitingData');}
+  if(kpiState.stockAlerts!=null){set("#kStockAlerts",kpiState.stockAlerts,"");}else{$("#kStockAlerts").textContent="0";}
 }
 
 /* ---------- connection ---------- */
@@ -1599,14 +1625,11 @@ function applyLiveData(data){
     sessionStorage.setItem("malky-activity-log",JSON.stringify(activityLog));
   }
   if(Array.isArray(d.notifications)){
-    notifItems=d.notifications.map(n=>({
-      id:String(n.id||Math.random()),
-      title:n.title||"Notification",
-      detail:n.message||"",
-      orderId:n.order_id||"",
-      time:n.at||new Date().toISOString(),
-      read:!n.unread
-    })).slice(0,100);
+    const readSet=new Set(JSON.parse(localStorage.getItem("malky-notif-read-v1")||"[]"));
+    notifItems=d.notifications.map(n=>{
+      const id=String(n.id||`${n.type||"notification"}-${n.order_id||n.item_id||""}`);
+      return {id,title:n.title||"Notification",detail:n.message||"",orderId:n.order_id||"",time:n.at||new Date().toISOString(),read:!n.unread||readSet.has(id)};
+    }).slice(0,100);
     sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));
   }
 
@@ -1615,6 +1638,8 @@ function applyLiveData(data){
     if(d.kpis.sales_today!=null) kpiState.sales=Number(d.kpis.sales_today);
     if(d.kpis.payments_confirmed!=null) kpiState.confirmed=Number(d.kpis.payments_confirmed);
     if(d.kpis.pending!=null) kpiState.pending=Number(d.kpis.pending);
+    if(d.kpis.cancelled!=null) kpiState.cancelled=Number(d.kpis.cancelled);
+    if(d.kpis.refunded_amount!=null) kpiState.refundedAmount=Number(d.kpis.refunded_amount);
     if(d.kpis.stock_alerts!=null) kpiState.stockAlerts=Number(d.kpis.stock_alerts);
   }
   window.malkyIntegrations=Array.isArray(d.integrations)?d.integrations:[];
@@ -1676,6 +1701,7 @@ function chartSeries(){
   const br=$("#branch").value;
   let undated=0;
   orders.forEach(o=>{
+    if(["cancelled","refunded"].includes(o.status)) return;
     if(br!=="all" && o.branch!==br) return;
     const d=parseOrderDate(o.created_at);
     if(!d){ undated++; return; }
@@ -1718,7 +1744,7 @@ function renderAgentFeed(){
 }
 function renderHome(){
  const br=$("#branch").value;
- const homeArr=filteredOrders();
+ const homeArr=filteredOrders().filter(o=>!["cancelled","refunded"].includes(o.status));
  $("#homeOrders").innerHTML=homeArr.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
  const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
  if(br==="all"){
@@ -1798,7 +1824,7 @@ function renderOrders(){
  const start=(ordersPage-1)*ORDERS_PAGE_SIZE;
  const page=arr.slice(start,start+ORDERS_PAGE_SIZE);
  $("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
- $("#ordersTable").innerHTML=page.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-cancel-order="${escHtml(o.id)}">${LANG==="ar"?"إلغاء":"Cancel"}</button>`:""}${o.payment_status==="paid"&&!["done","refunded"].includes(o.status)?`<button class="mini" data-refund-order="${escHtml(o.id)}">${LANG==="ar"?"استرداد":"Refund"}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
+ $("#ordersTable").innerHTML=page.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-cancel-order="${escHtml(o.id)}">${LANG==="ar"?"إلغاء":"Cancel"}</button>`:""}${o.payment_status==="paid"&&o.status!=="refunded"?`<button class="mini" data-refund-order="${escHtml(o.id)}">${LANG==="ar"?"استرداد":"Refund"}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
  $("#ordersPageInfo").textContent=`${arr.length?start+1:0}–${Math.min(start+page.length,arr.length)} / ${arr.length}`;
  $("#ordersPrev").disabled=ordersPage<=1; $("#ordersNext").disabled=ordersPage>=totalPages;
 }
@@ -1881,34 +1907,31 @@ function renderCustomers(){
 }
 function renderPayments(){
   const scoped=filteredOrders();
-  const paidLike=scoped.filter(o=>String(o.payment_status||"").toLowerCase()==="paid" || (!o.payment_status && ["processing","done"].includes(o.status)));
-  const pending=scoped.filter(o=>o.status==="pending");
-  const totalPaid=paidLike.reduce((s,o)=>s+(Number(o.total)||0),0);
-  $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
+  const paidLike=scoped.filter(o=>!["cancelled","refunded"].includes(o.status)&&(String(o.payment_status||"").toLowerCase()==="paid"||(!o.payment_status&&["processing","done"].includes(o.status))));
+  const pending=scoped.filter(o=>o.status==="pending"), refundedOrders=scoped.filter(o=>o.status==="refunded");
+  const refundedAmount=refundedOrders.reduce((sum,o)=>sum+(Number(o.total)||0),0), totalPaid=paidLike.reduce((sum,o)=>sum+(Number(o.total)||0),0);
+  $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div><div class="status-row"><span class="who">${t('refundedTotal')}</span><b>${money(refundedAmount)}</b></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
   $("#paymentPending").innerHTML=pending.length?pending.map(o=>`<div class="status-row" style="margin-bottom:8px"><span class="who"><b>${o.id}</b><br><small style="font-weight:400">${o.name} • ${money(o.total)}</small></span><button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button></div>`).join(""):`<div class="panel-empty" style="padding:14px"><svg><use href="#i-check"/></svg>${t('noPendingReview')}</div>`;
-  const insta=scoped.filter(o=>o.payment==="instapay").length, cash=scoped.filter(o=>o.payment==="cash").length, tot=scoped.length;
-  if(!tot){ $("#paymentChannels").innerHTML=`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('channelsEmpty')}</div>`; return; }
-  const pi=Math.round(insta/tot*100), pc=Math.round(cash/tot*100);
-  $("#paymentChannels").innerHTML=`
-    <div class="channel-row"><div class="lbl"><span>InstaPay</span><b>${pi}%</b></div><div class="channel-bar"><b style="background:var(--blue)" data-w="${pi}"></b></div></div>
-    <div class="channel-row"><div class="lbl"><span>${t('cash')}</span><b>${pc}%</b></div><div class="channel-bar"><b style="background:var(--pink)" data-w="${pc}"></b></div></div>`;
+  const activeChannels=scoped.filter(o=>!["cancelled","refunded"].includes(o.status)), insta=activeChannels.filter(o=>o.payment==="instapay").length, cash=activeChannels.filter(o=>o.payment==="cash").length, tot=activeChannels.length;
+  if(!tot){$("#paymentChannels").innerHTML=`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('channelsEmpty')}</div>`;return;}
+  const pi=Math.round(insta/tot*100),pc=Math.round(cash/tot*100);
+  $("#paymentChannels").innerHTML=`<div class="channel-row"><div class="lbl"><span>InstaPay</span><b>${pi}%</b></div><div class="channel-bar"><b style="background:var(--blue)" data-w="${pi}"></b></div></div><div class="channel-row"><div class="lbl"><span>${t('cash')}</span><b>${pc}%</b></div><div class="channel-bar"><b style="background:var(--pink)" data-w="${pc}"></b></div></div>`;
   requestAnimationFrame(()=>document.querySelectorAll("#paymentChannels .channel-bar b").forEach(b=>b.style.width=b.dataset.w+"%"));
 }
 function renderReports(){
-  const scoped=filteredOrders();
-  const total=scoped.length, done=scoped.filter(o=>o.status==="done").length, paid=scoped.filter(o=>o.status!=="pending").length;
-  const aov=total?Math.round(scoped.reduce((s,o)=>s+(Number(o.total)||0),0)/total):0;
-  $("#repAov").textContent=total?money(aov):"—";
-  $("#repPayRate").textContent=total?Math.round(paid/total*100)+"%":"—";
-  $("#repTotalOrders").textContent=total.toLocaleString("en-US");
-  $("#repDone").textContent=done.toLocaleString("en-US");
-  const ints=window.malkyIntegrations||[];
-  const get=k=>ints.find(x=>x.key===k)||null;
+  const scoped=filteredOrders(), active=scoped.filter(o=>!["cancelled","refunded"].includes(o.status));
+  const total=active.length, done=active.filter(o=>o.status==="done").length, paid=active.filter(o=>o.status!=="pending").length;
+  const cancelled=scoped.filter(o=>o.status==="cancelled").length, refunded=scoped.filter(o=>o.status==="refunded");
+  const refundedAmount=refunded.reduce((sum,o)=>sum+(Number(o.total)||0),0);
+  const aov=total?Math.round(active.reduce((sum,o)=>sum+(Number(o.total)||0),0)/total):0;
+  $("#repAov").textContent=total?money(aov):"—"; $("#repPayRate").textContent=total?Math.round(paid/total*100)+"%":"—";
+  $("#repTotalOrders").textContent=total.toLocaleString("en-US"); $("#repDone").textContent=done.toLocaleString("en-US");
+  $("#repCancelled").textContent=cancelled.toLocaleString("en-US"); $("#repRefundedAmount").textContent=money(refundedAmount);
+  const ints=window.malkyIntegrations||[], get=k=>ints.find(x=>x.key===k)||null;
   const label=x=>x?.status==="connected"?(LANG==="ar"?"متصل":"Connected"):x?.status==="unknown"?(LANG==="ar"?"غير متحقق":"Not verified"):(x?.status||"—");
   const cls=x=>x?.status==="connected"?"green":x?.status==="unknown"?"yellow":"red";
   [["repN8n","n8n"],["repGs","google_sheets"]].forEach(([id,key])=>{const el=$("#"+id),x=get(key);if(el){el.textContent=label(x);el.className="badge b-"+cls(x);}});
-  const repRows=document.querySelectorAll("#reports .status-list .status-row");
-  repRows.forEach(row=>{const who=row.querySelector(".who")?.textContent?.trim();const key=who==="WhatsApp"?"whatsapp":who==="Telegram"?"telegram":null;if(key){const x=get(key);const b=row.querySelector(".badge");if(b){b.textContent=label(x);b.className="badge b-"+cls(x);}}});
+  document.querySelectorAll("#reports .status-list .status-row").forEach(row=>{const who=row.querySelector(".who")?.textContent?.trim();const key=who==="WhatsApp"?"whatsapp":who==="Telegram"?"telegram":null;if(key){const x=get(key),b=row.querySelector(".badge");if(b){b.textContent=label(x);b.className="badge b-"+cls(x);}}});
 }
 function renderAll(){renderHome();renderStock();renderTopItems();renderBranches();renderCustomers();renderPayments();renderReports();renderOrders();}
 
@@ -1974,8 +1997,8 @@ function exportOrdersCsv(){
 function openConfirmStatus(id,next){
   const o=orders.find(x=>x.id===id); if(!o||o.status===next)return;
   confirmPending={id,next};
-  const statusSelect=document.querySelector(`[data-status-select="${CSS.escape(String(id))}"]`);
-  if(statusSelect) statusSelect.value=o.status;
+  const statusAction=document.querySelector(`[data-status-action="${CSS.escape(String(id))}"]`);
+  if(statusAction) statusAction.setAttribute("aria-expanded","false");
   const labels={cancelled:LANG==="ar"?"إلغاء الطلب":"Cancel order",refunded:LANG==="ar"?"استرداد المبلغ":"Refund order"};
   $("#confirmTitle").textContent=labels[next]|| (LANG==="ar"?"تأكيد تغيير الحالة":"Confirm status change");
   $("#confirmText").textContent=LANG==="ar"
@@ -2054,25 +2077,31 @@ $("#drawerBackdrop").addEventListener("click", closeDrawer);
 $("#mBottomNav").addEventListener("click", e=>{ const b=e.target.closest("button[data-section]"); if(b){ showSection(b.dataset.section); window.scrollTo({top:0,behavior:'smooth'}); } });
 document.addEventListener("click",e=>{
  const nbtn=e.target.closest("#notifBtn"); if(nbtn){ const p=$("#notifPop"); p.hidden=!p.hidden; renderNotifications(); return; }
- const mark=e.target.closest("#markNotifsRead"); if(mark){ notifItems=notifItems.map(x=>({...x,read:true})); sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems)); renderNotifications(); return; }
- const ni=e.target.closest("[data-notif-id]"); if(ni){ const n=notifItems.find(x=>x.id===ni.dataset.notifId); if(n){n.read=true;sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));renderNotifications(); if(n.orderId)openOrder(n.orderId);} return; }
+ const mark=e.target.closest("#markNotifsRead"); if(mark){
+  notifItems=notifItems.map(x=>({...x,read:true}));
+  localStorage.setItem("malky-notif-read-v1",JSON.stringify(notifItems.map(x=>x.id).slice(0,200)));
+  sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));
+  renderNotifications();
+  return;
+}
+ const ni=e.target.closest("[data-notif-id]"); if(ni){ const n=notifItems.find(x=>x.id===ni.dataset.notifId); if(n){
+  n.read=true;
+  const readSet=new Set(JSON.parse(localStorage.getItem("malky-notif-read-v1")||"[]"));readSet.add(n.id);
+  localStorage.setItem("malky-notif-read-v1",JSON.stringify([...readSet].slice(-200)));
+  sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));renderNotifications();
+  if(n.orderId)openOrder(n.orderId);
+} return; }
  const go=e.target.closest("[data-go]");if(go)showSection(go.dataset.go);
  const v=e.target.closest("[data-view]");if(v)openOrder(v.dataset.view);
  const c=e.target.closest("[data-confirm]");if(c){updateStatus(c.dataset.confirm,"paid");if($("#modal").classList.contains("open"))$("#modal").classList.remove("open")}
- const st=e.target.closest("[data-status-select]");if(st){
-   const id=st.dataset.statusSelect;
-   const next=st.value;
-   const o=orders.find(x=>x.id===id);
-   if(o && o.status!==next) openConfirmStatus(id,next);
-   return;
- }
+ const st=e.target.closest("[data-status-action]");if(st){openStatusMenu(st.dataset.statusAction,st);return;}
  const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
  const cancel=e.target.closest("[data-cancel-order]");if(cancel){openConfirmStatus(cancel.dataset.cancelOrder,"cancelled");return;}
  const refund=e.target.closest("[data-refund-order]");if(refund){openConfirmStatus(refund.dataset.refundOrder,"refunded");return;}
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")}); $("#confirmModal").addEventListener("click",e=>{if(e.target.id==="confirmModal"){confirmPending=null;$("#confirmModal").classList.remove("open")}});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(typeof closeStockModal==="function"&&$("#stockModal").classList.contains("open"))closeStockModal();$("#modal").classList.remove("open");$("#confirmModal").classList.remove("open");confirmPending=null;closeIosSheet();closeDrawer();}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeStatusMenu();if(typeof closeStockModal==="function"&&$("#stockModal").classList.contains("open"))closeStockModal();$("#modal").classList.remove("open");$("#confirmModal").classList.remove("open");confirmPending=null;closeIosSheet();closeDrawer();}});
 ["search","branch","status"].forEach(id=>$("#"+id).addEventListener("input",renderAll));
 $("#search").addEventListener("input",renderSearchPop);
 $("#search").addEventListener("focus",renderSearchPop);
