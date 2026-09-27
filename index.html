@@ -804,6 +804,17 @@ img,svg{max-width:100%}
   .enterprise-pop{inset-inline-start:8px;inset-inline-end:8px;width:auto}
 }
 
+
+.modal-box{max-height:calc(100dvh - 40px);display:flex;flex-direction:column}
+.modal-box .modal-head{flex:none}
+.modal-box .modal-content{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.status-select{min-width:120px;max-width:155px}
+@media(max-width:860px){
+  .modal{align-items:flex-end;padding:0}
+  .modal-box{width:100%;border-radius:24px 24px 0 0;max-height:calc(100dvh - 8px);overflow:hidden;padding-bottom:env(safe-area-inset-bottom);display:flex;flex-direction:column}
+  .modal-box .modal-head{flex:none}
+  .modal-box .modal-content{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+}
 </style>
 </head>
 <body>
@@ -1011,6 +1022,8 @@ img,svg{max-width:100%}
     <option value="paid" data-i18n="statusPaid">مدفوع</option>
     <option value="processing" data-i18n="statusProcessing">قيد التجهيز</option>
     <option value="done" data-i18n="statusDone">تم التسليم</option>
+    <option value="cancelled">ملغي</option>
+    <option value="refunded">مسترد</option>
   </select>
   <button class="btn ghost" id="clearFilters" data-i18n="btnClearFilters">مسح الفلاتر</button>
   <button class="btn ghost" id="advancedToggle" type="button"><svg><use href="#i-sliders"/></svg><span data-i18n="advancedFilters">فلاتر متقدمة</span></button>
@@ -1283,21 +1296,34 @@ function displayOrderDate(o){
 }
 function statusMeta(s){
   const map={
-   pending:{c:"yellow", label:t('statusPending')}, paid:{c:"blue", label:t('statusPaid')},
-   processing:{c:"blue", label:t('statusProcessing')}, done:{c:"green", label:t('statusDone')}
+   pending:{c:"yellow", label:LANG==="ar"?"قيد المراجعة":"Under review"},
+   paid:{c:"blue", label:LANG==="ar"?"مدفوع":"Paid"},
+   processing:{c:"blue", label:LANG==="ar"?"قيد التنفيذ":"Processing"},
+   done:{c:"green", label:LANG==="ar"?"تم التسليم":"Delivered"},
+   cancelled:{c:"red", label:LANG==="ar"?"ملغي":"Cancelled"},
+   refunded:{c:"red", label:LANG==="ar"?"مسترد":"Refunded"}
   };
-  return map[s] || {c:"blue", label:s};
+  return map[s] || {c:"blue", label:s||"—"};
+}
+function normalizedStatus(o){
+  const os=String(o.order_status||"").trim().toLowerCase();
+  const ps=String(o.payment_status||"").trim().toLowerCase();
+  if(ps==="refunded"||os==="refunded") return "refunded";
+  if(os==="cancelled"||os==="canceled") return "cancelled";
+  if(os==="delivered"||os==="done") return "done";
+  if(os==="preparing"||os==="processing") return "processing";
+  if(ps==="paid") return "paid";
+  return "pending";
 }
 function badgeStatus(s,id=""){
   const m=statusMeta(s);
   if(!id) return `<span class="badge b-${m.c}">${escHtml(m.label)}</span>`;
   const options=[
-    ["pending",t("statusPending")],
-    ["paid",t("statusPaid")],
-    ["processing",t("statusProcessing")],
-    ["done",t("statusDone")]
+    ["pending",statusMeta("pending").label],["paid",statusMeta("paid").label],
+    ["processing",statusMeta("processing").label],["done",statusMeta("done").label],
+    ["cancelled",statusMeta("cancelled").label],["refunded",statusMeta("refunded").label]
   ];
-  return `<select class="status-select b-${m.c}" data-status-select="${escHtml(id)}" value="${escHtml(s)}" aria-label="${escHtml(t("changeStatusBtn"))}">${options.map(([v,l])=>`<option value="${v}" ${v===s?"selected":""}>${escHtml(l)}</option>`).join("")}</select>`;
+  return `<select class="status-select b-${m.c}" data-status-select="${escHtml(id)}" aria-label="${escHtml(LANG==="ar"?"تغيير حالة الطلب":"Change order status")}">${options.map(([v,l])=>`<option value="${v}" ${v===s?"selected":""}>${escHtml(l)}</option>`).join("")}</select>`;
 }
 
 function applyLanguage(lang){
@@ -1537,14 +1563,13 @@ function applyLiveData(data){
       payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
       payment_status:String(o.payment_status||o.paymentStatus||""),
       order_status:String(o.order_status||o.orderStatus||""),
-      status:(()=>{
-        const os=String(o.order_status||o.orderStatus||"").trim().toLowerCase();
-        const ps=String(o.payment_status||o.paymentStatus||"").trim().toLowerCase();
-        if(os==="delivered" || os==="done") return "done";
-        if(["preparing","processing"].includes(os)) return "processing";
-        if(ps==="paid" && ["awaiting_payment","confirmed","pending",""].includes(os)) return "paid";
-        return "pending";
-      })()
+      status_history:Array.isArray(o.history)?o.history:(Array.isArray(o.status_history)?o.status_history:(()=>{try{return JSON.parse(String(o.status_history||"[]"))}catch{return []}})()),
+      status_changed_at:String(o.status_changed_at||""),
+      updated_at:String(o.updated_at||""),
+      status_started_at:String(o.status_started_at||""),
+      status_elapsed_seconds:Number(o.status_elapsed_seconds||0),
+      status_elapsed_text:String(o.status_elapsed_text||""),
+      status:normalizedStatus(o)
     }));
     if(seenOrderIds===null){
       seenOrderIds=new Set(mapped.map(o=>o.id).filter(Boolean));
@@ -1563,6 +1588,28 @@ function applyLiveData(data){
   if(Array.isArray(d.top_items)) topItems=d.top_items.map(x=>({name:x.name||x.item||"",count:Number(x.count??x.orders??0)}));
   if(Array.isArray(d.agent_log)) agentLog=d.agent_log.map(x=>({time:x.time||"",title:x.title||x.action||"",detail:x.detail||x.message||""}));
 
+  if(Array.isArray(d.activities)){
+    activityLog=d.activities.map(a=>({
+      title:a.status_label||a.action||"Activity",
+      detail:a.message||[a.order_id,a.status_label||a.status].filter(Boolean).join(" — "),
+      user:a.actor||"system",
+      orderId:a.order_id||"",
+      time:a.at||new Date().toISOString()
+    })).slice(0,200);
+    sessionStorage.setItem("malky-activity-log",JSON.stringify(activityLog));
+  }
+  if(Array.isArray(d.notifications)){
+    notifItems=d.notifications.map(n=>({
+      id:String(n.id||Math.random()),
+      title:n.title||"Notification",
+      detail:n.message||"",
+      orderId:n.order_id||"",
+      time:n.at||new Date().toISOString(),
+      read:!n.unread
+    })).slice(0,100);
+    sessionStorage.setItem("malky-notifications",JSON.stringify(notifItems));
+  }
+
   if(d.kpis){
     if(d.kpis.orders_today!=null) kpiState.orders=Number(d.kpis.orders_today);
     if(d.kpis.sales_today!=null) kpiState.sales=Number(d.kpis.sales_today);
@@ -1570,9 +1617,11 @@ function applyLiveData(data){
     if(d.kpis.pending!=null) kpiState.pending=Number(d.kpis.pending);
     if(d.kpis.stock_alerts!=null) kpiState.stockAlerts=Number(d.kpis.stock_alerts);
   }
+  window.malkyIntegrations=Array.isArray(d.integrations)?d.integrations:[];
   renderKpis(true);
   renderAll(); renderNotifications(); renderActivity();
 }
+
 
 let liveLoading=null;
 async function loadLiveData(showToast=false){
@@ -1609,10 +1658,9 @@ async function sendAction(action, orderId, extra={}){
     if(data?.auth===false){ clearToken(); setUser(null); showLogin(t('sessionExpired')); return null; }
     if(data?.ok===false) throw new Error(data.message||"action failed");
     setConnection("online");
-    saveActivity({title:action==="confirm_payment"?(LANG==="ar"?"تأكيد دفع":"Payment confirmed"):(LANG==="ar"?"تغيير حالة":"Status changed"),detail:`${orderId} → ${extra.status||""}`,orderId});
     return data;
   }catch(err){
-    toast(t('toastActionFailed'),true);
+    toast(err?.message||t('toastActionFailed'),true);
     return null;
   }
 }
@@ -1750,7 +1798,7 @@ function renderOrders(){
  const start=(ordersPage-1)*ORDERS_PAGE_SIZE;
  const page=arr.slice(start,start+ORDERS_PAGE_SIZE);
  $("#orderCount").textContent=`${arr.length} ${t('ordersUnit')}`;
- $("#ordersTable").innerHTML=page.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${o.status!=="done"?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
+ $("#ordersTable").innerHTML=page.map((o,i)=>`<tr style="animation-delay:${Math.min(i,10)*25}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td><span>${escHtml(displayOrderDate(o))}</span></td><td><span class="badge b-blue">${escHtml(channelLabel(o.channel))}</span></td><td>${escHtml(o.name)}<br><small style="color:var(--muted)">${escHtml(o.phone)}</small></td><td>${escHtml(prettyBranch(o.branch))}</td><td>${escHtml(o.items)}</td><td><b>${money(o.total)}</b></td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status,o.id)}</td><td><div class="mini-actions"><button class="mini" data-view="${escHtml(o.id)}">${t('actionDetails')}</button>${o.status==="pending"?`<button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-next="${escHtml(o.id)}">${t('actionNext')}</button>`:""}${!["done","cancelled","refunded"].includes(o.status)?`<button class="mini" data-cancel-order="${escHtml(o.id)}">${LANG==="ar"?"إلغاء":"Cancel"}</button>`:""}${o.payment_status==="paid"&&!["done","refunded"].includes(o.status)?`<button class="mini" data-refund-order="${escHtml(o.id)}">${LANG==="ar"?"استرداد":"Refund"}</button>`:""}</div></td></tr>`).join("")||`<tr><td colspan="10" class="empty">${t('noMatchingOrders')}</td></tr>`;
  $("#ordersPageInfo").textContent=`${arr.length?start+1:0}–${Math.min(start+page.length,arr.length)} / ${arr.length}`;
  $("#ordersPrev").disabled=ordersPage<=1; $("#ordersNext").disabled=ordersPage>=totalPages;
 }
@@ -1854,6 +1902,13 @@ function renderReports(){
   $("#repPayRate").textContent=total?Math.round(paid/total*100)+"%":"—";
   $("#repTotalOrders").textContent=total.toLocaleString("en-US");
   $("#repDone").textContent=done.toLocaleString("en-US");
+  const ints=window.malkyIntegrations||[];
+  const get=k=>ints.find(x=>x.key===k)||null;
+  const label=x=>x?.status==="connected"?(LANG==="ar"?"متصل":"Connected"):x?.status==="unknown"?(LANG==="ar"?"غير متحقق":"Not verified"):(x?.status||"—");
+  const cls=x=>x?.status==="connected"?"green":x?.status==="unknown"?"yellow":"red";
+  [["repN8n","n8n"],["repGs","google_sheets"]].forEach(([id,key])=>{const el=$("#"+id),x=get(key);if(el){el.textContent=label(x);el.className="badge b-"+cls(x);}});
+  const repRows=document.querySelectorAll("#reports .status-list .status-row");
+  repRows.forEach(row=>{const who=row.querySelector(".who")?.textContent?.trim();const key=who==="WhatsApp"?"whatsapp":who==="Telegram"?"telegram":null;if(key){const x=get(key);const b=row.querySelector(".badge");if(b){b.textContent=label(x);b.className="badge b-"+cls(x);}}});
 }
 function renderAll(){renderHome();renderStock();renderTopItems();renderBranches();renderCustomers();renderPayments();renderReports();renderOrders();}
 
@@ -1919,60 +1974,30 @@ function exportOrdersCsv(){
 function openConfirmStatus(id,next){
   const o=orders.find(x=>x.id===id); if(!o||o.status===next)return;
   confirmPending={id,next};
-  $("#confirmTitle").textContent=LANG==="ar"?"تأكيد تغيير الحالة":"Confirm status change";
-  $("#confirmText").textContent=LANG==="ar"?`${o.id}: تغيير الحالة من «${statusMeta(o.status).label}» إلى «${statusMeta(next).label}»؟`:`${o.id}: change from "${statusMeta(o.status).label}" to "${statusMeta(next).label}"?`;
+  const labels={cancelled:LANG==="ar"?"إلغاء الطلب":"Cancel order",refunded:LANG==="ar"?"استرداد المبلغ":"Refund order"};
+  $("#confirmTitle").textContent=labels[next]|| (LANG==="ar"?"تأكيد تغيير الحالة":"Confirm status change");
+  $("#confirmText").textContent=LANG==="ar"
+    ? `${o.id}: تغيير الحالة من «${statusMeta(o.status).label}» إلى «${statusMeta(next).label}»؟`
+    : `${o.id}: change from "${statusMeta(o.status).label}" to "${statusMeta(next).label}"?`;
   $("#confirmModal").classList.add("open");
-}
-function renderOrderTimeline(o){
-  const seq=["pending","paid","processing","done"], idx=Math.max(0,seq.indexOf(o.status));
-  return `<div class="timeline">${seq.map((st,i)=>`<div class="timeline-item ${i<idx?"done":i===idx?"active":""}"><span class="timeline-dot"><svg><use href="#i-check"/></svg></span><div class="timeline-body"><b>${statusMeta(st).label}</b><small>${i===idx?(LANG==="ar"?"الحالة الحالية":"Current status"):(i<idx?(LANG==="ar"?"تم اجتيازها":"Completed"):(LANG==="ar"?"بانتظارها":"Pending"))}</small></div></div>`).join("")}</div>`;
-}
-
-function showSection(id){
- const next=document.getElementById(id); if(!next) return;
- currentSection=id;
- document.querySelectorAll(".section").forEach(x=>{ if(x.id!==id) x.hidden=true; });
- document.querySelectorAll("#nav button[data-section], #mBottomNav button[data-section]").forEach(x=>x.classList.toggle("active",x.dataset.section===id));
- closeDrawer();
- refreshSectionTitle();
- next.hidden=false; next.classList.remove("section-enter"); void next.offsetWidth; next.classList.add("section-enter");
- if(id==="home")renderChart();
- if(id==="orders")renderOrders();
- if(id==="stock"){renderStock();renderTopItems();}
- if(id==="payments")renderPayments();
- if(id==="reports")renderReports(); if(id==="activity")renderActivity();
-}
-function toast(msg,isError){
-  const box=$("#toast");
-  box.querySelector("svg use").setAttribute("href",isError?"#i-alert":"#i-check");
-  $("#toastText").textContent=msg;
-  box.classList.add("show");
-  clearTimeout(box._timer);
-  box._timer=setTimeout(()=>box.classList.remove("show"),2400);
-}
-function openOrder(id){
-  const o=orders.find(x=>x.id===id);if(!o)return;
-  $("#modal").dataset.orderId=id;
-  $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
-  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button></div>`;
-  $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
  const o=orders.find(x=>x.id===id); if(!o)return;
- const seq=["pending","paid","processing","done"]; let i=seq.indexOf(o.status);
- const target=next||seq[Math.min(i+1,3)];
- const action=target==="paid"?"confirm_payment":"change_status";
- const result=await sendAction(action,id,{status:target});
+ const seq=["pending","paid","processing","done"];
+ const target=next||seq[Math.min(Math.max(seq.indexOf(o.status),0)+1,3)];
+ let action="change_status", extra={status:target};
+ if(target==="paid") action="confirm_payment";
+ if(target==="cancelled") action="cancel_order";
+ if(target==="refunded") action="refund_order";
+ const result=await sendAction(action,id,extra);
  if(result){
-   o.status=target;
-   if(target==="paid") o.payment_status="paid";
-   toast(`${o.id} → ${statusMeta(o.status).label}`);
-   renderHome();renderOrders();renderPayments();renderReports();
-   if(apiOnline) setTimeout(()=>loadLiveData(false),500);
- }else{
-   renderOrders();
+   $("#modal").classList.remove("open");
+   await loadLiveData(false);
+   const fresh=orders.find(x=>x.id===id);
+   toast(`${id} → ${statusMeta(fresh?.status||target).label}`);
  }
 }
+
 
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-section]");if(b)showSection(b.dataset.section)});
 function openDrawer(){ $(".sidebar").classList.add("open"); $("#drawerBackdrop").classList.add("show"); }
@@ -1997,6 +2022,8 @@ document.addEventListener("click",e=>{
    return;
  }
  const n=e.target.closest("[data-next]");if(n)updateStatus(n.dataset.next);
+ const cancel=e.target.closest("[data-cancel-order]");if(cancel){openConfirmStatus(cancel.dataset.cancelOrder,"cancelled");return;}
+ const refund=e.target.closest("[data-refund-order]");if(refund){openConfirmStatus(refund.dataset.refundOrder,"refunded");return;}
 });
 $("#close").onclick=()=>$("#modal").classList.remove("open");
 $("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("open")}); $("#confirmModal").addEventListener("click",e=>{if(e.target.id==="confirmModal"){confirmPending=null;$("#confirmModal").classList.remove("open")}});
@@ -2033,7 +2060,7 @@ $("#ordersNext").onclick=()=>{const pages=Math.max(1,Math.ceil(filteredOrders().
 $("#exportBtn").onclick=exportOrdersCsv;
 $("#confirmCancel").onclick=()=>{confirmPending=null;$("#confirmModal").classList.remove("open");};
 $("#confirmOk").onclick=async()=>{if(!confirmPending)return;const c=confirmPending;confirmPending=null;$("#confirmModal").classList.remove("open");await updateStatus(c.id,c.next);};
-$("#clearActivity").onclick=()=>{activityLog=[];sessionStorage.removeItem("malky-activity-log");renderActivity();};
+$("#clearActivity").onclick=()=>{loadLiveData(true);};
 $("#clearFilters").onclick=()=>{$("#search").value="";$("#branch").value="all";$("#status").value="all";$("#dateFrom").value="";$("#dateTo").value="";$("#channelFilter").value="all";$("#paymentFilter").value="all";ordersPage=1;renderAll();toast(t('toastFiltersCleared'))};
 $("#refresh").onclick=()=>{ensureNotificationPermission();$("#refreshIco").classList.add("spin");loadLiveData(true).finally(()=>$("#refreshIco").classList.remove("spin"))};
 $("#quick").onclick=()=>{showSection("orders");toast(t('toastQuickAdd'))};
@@ -2282,10 +2309,28 @@ function labelTable(tbody){
 const tableObserver=new MutationObserver(muts=>muts.forEach(m=>{ if(m.target.tagName==="TBODY") labelTable(m.target); }));
 document.querySelectorAll("table tbody").forEach(tb=>{ labelTable(tb); tableObserver.observe(tb,{childList:true}); });
 
+
+function renderStatusTimers(){
+  const now=Date.now();
+  orders.forEach(o=>{
+    const started=Date.parse(String(o.status_started_at||""));
+    if(Number.isNaN(started)) return;
+    const sec=Math.max(0,Math.floor((now-started)/1000));
+    o.status_elapsed_seconds=sec;
+    o.status_elapsed_text=humanDurationLocal(sec);
+    document.querySelectorAll(`[data-order-timer="${CSS.escape(String(o.id))}"]`).forEach(el=>el.textContent=o.status_elapsed_text);
+  });
+}
+function humanDurationLocal(seconds){
+  const s=Math.max(0,Math.floor(Number(seconds)||0)), d=Math.floor(s/86400), h=Math.floor((s%86400)/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  if(d)return `${d} ${LANG==="ar"?"يوم":"d"} ${h} ${LANG==="ar"?"س":"h"}`;
+  if(h)return `${h} ${LANG==="ar"?"س":"h"} ${m} ${LANG==="ar"?"د":"m"}`;
+  if(m)return `${m} ${LANG==="ar"?"د":"m"} ${sec} ${LANG==="ar"?"ث":"s"}`;
+  return `${sec} ${LANG==="ar"?"ث":"s"}`;
+}
 /* ---------- boot ---------- */
 let booted=false;
 function boot(){
-  if(!booted) document.body.classList.add("data-loading");
   renderAll();
   if(booted){ loadLiveData(false); return; }
   booted=true;
@@ -2298,6 +2343,7 @@ function boot(){
   document.addEventListener("visibilitychange",refreshIfVisible);
   window.addEventListener("focus",refreshIfVisible);
   setInterval(renderSyncAgo,1000);
+  setInterval(renderStatusTimers,1000);
 }
 applyTheme(localStorage.getItem('malky-theme') || systemTheme());
 applyLanguage(LANG);
