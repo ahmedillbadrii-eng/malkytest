@@ -1974,12 +1974,54 @@ function exportOrdersCsv(){
 function openConfirmStatus(id,next){
   const o=orders.find(x=>x.id===id); if(!o||o.status===next)return;
   confirmPending={id,next};
+  const statusSelect=document.querySelector(`[data-status-select="${CSS.escape(String(id))}"]`);
+  if(statusSelect) statusSelect.value=o.status;
   const labels={cancelled:LANG==="ar"?"إلغاء الطلب":"Cancel order",refunded:LANG==="ar"?"استرداد المبلغ":"Refund order"};
   $("#confirmTitle").textContent=labels[next]|| (LANG==="ar"?"تأكيد تغيير الحالة":"Confirm status change");
   $("#confirmText").textContent=LANG==="ar"
     ? `${o.id}: تغيير الحالة من «${statusMeta(o.status).label}» إلى «${statusMeta(next).label}»؟`
     : `${o.id}: change from "${statusMeta(o.status).label}" to "${statusMeta(next).label}"?`;
   $("#confirmModal").classList.add("open");
+}
+function renderOrderTimeline(o){
+  const seq=["pending","paid","processing","done"], idx=Math.max(0,seq.indexOf(o.status));
+  const isTerminal=!["pending","paid","processing","done"].includes(o.status);
+  return `<div class="timeline">${seq.map((st,i)=>`<div class="timeline-item ${i<idx?"done":i===idx&&!isTerminal?"active":""}"><span class="timeline-dot"><svg><use href="#i-check"/></svg></span><div class="timeline-body"><b>${statusMeta(st).label}</b><small>${i===idx&&!isTerminal?(LANG==="ar"?"الحالة الحالية":"Current status"):(i<idx?(LANG==="ar"?"تم اجتيازها":"Completed"):(LANG==="ar"?"بانتظارها":"Pending"))}</small></div></div>`).join("")}</div>${isTerminal?`<div class="enterprise-note" style="margin-top:10px">${LANG==="ar"?`الحالة النهائية: ${statusMeta(o.status).label}`:`Final status: ${statusMeta(o.status).label}`}</div>`:""}`;
+}
+function showSection(id){
+  const next=document.getElementById(id); if(!next) return;
+  currentSection=id;
+  document.querySelectorAll(".section").forEach(x=>{ if(x.id!==id) x.hidden=true; });
+  document.querySelectorAll("#nav button[data-section], #mBottomNav button[data-section]").forEach(x=>x.classList.toggle("active",x.dataset.section===id));
+  if(typeof closeDrawer==="function") closeDrawer();
+  refreshSectionTitle();
+  next.hidden=false;
+  next.classList.remove("section-enter");
+  void next.offsetWidth;
+  next.classList.add("section-enter");
+  if(id==="home") renderChart();
+  if(id==="orders") renderOrders();
+  if(id==="stock"){ renderStock(); renderTopItems(); }
+  if(id==="payments") renderPayments();
+  if(id==="reports") renderReports();
+  if(id==="activity") renderActivity();
+}
+function toast(msg,isError){
+  const box=$("#toast");
+  if(!box) return;
+  const use=box.querySelector("svg use");
+  if(use) use.setAttribute("href",isError?"#i-alert":"#i-check");
+  $("#toastText").textContent=msg;
+  box.classList.add("show");
+  clearTimeout(box._timer);
+  box._timer=setTimeout(()=>box.classList.remove("show"),2400);
+}
+function openOrder(id){
+  const o=orders.find(x=>x.id===id); if(!o) return;
+  $("#modal").dataset.orderId=id;
+  $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
+  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-next="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button>${!['done','cancelled','refunded'].includes(o.status)?`<button class="btn" data-cancel-order="${escHtml(o.id)}"><svg><use href="#i-x"/></svg>${LANG==="ar"?"إلغاء الطلب":"Cancel order"}</button>`:""}${o.payment_status==="paid"&&!['done','refunded'].includes(o.status)?`<button class="btn" data-refund-order="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${LANG==="ar"?"استرداد المبلغ":"Refund"}</button>`:""}</div>`;
+  $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
  const o=orders.find(x=>x.id===id); if(!o)return;
@@ -1995,6 +2037,9 @@ async function updateStatus(id,next){
    await loadLiveData(false);
    const fresh=orders.find(x=>x.id===id);
    toast(`${id} → ${statusMeta(fresh?.status||target).label}`);
+ }else{
+   renderOrders();
+   if(currentSection==="home") renderHome();
  }
 }
 
