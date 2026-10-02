@@ -295,6 +295,8 @@ html[data-theme="dark"] .live-strip.offline{color:#ffcf87}
 .toast{position:fixed;inset-inline-start:22px;bottom:22px;display:flex;align-items:center;gap:9px;background:var(--navy-950);color:#fff;padding:13px 17px;border-radius:13px;box-shadow:var(--sh-lg);z-index:50;opacity:0;transform:translateY(14px);pointer-events:none;transition:opacity .2s ease,transform .2s ease;font-size:13px;font-weight:600}
 .toast.show{opacity:1;transform:none}
 .toast svg{width:16px;height:16px;flex:none;color:var(--pink-light)}
+.toast{visibility:hidden;max-width:min(92vw,520px);overflow-wrap:anywhere;line-height:1.5;transition:opacity .2s ease,transform .2s ease,visibility 0s linear .22s}
+.toast.show{visibility:visible;pointer-events:auto;cursor:pointer;transition-delay:0s}
 
 .empty{padding:35px;text-align:center;color:var(--muted)}
 
@@ -1047,8 +1049,8 @@ img,svg{max-width:100%}
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiSalesToday">مبيعات اليوم</span><span class="kpi-ico pink"><svg><use href="#i-trend"/></svg></span></div><div class="num" id="kSales" data-val="0">—</div><div class="trend" id="kSalesTrend" data-i18n="waitingData">بانتظار البيانات</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiConfirmedPayments">مدفوعات مؤكدة</span><span class="kpi-ico green"><svg><use href="#i-check"/></svg></span></div><div class="num" id="kConfirmed" data-val="0">0</div><div class="trend up" id="kConfirmedCount">0</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiPending">قيد الانتظار</span><span class="kpi-ico amber"><svg><use href="#i-clock"/></svg></span></div><div class="num" id="kPending" data-val="0">—</div><div class="trend" id="kPendingTrend" data-i18n="waitingData">بانتظار البيانات</div></div>
-  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiCancelled">طلبات ملغاة</span><span class="kpi-ico red"><svg><use href="#i-x"/></svg></span></div><div class="num" id="kCancelled" data-val="0">0</div><div class="trend down" id="kCancelledTrend" data-i18n="allTimeMetric">إجمالي حالي</div></div>
-  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiRefundedAmount">إجمالي المسترد</span><span class="kpi-ico pink"><svg><use href="#i-refresh"/></svg></span></div><div class="num" id="kRefundedAmount" data-val="0">0 ج</div><div class="trend" id="kRefundedTrend" data-i18n="allTimeMetric">إجمالي حالي</div></div>
+  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiCancelled">ملغاة اليوم</span><span class="kpi-ico red"><svg><use href="#i-x"/></svg></span></div><div class="num" id="kCancelled" data-val="0">0</div><div class="trend down" id="kCancelledTrend" data-i18n="todayMetric">إجمالي حالي</div></div>
+  <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiRefundedAmount">المسترد اليوم</span><span class="kpi-ico pink"><svg><use href="#i-refresh"/></svg></span></div><div class="num" id="kRefundedAmount" data-val="0">0 ج</div><div class="trend" id="kRefundedTrend" data-i18n="todayMetric">إجمالي حالي</div></div>
   <div class="card kpi"><div class="kpi-top"><span data-i18n="kpiStockAlerts">تنبيهات المخزون</span><span class="kpi-ico red"><svg><use href="#i-alert"/></svg></span></div><div class="num" id="kStockAlerts" data-val="0">0</div><div class="trend down" data-i18n="currentAlerts">تنبيهات حالية</div></div>
 </div>
 <div class="grid">
@@ -1193,8 +1195,8 @@ const I18N = {
   titleCustomers:"العملاء", subCustomers:"سجل العملاء والطلبات",
   titlePayments:"المدفوعات", subPayments:"مراجعة وتأكيد التحويلات",
   titleReports:"التقارير", subReports:"مؤشرات الأداء والتكاملات",
-  kpiOrdersToday:"طلبات اليوم", kpiSalesToday:"مبيعات اليوم", kpiConfirmedPayments:"مدفوعات مؤكدة", kpiPending:"قيد الانتظار", kpiCancelled:"طلبات ملغاة", kpiRefundedAmount:"إجمالي المسترد", kpiStockAlerts:"تنبيهات المخزون",
-  waitingData:"بانتظار البيانات", fromN8n:"من n8n", needsFollowUp:"تحتاج متابعة", allTimeMetric:"إجمالي حالي", currentAlerts:"تنبيهات حالية",
+  kpiOrdersToday:"طلبات اليوم", kpiSalesToday:"مبيعات اليوم", kpiConfirmedPayments:"مدفوعات مؤكدة اليوم", kpiPending:"قيد الانتظار", kpiCancelled:"ملغاة اليوم", kpiRefundedAmount:"المسترد اليوم", kpiStockAlerts:"تنبيهات المخزون",
+  waitingData:"بانتظار البيانات", fromN8n:"من n8n", needsFollowUp:"تحتاج متابعة", allTimeMetric:"إجمالي حالي", todayMetric:"اليوم", currentAlerts:"تنبيهات حالية",
   unitTxn:"عملية", unitTxnConfirmed:"عملية مؤكدة",
   weeklySalesTitle:"المبيعات خلال الأسبوع", legendSales:"المبيعات", chartEmpty:"بيانات المبيعات الأسبوعية هتظهر هنا أول ما يوصل تحديث من n8n",
   opStatusTitle:"حالة التشغيل", connected:"متصل", connecting:"جاري الاتصال", working:"يعمل", simulated:"محاكاة", lastSyncLabel:"آخر مزامنة",
@@ -1219,7 +1221,7 @@ const I18N = {
   cash:"كاش", currency:"ج",
   themeToDark:"تفعيل الوضع الليلي", themeToLight:"تفعيل الوضع النهاري",
   kickerOperations:"العمليات", kickerInsights:"التحليلات", navMore:"المزيد",
-  offlineShort:"غير متصل", forgotLink:"نسيت كلمة المرور؟", resetTitle:"استعادة كلمة المرور", resetSub1:"اكتب إيميلك وهنبعتلك كود من 6 أرقام", sendCode:"ابعت الكود", codeSentTo:"لو الإيميل {e} مسجل عندنا، هيوصلك كود خلال دقيقة. شوف الـ Spam لو ملقتوش.", fieldCode:"الكود", verifyCode:"تأكيد الكود", resendCode:"ابعت الكود تاني", resendIn:"إعادة الإرسال بعد {n} ث", resetSub3:"اختار كلمة مرور جديدة (8 حروف على الأقل)", fieldNewPassword:"كلمة المرور الجديدة", saveNewPassword:"حفظ كلمة المرور", backToLogin:"رجوع لتسجيل الدخول", resetDone:"تم تغيير كلمة المرور — سجّل دخول بالكلمة الجديدة", errInvalidCode:"الكود غلط", errCodeExpired:"الكود انتهت صلاحيته — اطلب كود جديد", errTooMany:"محاولات كتير غلط — اطلب كود جديد", errVerificationRequired:"لازم تأكد الكود الأول — ابدأ من جديد", errGeneric:"حصلت مشكلة، جرب تاني", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي 7 أيام", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
+  offlineShort:"غير متصل", forgotLink:"نسيت كلمة المرور؟", resetTitle:"استعادة كلمة المرور", resetSub1:"اكتب إيميلك وهنبعتلك كود من 6 أرقام", sendCode:"ابعت الكود", codeSentTo:"لو الإيميل {e} مسجل عندنا، هيوصلك كود خلال دقيقة. شوف الـ Spam لو ملقتوش.", fieldCode:"الكود", verifyCode:"تأكيد الكود", resendCode:"ابعت الكود تاني", resendIn:"إعادة الإرسال بعد {n} ث", resetSub3:"اختار كلمة مرور جديدة (8 حروف على الأقل)", fieldNewPassword:"كلمة المرور الجديدة", saveNewPassword:"حفظ كلمة المرور", backToLogin:"رجوع لتسجيل الدخول", resetDone:"تم تغيير كلمة المرور — سجّل دخول بالكلمة الجديدة", errInvalidCode:"الكود غلط", errCodeExpired:"الكود انتهت صلاحيته — اطلب كود جديد", errTooMany:"محاولات كتير غلط — اطلب كود جديد", errVerificationRequired:"لازم تأكد الكود الأول — ابدأ من جديد", errGeneric:"حصلت مشكلة، جرب تاني", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي الأسبوع (من السبت)", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
   installTitle:"ثبّت تطبيق المالكي", installSub:"افتح اللوحة بلمسة من الشاشة الرئيسية", installBtn:"تثبيت",
   iosSheetTitle:"تثبيت التطبيق على آيفون", iosStep1:"اضغط زر المشاركة في شريط Safari", iosStep2:"اختار «إضافة إلى الشاشة الرئيسية»", iosStep3:"اضغط «إضافة» — والتطبيق هيظهر مع باقي تطبيقاتك", gotIt:"تمام",
   loginSub:"سجّل الدخول للوصول للوحة التشغيل", tabSignIn:"تسجيل الدخول", tabSignUp:"إنشاء حساب", fieldEmail:"البريد الإلكتروني", fieldPassword:"كلمة المرور", fieldName:"الاسم", fieldConfirmPassword:"تأكيد كلمة المرور",
@@ -1244,8 +1246,8 @@ const I18N = {
   titleCustomers:"Customers", subCustomers:"Customer records and order history",
   titlePayments:"Payments", subPayments:"Review and confirm transfers",
   titleReports:"Reports", subReports:"Performance metrics and integrations",
-  kpiOrdersToday:"Orders today", kpiSalesToday:"Sales today", kpiConfirmedPayments:"Confirmed payments", kpiPending:"Pending", kpiCancelled:"Cancelled orders", kpiRefundedAmount:"Total refunded", kpiStockAlerts:"Stock alerts",
-  waitingData:"Waiting for data", fromN8n:"from n8n", needsFollowUp:"needs follow-up", allTimeMetric:"Current total", currentAlerts:"current alerts",
+  kpiOrdersToday:"Orders today", kpiSalesToday:"Sales today", kpiConfirmedPayments:"Confirmed today", kpiPending:"Pending", kpiCancelled:"Cancelled today", kpiRefundedAmount:"Refunded today", kpiStockAlerts:"Stock alerts",
+  waitingData:"Waiting for data", fromN8n:"from n8n", needsFollowUp:"needs follow-up", allTimeMetric:"Current total", todayMetric:"Today", currentAlerts:"current alerts",
   unitTxn:"txns", unitTxnConfirmed:"confirmed",
   weeklySalesTitle:"Sales this week", legendSales:"Sales", chartEmpty:"Weekly sales will appear here once n8n sends an update",
   opStatusTitle:"Operational status", connected:"Connected", connecting:"Connecting", working:"Working", simulated:"Simulated", lastSyncLabel:"Last sync",
@@ -1270,7 +1272,7 @@ const I18N = {
   cash:"Cash", currency:"EGP",
   themeToDark:"Switch to dark mode", themeToLight:"Switch to light mode",
   kickerOperations:"Operations", kickerInsights:"Insights", navMore:"More",
-  offlineShort:"Offline", forgotLink:"Forgot password?", resetTitle:"Reset password", resetSub1:"Enter your email and we'll send you a 6-digit code", sendCode:"Send code", codeSentTo:"If {e} is registered, a code will arrive within a minute. Check spam if you don't see it.", fieldCode:"Code", verifyCode:"Verify code", resendCode:"Resend code", resendIn:"Resend in {n}s", resetSub3:"Choose a new password (at least 8 characters)", fieldNewPassword:"New password", saveNewPassword:"Save password", backToLogin:"Back to sign in", resetDone:"Password changed — sign in with your new password", errInvalidCode:"Incorrect code", errCodeExpired:"This code expired — request a new one", errTooMany:"Too many wrong attempts — request a new code", errVerificationRequired:"Verify the code first — start again", errGeneric:"Something went wrong, try again", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Last 7 days", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
+  offlineShort:"Offline", forgotLink:"Forgot password?", resetTitle:"Reset password", resetSub1:"Enter your email and we'll send you a 6-digit code", sendCode:"Send code", codeSentTo:"If {e} is registered, a code will arrive within a minute. Check spam if you don't see it.", fieldCode:"Code", verifyCode:"Verify code", resendCode:"Resend code", resendIn:"Resend in {n}s", resetSub3:"Choose a new password (at least 8 characters)", fieldNewPassword:"New password", saveNewPassword:"Save password", backToLogin:"Back to sign in", resetDone:"Password changed — sign in with your new password", errInvalidCode:"Incorrect code", errCodeExpired:"This code expired — request a new one", errTooMany:"Too many wrong attempts — request a new code", errVerificationRequired:"Verify the code first — start again", errGeneric:"Something went wrong, try again", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Week total (from Sat)", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
   installTitle:"Install the El Malky app", installSub:"Open the dashboard in one tap from your home screen", installBtn:"Install",
   iosSheetTitle:"Install on iPhone", iosStep1:"Tap the Share button in Safari's toolbar", iosStep2:"Choose “Add to Home Screen”", iosStep3:"Tap “Add” — the app appears with your other apps", gotIt:"Got it",
   loginSub:"Sign in to access the dashboard", tabSignIn:"Sign in", tabSignUp:"Create account", fieldEmail:"Email", fieldPassword:"Password", fieldName:"Name", fieldConfirmPassword:"Confirm password",
@@ -1326,10 +1328,10 @@ function normalizedStatus(o){
 function badgeStatus(s,id=""){
   const m=statusMeta(s);
   if(!id)return `<span class="badge b-${m.c}">${escHtml(m.label)}</span>`;
-  return `<button type="button" class="status-action b-${m.c}" data-status-action="${escHtml(id)}" aria-haspopup="menu" aria-expanded="false" title="${escHtml(LANG==="ar"?"اضغط لتغيير الحالة":"Click to change status")}"><span>${escHtml(m.label)}</span><span class="status-chevron" aria-hidden="true">⌄</span></button>`;
+  return `<button type="button" class="status-action b-${m.c}" data-status-action="${escHtml(id)}" aria-haspopup="menu" aria-expanded="false" aria-label="${escHtml(LANG==="ar"?"اضغط لتغيير الحالة":"Click to change status")}"><span>${escHtml(m.label)}</span><span class="status-chevron" aria-hidden="true">⌄</span></button>`;
 }
 function statusTransitions(current,o){
-  const map={pending:["paid","cancelled"],paid:["processing","cancelled","refunded"],processing:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
+  const map={pending:["paid","cancelled"],paid:["processing","done","cancelled","refunded"],processing:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
   const choices=[...(map[current]||[])];
   if(current==="cancelled" && String(o?.payment_status||"").toLowerCase()!=="paid") return [];
   return choices;
@@ -1506,8 +1508,8 @@ function renderKpis(animate){
   if(kpiState.sales!=null){set("#kSales",kpiState.sales," "+t('currency'));$("#kSalesTrend").textContent=t('fromN8n');}else{$("#kSales").textContent="—";$("#kSalesTrend").textContent=t('waitingData');}
   if(kpiState.confirmed!=null){set("#kConfirmed",kpiState.confirmed," "+t('unitTxn'));$("#kConfirmedCount").textContent=kpiState.confirmed.toLocaleString("en-US")+" "+t('unitTxnConfirmed');}else{$("#kConfirmed").textContent="0 "+t('unitTxn');$("#kConfirmedCount").textContent="0 "+t('unitTxnConfirmed');}
   if(kpiState.pending!=null){set("#kPending",kpiState.pending,"");$("#kPendingTrend").textContent=t('needsFollowUp');}else{$("#kPending").textContent="—";$("#kPendingTrend").textContent=t('waitingData');}
-  if(kpiState.cancelled!=null){set("#kCancelled",kpiState.cancelled,"");$("#kCancelledTrend").textContent=t('allTimeMetric');}else{$("#kCancelled").textContent="0";$("#kCancelledTrend").textContent=t('waitingData');}
-  if(kpiState.refundedAmount!=null){set("#kRefundedAmount",kpiState.refundedAmount," "+t('currency'));$("#kRefundedTrend").textContent=t('allTimeMetric');}else{$("#kRefundedAmount").textContent="0 "+t('currency');$("#kRefundedTrend").textContent=t('waitingData');}
+  if(kpiState.cancelled!=null){set("#kCancelled",kpiState.cancelled,"");$("#kCancelledTrend").textContent=t('todayMetric');}else{$("#kCancelled").textContent="0";$("#kCancelledTrend").textContent=t('waitingData');}
+  if(kpiState.refundedAmount!=null){set("#kRefundedAmount",kpiState.refundedAmount," "+t('currency'));$("#kRefundedTrend").textContent=t('todayMetric');}else{$("#kRefundedAmount").textContent="0 "+t('currency');$("#kRefundedTrend").textContent=t('waitingData');}
   if(kpiState.stockAlerts!=null){set("#kStockAlerts",kpiState.stockAlerts,"");}else{$("#kStockAlerts").textContent="0";}
 }
 
@@ -1737,8 +1739,10 @@ function parseOrderDate(s){ const m=String(s||'').match(/^(\d{1,2})\/(\d{1,2})\/
 function chartSeries(){
   const loc = LANG==="ar"?"ar-EG":"en-US";
   const base=new Date(); base.setHours(0,0,0,0);
+  const sinceSat=(base.getDay()+1)%7; /* week starts on Saturday */
+  const weekStart=new Date(base); weekStart.setDate(weekStart.getDate()-sinceSat);
   const days=[];
-  for(let i=13;i>=0;i--){ const d=new Date(base); d.setDate(d.getDate()-i); days.push({date:d,total:0,count:0,today:i===0}); }
+  for(let i=0;i<14;i++){ const d=new Date(weekStart); d.setDate(d.getDate()-7+i); days.push({date:d,total:0,count:0,today:d.getTime()===base.getTime()}); }
   const br=$("#branch").value;
   let undated=0;
   orders.forEach(o=>{
@@ -1750,7 +1754,7 @@ function chartSeries(){
     if(slot){ slot.total+=Number(o.total)||0; slot.count++; }
   });
   const week=days.slice(7).map(x=>Object.assign(x,{label:x.date.toLocaleDateString(loc,{weekday:'short'}),dateLabel:x.date.toLocaleDateString(loc,{day:'numeric',month:'numeric'})}));
-  const prevTotal=days.slice(0,7).reduce((a,b)=>a+b.total,0);
+  const prevTotal=days.slice(0,sinceSat+1).reduce((a,b)=>a+b.total,0);
   return {week,prevTotal,undated};
 }
 function compactNum(n){ n=Number(n)||0; if(n>=1000) return (n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k'; return String(Math.round(n)); }
@@ -1766,7 +1770,7 @@ function renderChart(){
   box.innerHTML=`<div class="wk-summary"><span class="wk-chip"><b>${cnt}</b> ${t('ordersUnit')}</span><span class="wk-chip"><b>${money(cnt?Math.round(sum/cnt):0)}</b> ${t('avgShort')}</span>${delta}</div>
   <div class="bars">${week.map((d,i)=>{
     const hPct=d.total>0?Math.max(6,d.total/max*100):0;
-    return `<div class="bar-col${d.today?' today':''}" title="${d.label} ${d.dateLabel} · ${d.count} ${t('ordersUnit')} · ${money(d.total)}">
+    return `<div class="bar-col${d.today?' today':''}" aria-label="${d.label} ${d.dateLabel} · ${d.count} ${t('ordersUnit')} · ${money(d.total)}">
       <span class="bar-val">${d.total>0?compactNum(d.total):''}</span>
       <div class="bar-track"><div class="bar-fill" style="--h:${hPct}%;animation-delay:${i*60}ms"></div></div>
       <span class="bar-day">${d.today?t('todayShort'):d.label}</span><span class="bar-date">${d.dateLabel}</span>
@@ -2078,7 +2082,8 @@ function toast(msg,isError){
   $("#toastText").textContent=msg;
   box.classList.add("show");
   clearTimeout(box._timer);
-  box._timer=setTimeout(()=>box.classList.remove("show"),2400);
+  box.onclick=()=>{clearTimeout(box._timer);box.classList.remove("show");};
+  box._timer=setTimeout(()=>box.classList.remove("show"),isError?5500:2600);
 }
 function openOrder(id){
   const o=orders.find(x=>x.id===id); if(!o) return;
@@ -2100,7 +2105,7 @@ async function updateStatus(id,next){
    $("#modal").classList.remove("open");
    await loadLiveData(false);
    const fresh=orders.find(x=>x.id===id);
-   toast(`${id} → ${statusMeta(fresh?.status||target).label}`);
+   toast(`${id} → ${statusMeta(fresh?.status||target).label}`+(result.stock_warning?` — ⚠️ ${result.stock_warning}`:""),!!result.stock_warning);
  }else{
    renderOrders();
    if(currentSection==="home") renderHome();
