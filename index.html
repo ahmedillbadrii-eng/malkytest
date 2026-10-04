@@ -793,6 +793,17 @@ img,svg{max-width:100%}
 .timeline-item.active .timeline-dot{background:var(--warning-bg);color:var(--warning-ink)}
 .timeline-body{display:grid;gap:3px}
 .timeline-body b{font-size:12px}
+.receipt-box{display:grid;gap:6px;padding:10px;border:1px solid var(--line);border-radius:14px;background:var(--panel-2);margin-top:6px;justify-items:start}
+.receipt-img{width:100%;max-width:300px;max-height:340px;object-fit:contain;border-radius:10px;border:1px solid var(--line-soft);background:#fff;cursor:zoom-in}
+.receipt-box .receipt-fail{display:none;color:var(--danger-ink)}
+.receipt-box.failed .receipt-fail{display:block}
+.receipt-box.failed .receipt-img,.receipt-box.failed .receipt-hint{display:none}
+.receipt-box small{color:var(--muted,#8a8378)}
+.receipt-lightbox{position:fixed;inset:0;z-index:99999;background:rgba(10,12,18,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.receipt-lightbox img{max-width:min(96vw,720px);max-height:92vh;object-fit:contain;border-radius:12px;background:#fff}
+.tl-time{font-weight:700}
+.tl-gap{opacity:.75}
+
 .timeline-body small{font-size:10.5px;color:var(--muted)}
 .role-chip{font-size:10px;padding:4px 8px;border-radius:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#b9c7db}
 .enterprise-note{font-size:11px;color:var(--muted);background:var(--bg);border:1px dashed var(--line);padding:10px 12px;border-radius:11px;margin-top:10px}
@@ -1029,6 +1040,7 @@ img,svg{max-width:100%}
     <option value="pending" data-i18n="statusPending">قيد المراجعة</option>
     <option value="paid" data-i18n="statusPaid">مدفوع</option>
     <option value="processing" data-i18n="statusProcessing">قيد التجهيز</option>
+    <option value="out" data-i18n="statusOut">خرج للتوصيل</option>
     <option value="done" data-i18n="statusDone">تم التسليم</option>
     <option value="cancelled">ملغي</option>
     <option value="refunded">مسترد</option>
@@ -1167,6 +1179,7 @@ const API = {
   action: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-action",
   auth: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-auth",
   reset: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-password-reset",
+  receipt: "https://ahmadbadryy.duckdns.org/webhook/malky-dashboard-receipt",
   timeout: 9000
 };
 let apiOnline = false;
@@ -1186,7 +1199,7 @@ const I18N = {
   agentTitle:"وكيل n8n الذكي", agentWaiting:"جاري الاتصال بالوكيل…", agentOnline:"متصل ويستقبل الطلبات لحظيًا", agentOffline:"بانتظار أول استجابة من n8n",
   liveConnecting:"جاري الاتصال بـ n8n…", liveOnline:"متصل بـ n8n — بيانات مباشرة", liveOffline:"تعذر الاتصال بـ n8n — لا توجد بيانات تجريبية معروضة",
   btnSync:"مزامنة الآن", btnAddOrder:"إضافة طلب", searchPlaceholder:"ابحث برقم الطلب، اسم العميل، الهاتف...",
-  allBranches:"كل الفروع", allStatuses:"كل الحالات", statusPending:"قيد المراجعة", statusPaid:"مدفوع", statusProcessing:"قيد التجهيز", statusDone:"تم التسليم",
+  allBranches:"كل الفروع", allStatuses:"كل الحالات", statusPending:"قيد المراجعة", statusPaid:"مدفوع", statusProcessing:"قيد التجهيز", statusOut:"خرج للتوصيل", statusDone:"تم التسليم",
   btnClearFilters:"مسح الفلاتر",
   titleHome:"لوحة التحكم", subHome:"كل اللي محتاج تعرفه عن الطلبات والتشغيل في شاشة واحدة",
   titleOrders:"الطلبات", subOrders:"إدارة ومتابعة جميع الطلبات",
@@ -1237,7 +1250,7 @@ const I18N = {
   agentTitle:"n8n AI Agent", agentWaiting:"Connecting to the agent…", agentOnline:"Connected — receiving orders live", agentOffline:"Waiting for the first response from n8n",
   liveConnecting:"Connecting to n8n…", liveOnline:"Connected to n8n — live data", liveOffline:"Couldn't connect to n8n — no demo data is shown",
   btnSync:"Sync now", btnAddOrder:"Add order", searchPlaceholder:"Search by order ID, customer name, phone...",
-  allBranches:"All branches", allStatuses:"All statuses", statusPending:"Pending", statusPaid:"Paid", statusProcessing:"Processing", statusDone:"Delivered",
+  allBranches:"All branches", allStatuses:"All statuses", statusPending:"Pending", statusPaid:"Paid", statusProcessing:"Processing", statusOut:"Out for delivery", statusDone:"Delivered",
   btnClearFilters:"Clear filters",
   titleHome:"Dashboard", subHome:"Everything about orders and operations, in one screen",
   titleOrders:"Orders", subOrders:"Manage and track every order",
@@ -1309,6 +1322,7 @@ function statusMeta(s){
    pending:{c:"yellow", label:LANG==="ar"?"قيد المراجعة":"Under review"},
    paid:{c:"blue", label:LANG==="ar"?"مدفوع":"Paid"},
    processing:{c:"blue", label:LANG==="ar"?"قيد التنفيذ":"Processing"},
+   out:{c:"blue", label:LANG==="ar"?"خرج للتوصيل":"Out for delivery"},
    done:{c:"green", label:LANG==="ar"?"تم التسليم":"Delivered"},
    cancelled:{c:"red", label:LANG==="ar"?"ملغي":"Cancelled"},
    refunded:{c:"red", label:LANG==="ar"?"مسترد":"Refunded"}
@@ -1321,6 +1335,7 @@ function normalizedStatus(o){
   if(ps==="refunded"||os==="refunded") return "refunded";
   if(os==="cancelled"||os==="canceled") return "cancelled";
   if(os==="delivered"||os==="done") return "done";
+  if(os==="out_for_delivery"||os==="out") return "out";
   if(os==="preparing"||os==="processing") return "processing";
   if(ps==="paid") return "paid";
   return "pending";
@@ -1331,7 +1346,7 @@ function badgeStatus(s,id=""){
   return `<button type="button" class="status-action b-${m.c}" data-status-action="${escHtml(id)}" aria-haspopup="menu" aria-expanded="false" aria-label="${escHtml(LANG==="ar"?"اضغط لتغيير الحالة":"Click to change status")}"><span>${escHtml(m.label)}</span><span class="status-chevron" aria-hidden="true">⌄</span></button>`;
 }
 function statusTransitions(current,o){
-  const map={pending:["paid","cancelled"],paid:["processing","done","cancelled","refunded"],processing:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
+  const map={pending:["paid","cancelled"],paid:["processing","out","done","cancelled","refunded"],processing:["out","done","cancelled","refunded"],out:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
   const choices=[...(map[current]||[])];
   if(current==="cancelled" && String(o?.payment_status||"").toLowerCase()!=="paid") return [];
   return choices;
@@ -1365,7 +1380,7 @@ function openStatusMenu(id,anchor){
   }
   closeStatusMenu();
   const available=new Set(statusTransitions(o.status,o));
-  const allStatuses=["pending","paid","processing","done","cancelled","refunded"];
+  const allStatuses=["pending","paid","processing","out","done","cancelled","refunded"];
   const menu=document.createElement("div");
   menu.id="statusActionMenu";
   menu.className="status-action-menu";
@@ -1636,6 +1651,10 @@ function applyLiveData(data){
       status_changed_at:String(o.status_changed_at||""),
       updated_at:String(o.updated_at||""),
       status_started_at:String(o.status_started_at||""),
+      stages:(o.stages&&typeof o.stages==="object")?o.stages:{},
+      receipt_file_id:String(o.receipt_file_id||""),
+      receipt_at:String(o.receipt_at||""),
+      address:String(o.address||""),
       status_elapsed_seconds:Number(o.status_elapsed_seconds||0),
       status_elapsed_text:String(o.status_elapsed_text||""),
       status:normalizedStatus(o)
@@ -1892,15 +1911,16 @@ function renderStock(){
     list=stock.filter(s=>s.branch===br);
   }
   const maxOf=s=>Number(s.max)||Number(s.received)||Math.max(Number(s.qty)||0,1);
-  const crit=list.filter(s=>Number(s.qty)/maxOf(s)*100<35);
+  const isLowStock=s=>(Number(s.qty)||0)<=Math.max(5,Math.floor(maxOf(s)*0.2));
+  const crit=list.filter(isLowStock);
   $("#criticalCount").textContent=crit.length;
   if(!list.length){
     $("#criticalStock").innerHTML=`<div class="panel-empty"><svg><use href="#i-box"/></svg>${t('waitingData')}</div>`;
   }else{
     $("#criticalStock").innerHTML=list.map(s=>{
-      const p=Number(s.qty)/maxOf(s)*100,c=p<15?"danger":p<35?"warn":"";
+      const p=Number(s.qty)/maxOf(s)*100,c=(Number(s.qty)||0)<=2?"danger":isLowStock(s)?"warn":"";
       const canEdit=!!(s.item_id&&s.branch&&br!=="all");
-      return `<div class="stock-item${Number(s.qty)<15?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${Number(s.qty).toLocaleString('en-US')} ${t('unitsAvailable')}${br==="all"?' · '+t('allBranches'):s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`;
+      return `<div class="stock-item${isLowStock(s)?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${Number(s.qty).toLocaleString('en-US')} ${t('unitsAvailable')}${br==="all"?' · '+t('allBranches'):s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`;
     }).join("");
   }
   requestAnimationFrame(()=>document.querySelectorAll("#criticalStock .progress b").forEach(b=>b.style.width=b.dataset.w+"%"));
@@ -2051,10 +2071,76 @@ function openConfirmStatus(id,next){
     : `${o.id}: change from "${statusMeta(o.status).label}" to "${statusMeta(next).label}"?`;
   $("#confirmModal").classList.add("open");
 }
+function fmtStageTime(iso){
+  const t=Date.parse(iso||""); if(isNaN(t)) return "";
+  return new Date(t).toLocaleString(LANG==="ar"?"ar-EG":"en-GB",{timeZone:"Africa/Cairo",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit",hour12:true});
+}
+function fmtGap(a,b){
+  const x=Date.parse(a||""),y=Date.parse(b||""); if(isNaN(x)||isNaN(y)||y<x) return "";
+  const m=Math.round((y-x)/60000);
+  if(m<1) return LANG==="ar"?"أقل من دقيقة":"under 1 min";
+  if(m<60) return m+(LANG==="ar"?" د":" min");
+  const h=Math.floor(m/60), r=m%60;
+  return h+(LANG==="ar"?" س":" h")+(r?" "+r+(LANG==="ar"?" د":" min"):"");
+}
+function receiptUrl(o){
+  const tk=getToken();
+  return o&&o.receipt_file_id ? API.receipt+"?fid="+encodeURIComponent(o.receipt_file_id)+"&token="+encodeURIComponent(tk||"") : "";
+}
+function openReceipt(url){
+  if(!url) return;
+  let box=document.getElementById("receiptLightbox");
+  if(box) box.remove();
+  box=document.createElement("div");
+  box.id="receiptLightbox"; box.className="receipt-lightbox";
+  box.innerHTML=`<img src="${escHtml(url)}" alt="InstaPay receipt">`;
+  box.addEventListener("click",()=>box.remove());
+  document.body.appendChild(box);
+}
+function renderReceipt(o){
+  if(o.payment!=="instapay") return "";
+  const ar=LANG==="ar";
+  const title=`<div class="enterprise-note">${ar?"إيصال InstaPay":"InstaPay receipt"}</div>`;
+  const url=receiptUrl(o);
+  if(!url) return title+`<div class="receipt-box empty"><small>${ar?"لا توجد صورة إيصال مسجلة لهذا الطلب":"No receipt image recorded for this order"}</small></div>`;
+  const when=fmtStageTime(o.receipt_at);
+  return title+`<div class="receipt-box"><img class="receipt-img" src="${escHtml(url)}" alt="InstaPay receipt" loading="lazy" data-receipt-url="${escHtml(url)}" onerror="this.parentNode.classList.add('failed')"><small class="receipt-fail">${ar?"تعذر تحميل الصورة — حدّث الصفحة أو افتحها من تيليجرام":"Could not load the image — refresh or open it in Telegram"}</small>${when?`<small class="receipt-meta">${ar?"وصلت":"Received"}: ${escHtml(when)}</small>`:""}<small class="receipt-hint">${ar?"اضغط على الصورة لتكبيرها":"Tap the image to enlarge"}</small></div>`;
+}
 function renderOrderTimeline(o){
-  const seq=["pending","paid","processing","done"], idx=Math.max(0,seq.indexOf(o.status));
-  const isTerminal=!["pending","paid","processing","done"].includes(o.status);
-  return `<div class="timeline">${seq.map((st,i)=>`<div class="timeline-item ${i<idx?"done":i===idx&&!isTerminal?"active":""}"><span class="timeline-dot"><svg><use href="#i-check"/></svg></span><div class="timeline-body"><b>${statusMeta(st).label}</b><small>${i===idx&&!isTerminal?(LANG==="ar"?"الحالة الحالية":"Current status"):(i<idx?(LANG==="ar"?"تم اجتيازها":"Completed"):(LANG==="ar"?"بانتظارها":"Pending"))}</small></div></div>`).join("")}</div>${isTerminal?`<div class="enterprise-note" style="margin-top:10px">${LANG==="ar"?`الحالة النهائية: ${statusMeta(o.status).label}`:`Final status: ${statusMeta(o.status).label}`}</div>`:""}`;
+  const ar=LANG==="ar";
+  const st=o.stages||{};
+  const pickup=/استلام/.test(String(o.address||""));
+  const terminal=["cancelled","refunded"].includes(o.status);
+  const steps=[
+    {k:"created",label:ar?"تم استلام الطلب":"Order received",at:st.created||""},
+    {k:"paid",label:ar?"تم تأكيد الدفع":"Payment confirmed",at:st.paid||""},
+    {k:"preparing",label:ar?"بدأ التجهيز":"Preparation started",at:st.preparing||"",optional:true}
+  ];
+  if(!pickup) steps.push({k:"out",label:ar?"خرج للتوصيل":"Out for delivery",at:st.out||""});
+  steps.push({k:"delivered",label:pickup?(ar?"تم التسليم من الفرع":"Picked up at branch"):(ar?"تم التسليم":"Delivered"),at:st.delivered||""});
+  if(o.status==="refunded") steps.push({k:"refunded",label:ar?"تم الاسترداد":"Refunded",at:st.refunded||st.cancelled||""});
+  else if(o.status==="cancelled") steps.push({k:"cancelled",label:ar?"تم الإلغاء":"Cancelled",at:st.cancelled||""});
+  const curKey={pending:"created",paid:"paid",processing:"preparing",out:"out",done:"delivered",cancelled:"cancelled",refunded:"refunded"}[o.status]||"created";
+  const statusRank={created:0,paid:1,preparing:2,out:3,delivered:4,cancelled:5,refunded:5};
+  const curRank=statusRank[curKey];
+  const visible=steps.filter(x=>{ if(x.at) return true; if(x.optional) return false; if(terminal) return x.k==="created"||x.k===curKey; return true; });
+  let prevAt="";
+  const html=visible.map(x=>{
+    const isCur=x.k===curKey;
+    const passed=!!x.at||(!terminal&&statusRank[x.k]<curRank)||(isCur&&(o.status==="done"||terminal));
+    const cls=isCur&&!terminal&&o.status!=="done"?"active":(passed||isCur?"done":"");
+    const time=fmtStageTime(x.at);
+    const gap=prevAt&&x.at?fmtGap(prevAt,x.at):"";
+    if(x.at) prevAt=x.at;
+    const sub=time?`<span class="tl-time">${escHtml(time)}</span>${gap?` <span class="tl-gap">· ${ar?"بعد":"after"} ${escHtml(gap)}</span>`:""}`:(passed?(ar?"تم اجتيازها (الوقت غير مسجل)":"Completed (time not recorded)"):(ar?"بانتظارها":"Pending"));
+    return `<div class="timeline-item ${cls}"><span class="timeline-dot"><svg><use href="#i-check"/></svg></span><div class="timeline-body"><b>${x.label}</b><small>${sub}</small></div></div>`;
+  }).join("");
+  let total="";
+  if(st.created&&st.delivered&&!terminal){
+    const g=fmtGap(st.created,st.delivered);
+    if(g) total=`<div class="enterprise-note" style="margin-top:10px">${ar?"من الطلب لحد التسليم":"Order to delivery"}: ${escHtml(g)}</div>`;
+  }
+  return `<div class="timeline">${html}</div>${total}`;
 }
 function showSection(id){
   const next=document.getElementById(id); if(!next) return;
@@ -2089,13 +2175,13 @@ function openOrder(id){
   const o=orders.find(x=>x.id===id); if(!o) return;
   $("#modal").dataset.orderId=id;
   $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
-  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div><div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-status-action="${escHtml(o.id)}" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button>${!['done','cancelled','refunded'].includes(o.status)?`<button class="btn" data-cancel-order="${escHtml(o.id)}"><svg><use href="#i-x"/></svg>${LANG==="ar"?"إلغاء الطلب":"Cancel order"}</button>`:""}${o.payment_status==="paid"&&!['done','refunded'].includes(o.status)?`<button class="btn" data-refund-order="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${LANG==="ar"?"استرداد المبلغ":"Refund"}</button>`:""}</div>`;
+  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div>${renderReceipt(o)}<div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-status-action="${escHtml(o.id)}" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button>${!['done','cancelled','refunded'].includes(o.status)?`<button class="btn" data-cancel-order="${escHtml(o.id)}"><svg><use href="#i-x"/></svg>${LANG==="ar"?"إلغاء الطلب":"Cancel order"}</button>`:""}${o.payment_status==="paid"&&!['done','refunded'].includes(o.status)?`<button class="btn" data-refund-order="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${LANG==="ar"?"استرداد المبلغ":"Refund"}</button>`:""}</div>`;
   $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
  const o=orders.find(x=>x.id===id); if(!o)return;
- const seq=["pending","paid","processing","done"];
- const target=next||seq[Math.min(Math.max(seq.indexOf(o.status),0)+1,3)];
+ const seq=["pending","paid","processing","out","done"];
+ const target=next||seq[Math.min(Math.max(seq.indexOf(o.status),0)+1,seq.length-1)];
  let action="change_status", extra={status:target};
  if(target==="paid") action="confirm_payment";
  if(target==="cancelled") action="cancel_order";
@@ -2122,6 +2208,7 @@ $("#mMoreBtn").addEventListener("click", openDrawer);
 $("#drawerBackdrop").addEventListener("click", closeDrawer);
 $("#mBottomNav").addEventListener("click", e=>{ const b=e.target.closest("button[data-section]"); if(b){ showSection(b.dataset.section); window.scrollTo({top:0,behavior:'smooth'}); } });
 document.addEventListener("click",e=>{
+ const rimg=e.target.closest("[data-receipt-url]"); if(rimg){ openReceipt(rimg.getAttribute("data-receipt-url")); return; }
  const nbtn=e.target.closest("#notifBtn"); if(nbtn){ const p=$("#notifPop"); p.hidden=!p.hidden; renderNotifications(); return; }
  const mark=e.target.closest("#markNotifsRead"); if(mark){
   notifItems=notifItems.map(x=>({...x,read:true}));
