@@ -834,6 +834,18 @@ img,svg{max-width:100%}
   .modal-box .modal-head{flex:none}
   .modal-box .modal-content{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
 }
+
+/* ---- Mobile only: sheets (order details / confirm / stock) sit above the top bar and bottom nav ---- */
+@media(max-width:860px){
+  .modal{z-index:130;align-items:flex-end;padding:0}
+  .modal-box{width:100%;max-height:calc(100dvh - max(env(safe-area-inset-top),12px) - 8px);padding-bottom:0}
+  .modal-box .modal-head{position:sticky;top:0;background:var(--panel);z-index:2}
+  .modal-box .modal-content{padding-bottom:calc(28px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+  #confirmModal{align-items:center;padding:16px}
+  #confirmModal .confirm-box{width:100%;max-width:460px}
+  .toast{z-index:140}
+  body:has(.modal.open){overflow:hidden}
+}
 </style>
 </head>
 <body>
@@ -1337,6 +1349,7 @@ function normalizedStatus(o){
   if(os==="delivered"||os==="done") return "done";
   if(os==="out_for_delivery"||os==="out") return "out";
   if(os==="preparing"||os==="processing") return "processing";
+  if((ps==="cod"||ps==="na")&&os!=="awaiting_payment") return "processing"; /* cash on delivery: nothing to confirm online */
   if(ps==="paid") return "paid";
   return "pending";
 }
