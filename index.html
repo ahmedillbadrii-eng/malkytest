@@ -1050,6 +1050,7 @@ img,svg{max-width:100%}
   <select id="status">
     <option value="all" data-i18n="allStatuses">كل الحالات</option>
     <option value="pending" data-i18n="statusPending">قيد المراجعة</option>
+    <option value="awaiting" data-i18n="statusAwaiting">في انتظار الدفع</option>
     <option value="paid" data-i18n="statusPaid">مدفوع</option>
     <option value="processing" data-i18n="statusProcessing">قيد التجهيز</option>
     <option value="out" data-i18n="statusOut">خرج للتوصيل</option>
@@ -1063,7 +1064,7 @@ img,svg{max-width:100%}
     <div class="advanced-field"><label data-i18n="fromDate">من تاريخ</label><input id="dateFrom" type="date"></div>
     <div class="advanced-field"><label data-i18n="toDate">إلى تاريخ</label><input id="dateTo" type="date"></div>
     <div class="advanced-field"><label data-i18n="channelFilter">القناة</label><select id="channelFilter"><option value="all" data-i18n="allChannels">كل القنوات</option><option value="whatsapp">WhatsApp</option><option value="telegram">Telegram</option><option value="manual" data-i18n="manualChannel">يدوي</option></select></div>
-    <div class="advanced-field"><label data-i18n="paymentFilter">طريقة الدفع</label><select id="paymentFilter"><option value="all" data-i18n="allPayments">كل طرق الدفع</option><option value="instapay">InstaPay</option><option value="cash" data-i18n="cash">كاش</option></select></div>
+    <div class="advanced-field"><label data-i18n="paymentFilter">طريقة الدفع</label><select id="paymentFilter"><option value="all" data-i18n="allPayments">كل طرق الدفع</option><option value="instapay">InstaPay</option><option value="cash" data-i18n="cash">كاش</option><option value="visa" data-i18n="visa">فيزا</option></select></div>
   </div>
 </div>
 
@@ -1243,7 +1244,7 @@ const I18N = {
   toastLiveDataFetched:"تم جلب البيانات من n8n", toastCantConnect:"تعذر الاتصال بـ n8n", toastActionFailed:"تعذر تنفيذ العملية على n8n",
   toastFiltersCleared:"تم مسح الفلاتر", toastQuickAdd:"من هنا نقدر لاحقًا نربط إنشاء الطلب بـn8n",
   newOrderToast:"طلب جديد", newOrderNotifTitle:"طلب جديد — المالكي", enableNotifsToast:"فعّلنا تنبيهات الطلبات الجديدة",
-  cash:"كاش", currency:"ج",
+  cash:"كاش", visa:"فيزا", statusAwaiting:"في انتظار الدفع", visaAutoConfirm:"دفع الفيزا بيتأكد تلقائياً من Paymob", currency:"ج",
   themeToDark:"تفعيل الوضع الليلي", themeToLight:"تفعيل الوضع النهاري",
   kickerOperations:"العمليات", kickerInsights:"التحليلات", navMore:"المزيد",
   offlineShort:"غير متصل", forgotLink:"نسيت كلمة المرور؟", resetTitle:"استعادة كلمة المرور", resetSub1:"اكتب إيميلك وهنبعتلك كود من 6 أرقام", sendCode:"ابعت الكود", codeSentTo:"لو الإيميل {e} مسجل عندنا، هيوصلك كود خلال دقيقة. شوف الـ Spam لو ملقتوش.", fieldCode:"الكود", verifyCode:"تأكيد الكود", resendCode:"ابعت الكود تاني", resendIn:"إعادة الإرسال بعد {n} ث", resetSub3:"اختار كلمة مرور جديدة (8 حروف على الأقل)", fieldNewPassword:"كلمة المرور الجديدة", saveNewPassword:"حفظ كلمة المرور", backToLogin:"رجوع لتسجيل الدخول", resetDone:"تم تغيير كلمة المرور — سجّل دخول بالكلمة الجديدة", errInvalidCode:"الكود غلط", errCodeExpired:"الكود انتهت صلاحيته — اطلب كود جديد", errTooMany:"محاولات كتير غلط — اطلب كود جديد", errVerificationRequired:"لازم تأكد الكود الأول — ابدأ من جديد", errGeneric:"حصلت مشكلة، جرب تاني", adjustStock:"تعديل المخزون", adjustShort:"تعديل", stReceived:"الوارد", stReserved:"محجوز", stSold:"مباع", stAvailable:"المتاح", modeAdd:"إضافة للمخزون", modeSub:"خصم من المخزون", saveStock:"حفظ في الشيت", availableWillBe:"المتاح هيبقى", stockWouldBeNegative:"مينفعش — المتاح هيبقى أقل من صفر", stockSaveFailed:"تعذر حفظ المخزون", availableNow:"المتاح بقى", justNow:"الآن", secondsAgo:"منذ {n} ث", vsLastWeek:"عن الأسبوع اللي فات", newThisWeek:"جديد هذا الأسبوع", avgShort:"متوسط الطلب", todayShort:"النهارده", undatedNote:"{n} طلب في الشيت من غير تاريخ — مش محسوبين في الرسم ولا في أرقام النهارده", integWaSub:"استقبال الطلبات", integTgSub:"تنبيهات الفريق", integN8nSub:"أتمتة وردود ذكية", integGsSub:"الطلبات والمخزون", weekTotalLabel:"إجمالي الأسبوع (من السبت)", searchResults:"نتيجة", searchNoResults:"مفيش نتائج لـ", greetMorning:"صباح الخير", greetEvening:"مساء الخير",
@@ -1294,7 +1295,7 @@ const I18N = {
   toastLiveDataFetched:"Data fetched from n8n", toastCantConnect:"Couldn't connect to n8n", toastActionFailed:"Couldn't complete the action on n8n",
   toastFiltersCleared:"Filters cleared", toastQuickAdd:"This is where creating an order will connect to n8n",
   newOrderToast:"New order", newOrderNotifTitle:"New order — El Malky", enableNotifsToast:"New-order alerts enabled",
-  cash:"Cash", currency:"EGP",
+  cash:"Cash", visa:"Visa", statusAwaiting:"Awaiting payment", visaAutoConfirm:"Visa payments are confirmed automatically by Paymob", currency:"EGP",
   themeToDark:"Switch to dark mode", themeToLight:"Switch to light mode",
   kickerOperations:"Operations", kickerInsights:"Insights", navMore:"More",
   offlineShort:"Offline", forgotLink:"Forgot password?", resetTitle:"Reset password", resetSub1:"Enter your email and we'll send you a 6-digit code", sendCode:"Send code", codeSentTo:"If {e} is registered, a code will arrive within a minute. Check spam if you don't see it.", fieldCode:"Code", verifyCode:"Verify code", resendCode:"Resend code", resendIn:"Resend in {n}s", resetSub3:"Choose a new password (at least 8 characters)", fieldNewPassword:"New password", saveNewPassword:"Save password", backToLogin:"Back to sign in", resetDone:"Password changed — sign in with your new password", errInvalidCode:"Incorrect code", errCodeExpired:"This code expired — request a new one", errTooMany:"Too many wrong attempts — request a new code", errVerificationRequired:"Verify the code first — start again", errGeneric:"Something went wrong, try again", adjustStock:"Adjust stock", adjustShort:"Adjust", stReceived:"Received", stReserved:"Reserved", stSold:"Sold", stAvailable:"Available", modeAdd:"Add stock", modeSub:"Remove stock", saveStock:"Save to sheet", availableWillBe:"Available will be", stockWouldBeNegative:"Not allowed — available would drop below zero", stockSaveFailed:"Couldn't save stock", availableNow:"available now", justNow:"just now", secondsAgo:"{n}s ago", vsLastWeek:"vs last week", newThisWeek:"new this week", avgShort:"avg order", todayShort:"Today", undatedNote:"{n} orders in the sheet have no date — they are not counted in this chart or in today's numbers", integWaSub:"Receiving orders", integTgSub:"Team alerts", integN8nSub:"Automation & smart replies", integGsSub:"Orders & stock", weekTotalLabel:"Week total (from Sat)", searchResults:"results", searchNoResults:"No results for", greetMorning:"Good morning", greetEvening:"Good evening",
@@ -1310,7 +1311,7 @@ const I18N = {
 };
 function t(key){ return (I18N[LANG]&&I18N[LANG][key]) || I18N.ar[key] || key; }
 function money(n){ return Number(n||0).toLocaleString("en-US")+" "+t('currency'); }
-function paymentLabel(p){ return p==="instapay" ? "InstaPay" : t('cash'); }
+function paymentLabel(p){ return p==="instapay" ? "InstaPay" : (p==="visa" ? t('visa') : t('cash')); }
 function channelLabel(c){
   const v=String(c||'').trim().toLowerCase();
   if(v==='whatsapp'||v==='wa') return 'WhatsApp';
@@ -1332,6 +1333,7 @@ function displayOrderDate(o){
 function statusMeta(s){
   const map={
    pending:{c:"yellow", label:LANG==="ar"?"قيد المراجعة":"Under review"},
+   awaiting:{c:"yellow", label:LANG==="ar"?"في انتظار الدفع":"Awaiting payment"},
    paid:{c:"blue", label:LANG==="ar"?"مدفوع":"Paid"},
    processing:{c:"blue", label:LANG==="ar"?"قيد التنفيذ":"Processing"},
    out:{c:"blue", label:LANG==="ar"?"خرج للتوصيل":"Out for delivery"},
@@ -1349,6 +1351,7 @@ function normalizedStatus(o){
   if(os==="delivered"||os==="done") return "done";
   if(os==="out_for_delivery"||os==="out") return "out";
   if(os==="preparing"||os==="processing") return "processing";
+  if(os==="awaiting_payment"&&ps!=="paid"&&String(o.payment||o.payment_method||"").toLowerCase().includes("visa")) return "awaiting"; /* Visa: waiting for the customer to pay on Paymob */
   if((ps==="cod"||ps==="na")&&os!=="awaiting_payment") return "processing"; /* cash on delivery: nothing to confirm online */
   if(ps==="paid") return "paid";
   return "pending";
@@ -1359,7 +1362,7 @@ function badgeStatus(s,id=""){
   return `<button type="button" class="status-action b-${m.c}" data-status-action="${escHtml(id)}" aria-haspopup="menu" aria-expanded="false" aria-label="${escHtml(LANG==="ar"?"اضغط لتغيير الحالة":"Click to change status")}"><span>${escHtml(m.label)}</span><span class="status-chevron" aria-hidden="true">⌄</span></button>`;
 }
 function statusTransitions(current,o){
-  const map={pending:["paid","cancelled"],paid:["processing","out","done","cancelled","refunded"],processing:["out","done","cancelled","refunded"],out:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
+  const map={pending:["paid","cancelled"],awaiting:["cancelled"],paid:["processing","out","done","cancelled","refunded"],processing:["out","done","cancelled","refunded"],out:["done","cancelled","refunded"],done:["refunded"],cancelled:["refunded"],refunded:[]};
   const choices=[...(map[current]||[])];
   if(current==="cancelled" && String(o?.payment_status||"").toLowerCase()!=="paid") return [];
   return choices;
@@ -1657,7 +1660,7 @@ function applyLiveData(data){
       branch:o.branch||o.branch_name||"",
       items:o.items||o.order_items||"",
       total:Number(o.total??o.amount??0),
-      payment:(String(o.payment||o.payment_method||"cash").toLowerCase().includes("insta")?"instapay":"cash"),
+      payment:(function(){const pm=String(o.payment||o.payment_method||"cash").toLowerCase(); return pm.includes("insta")?"instapay":((pm.includes("visa")||pm.includes("card")||pm.includes("paymob"))?"visa":"cash");})(),
       payment_status:String(o.payment_status||o.paymentStatus||""),
       order_status:String(o.order_status||o.orderStatus||""),
       status_history:Array.isArray(o.history)?o.history:(Array.isArray(o.status_history)?o.status_history:(()=>{try{return JSON.parse(String(o.status_history||"[]"))}catch{return []}})()),
@@ -1778,7 +1781,7 @@ function chartSeries(){
   const br=$("#branch").value;
   let undated=0;
   orders.forEach(o=>{
-    if(["cancelled","refunded"].includes(o.status)) return;
+    if(["cancelled","refunded","awaiting"].includes(o.status)) return;
     if(br!=="all" && o.branch!==br) return;
     const d=parseOrderDate(o.created_at);
     if(!d){ undated++; return; }
@@ -1988,16 +1991,16 @@ function renderPayments(){
   const paidLike=scoped.filter(o=>!["cancelled","refunded"].includes(o.status)&&(String(o.payment_status||"").toLowerCase()==="paid"||(!o.payment_status&&["processing","done"].includes(o.status))));
   const pending=scoped.filter(o=>o.status==="pending"), refundedOrders=scoped.filter(o=>o.status==="refunded");
   const refundedAmount=refundedOrders.reduce((sum,o)=>sum+(Number(o.total)||0),0), totalPaid=paidLike.reduce((sum,o)=>sum+(Number(o.total)||0),0);
-  $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div><div class="status-row"><span class="who">${t('refundedTotal')}</span><b>${money(refundedAmount)}</b></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
+  $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div><div class="status-row"><span class="who">${t('statusAwaiting')}</span><span class="badge b-yellow">${scoped.filter(o=>o.status==="awaiting").length}</span></div><div class="status-row"><span class="who">${t('refundedTotal')}</span><b>${money(refundedAmount)}</b></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
   $("#paymentPending").innerHTML=pending.length?pending.map(o=>`<div class="status-row" style="margin-bottom:8px"><span class="who"><b>${o.id}</b><br><small style="font-weight:400">${o.name} • ${money(o.total)}</small></span><button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button></div>`).join(""):`<div class="panel-empty" style="padding:14px"><svg><use href="#i-check"/></svg>${t('noPendingReview')}</div>`;
-  const activeChannels=scoped.filter(o=>!["cancelled","refunded"].includes(o.status)), insta=activeChannels.filter(o=>o.payment==="instapay").length, cash=activeChannels.filter(o=>o.payment==="cash").length, tot=activeChannels.length;
+  const activeChannels=scoped.filter(o=>!["cancelled","refunded","awaiting"].includes(o.status)), insta=activeChannels.filter(o=>o.payment==="instapay").length, cash=activeChannels.filter(o=>o.payment==="cash").length, visaN=activeChannels.filter(o=>o.payment==="visa").length, tot=activeChannels.length;
   if(!tot){$("#paymentChannels").innerHTML=`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('channelsEmpty')}</div>`;return;}
-  const pi=Math.round(insta/tot*100),pc=Math.round(cash/tot*100);
-  $("#paymentChannels").innerHTML=`<div class="channel-row"><div class="lbl"><span>InstaPay</span><b>${pi}%</b></div><div class="channel-bar"><b style="background:var(--blue)" data-w="${pi}"></b></div></div><div class="channel-row"><div class="lbl"><span>${t('cash')}</span><b>${pc}%</b></div><div class="channel-bar"><b style="background:var(--pink)" data-w="${pc}"></b></div></div>`;
+  const pi=Math.round(insta/tot*100),pc=Math.round(cash/tot*100),pv=Math.round(visaN/tot*100);
+  $("#paymentChannels").innerHTML=`<div class="channel-row"><div class="lbl"><span>InstaPay</span><b>${pi}%</b></div><div class="channel-bar"><b style="background:var(--blue)" data-w="${pi}"></b></div></div><div class="channel-row"><div class="lbl"><span>${t('cash')}</span><b>${pc}%</b></div><div class="channel-bar"><b style="background:var(--pink)" data-w="${pc}"></b></div></div><div class="channel-row"><div class="lbl"><span>${t('visa')}</span><b>${pv}%</b></div><div class="channel-bar"><b style="background:var(--success)" data-w="${pv}"></b></div></div>`;
   requestAnimationFrame(()=>document.querySelectorAll("#paymentChannels .channel-bar b").forEach(b=>b.style.width=b.dataset.w+"%"));
 }
 function renderReports(){
-  const scoped=filteredOrders(), active=scoped.filter(o=>!["cancelled","refunded"].includes(o.status));
+  const scoped=filteredOrders(), active=scoped.filter(o=>!["cancelled","refunded","awaiting"].includes(o.status));
   const total=active.length, done=active.filter(o=>o.status==="done").length, paid=active.filter(o=>o.status!=="pending").length;
   const cancelled=scoped.filter(o=>o.status==="cancelled").length, refunded=scoped.filter(o=>o.status==="refunded");
   const refundedAmount=refunded.reduce((sum,o)=>sum+(Number(o.total)||0),0);
@@ -2133,7 +2136,7 @@ function renderOrderTimeline(o){
   steps.push({k:"delivered",label:pickup?(ar?"تم التسليم من الفرع":"Picked up at branch"):(ar?"تم التسليم":"Delivered"),at:st.delivered||""});
   if(o.status==="refunded") steps.push({k:"refunded",label:ar?"تم الاسترداد":"Refunded",at:st.refunded||st.cancelled||""});
   else if(o.status==="cancelled") steps.push({k:"cancelled",label:ar?"تم الإلغاء":"Cancelled",at:st.cancelled||""});
-  const curKey={pending:"created",paid:"paid",processing:"preparing",out:"out",done:"delivered",cancelled:"cancelled",refunded:"refunded"}[o.status]||"created";
+  const curKey={pending:"created",awaiting:"created",paid:"paid",processing:"preparing",out:"out",done:"delivered",cancelled:"cancelled",refunded:"refunded"}[o.status]||"created";
   const statusRank={created:0,paid:1,preparing:2,out:3,delivered:4,cancelled:5,refunded:5};
   const curRank=statusRank[curKey];
   const visible=steps.filter(x=>{ if(x.at) return true; if(x.optional) return false; if(terminal) return x.k==="created"||x.k===curKey; return true; });
@@ -2193,6 +2196,7 @@ function openOrder(id){
 }
 async function updateStatus(id,next){
  const o=orders.find(x=>x.id===id); if(!o)return;
+ if(o.status==="awaiting" && next!=="cancelled"){ toast(t('visaAutoConfirm'),true); return; }
  const seq=["pending","paid","processing","out","done"];
  const target=next||seq[Math.min(Math.max(seq.indexOf(o.status),0)+1,seq.length-1)];
  let action="change_status", extra={status:target};
@@ -2204,7 +2208,8 @@ async function updateStatus(id,next){
    $("#modal").classList.remove("open");
    await loadLiveData(false);
    const fresh=orders.find(x=>x.id===id);
-   toast(`${id} → ${statusMeta(fresh?.status||target).label}`+(result.stock_warning?` — ⚠️ ${result.stock_warning}`:""),!!result.stock_warning);
+   const warnTxt=[result.stock_warning,result.warning].filter(Boolean).join(" — ");
+    toast(`${id} → ${statusMeta(fresh?.status||target).label}`+(warnTxt?` — ⚠️ ${warnTxt}`:""),!!warnTxt);
  }else{
    renderOrders();
    if(currentSection==="home") renderHome();
