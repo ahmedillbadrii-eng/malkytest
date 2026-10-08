@@ -1890,6 +1890,10 @@ function applyLiveData(data){
       receipt_file_id:String(o.receipt_file_id||""),
       receipt_at:String(o.receipt_at||""),
       address:String(o.address||""),
+      zone:String(o.zone||""),
+      subtotal:Number(o.subtotal||0),
+      delivery_fee:Number(o.delivery_fee||0),
+      map_link:String(o.map_link||""),
       status_elapsed_seconds:Number(o.status_elapsed_seconds||0),
       status_elapsed_text:String(o.status_elapsed_text||""),
       status:normalizedStatus(o)
@@ -2406,11 +2410,22 @@ function toast(msg,isError){
   box.onclick=()=>{clearTimeout(box._timer);box.classList.remove("show");};
   box._timer=setTimeout(()=>box.classList.remove("show"),isError?5500:2600);
 }
+function renderOrderDelivery(o){
+  const ar=LANG==="ar";
+  const pickup=/استلام/.test(String(o.address||""));
+  const rows=[];
+  rows.push(`<div class="status-row"><span class="who">${ar?"طريقة الاستلام":"Fulfilment"}</span><b>${pickup?(ar?"استلام من الفرع":"Pickup"):(ar?"توصيل":"Delivery")}</b></div>`);
+  if(o.zone&&!pickup) rows.push(`<div class="status-row"><span class="who">${ar?"المنطقة":"Area"}</span><b>${escHtml(o.zone)}</b></div>`);
+  if(o.address) rows.push(`<div class="status-row"><span class="who">${ar?"العنوان":"Address"}</span><b style="white-space:normal;line-height:1.6">${escHtml(o.address)}</b></div>`);
+  const link=String(o.map_link||"");
+  if(/^https:\/\/(maps\.google\.com|www\.google\.com\/maps)/.test(link)) rows.push(`<div class="status-row"><span class="who">${ar?"اللوكيشن":"Location"}</span><a class="btn" href="${escHtml(link)}" target="_blank" rel="noopener">${ar?"افتح على الخريطة":"Open in Maps"}</a></div>`);
+  return rows.join("");
+}
 function openOrder(id){
   const o=orders.find(x=>x.id===id); if(!o) return;
   $("#modal").dataset.orderId=id;
   $("#modalTitle").textContent=`${t('orderDetailsPrefix')} ${o.id}`;
-  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div><div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div><div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div>${renderReceipt(o)}<div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-status-action="${escHtml(o.id)}" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button>${!['done','cancelled','refunded'].includes(o.status)?`<button class="btn" data-cancel-order="${escHtml(o.id)}"><svg><use href="#i-x"/></svg>${LANG==="ar"?"إلغاء الطلب":"Cancel order"}</button>`:""}${o.payment_status==="paid"&&!['done','refunded'].includes(o.status)?`<button class="btn" data-refund-order="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${LANG==="ar"?"استرداد المبلغ":"Refund"}</button>`:""}</div>`;
+  $("#modalContent").innerHTML=`<div class="status-list"><div class="status-row"><span class="who">${t('fieldCustomer')}</span><b>${escHtml(o.name)}</b></div><div class="status-row"><span class="who">${t('fieldPhone')}</span><b>${escHtml(o.phone)}</b></div><div class="status-row"><span class="who">${t('colTime')}</span><b>${escHtml(displayOrderDate(o))}</b></div><div class="status-row"><span class="who">${t('colChannel')}</span><b>${escHtml(channelLabel(o.channel))}</b></div><div class="status-row"><span class="who">${t('fieldBranch')}</span><b>${escHtml(o.branch)}</b></div>${renderOrderDelivery(o)}<div class="status-row"><span class="who">${t('fieldItems')}</span><b>${escHtml(o.items)}</b></div><div class="status-row"><span class="who">${t('fieldTotal')}</span><b>${money(o.total)}</b></div>${(o.delivery_fee>0||o.subtotal>0)?`<div class="status-row"><span class="who">${LANG==="ar"?"الأصناف (بدون توصيل)":"Items subtotal"}</span><b>${money(o.subtotal||Math.max(0,o.total-o.delivery_fee))}</b></div><div class="status-row"><span class="who">${LANG==="ar"?"التوصيل":"Delivery fee"}</span><b>${money(o.delivery_fee)}</b></div>`:""}<div class="status-row"><span class="who">${t('fieldPayment')}</span><b>${paymentLabel(o.payment)}</b></div><div class="status-row"><span class="who">${t('fieldStatus')}</span>${badgeStatus(o.status,o.id)}</div></div>${renderReceipt(o)}<div class="enterprise-note">${LANG==="ar"?"مسار الحالة":"Status timeline"}</div>${renderOrderTimeline(o)}<div class="actions" style="margin-top:18px">${o.status==="pending"?`<button class="btn success" data-confirm="${escHtml(o.id)}"><svg><use href="#i-check"/></svg>${t('confirmPaymentBtn')}</button>`:""}<button class="btn" data-status-action="${escHtml(o.id)}" aria-haspopup="menu" aria-expanded="false"><svg><use href="#i-refresh"/></svg>${t('changeStatusBtn')}</button>${!['done','cancelled','refunded'].includes(o.status)?`<button class="btn" data-cancel-order="${escHtml(o.id)}"><svg><use href="#i-x"/></svg>${LANG==="ar"?"إلغاء الطلب":"Cancel order"}</button>`:""}${o.payment_status==="paid"&&!['done','refunded'].includes(o.status)?`<button class="btn" data-refund-order="${escHtml(o.id)}"><svg><use href="#i-refresh"/></svg>${LANG==="ar"?"استرداد المبلغ":"Refund"}</button>`:""}</div>`;
   $("#modal").classList.add("open");
 }
 async function updateStatus(id,next){
