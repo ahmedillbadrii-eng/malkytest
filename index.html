@@ -1448,6 +1448,50 @@ html .kpi-ico{backdrop-filter:none}
 }
 @media (prefers-reduced-motion:reduce){html .kpis .kpi::before{display:none}}
 
+
+/* =====================================================================
+   PREMIUM POLISH layer — clearer type, cleaner hero, no clipped tables
+   ===================================================================== */
+/* clearer text: one step up from the compact layer, same fonts */
+html body{font-size:15px}
+html .title p{font-size:14px}
+html .card-head h2{font-size:16px}
+html .kpi-top{font-size:13.5px;font-weight:600}
+html .kpi .num{font-size:26px}
+html .trend{font-size:12.5px;font-weight:600}
+html .nav button{font-size:14.5px}
+html .nav-group,html .nav .group-label,html .nav-title{font-size:11.5px;font-weight:700;letter-spacing:.02em}
+html .btn{font-size:13.5px}
+html .table th{font-size:12.5px;font-weight:700;color:var(--muted)}
+html .table td{font-size:13.5px}
+html .table th,html .table td{padding:13px 12px}
+html .badge{font-size:12px}
+html .filters input,html .filters select,html .search-box input{font-size:14px}
+html .stock-info small,html .status-row .who small,html .integ-meta small{font-size:12.5px}
+/* tabular figures so amounts and counts line up */
+html .num,html .table td,html .badge,html .money{font-variant-numeric:tabular-nums}
+/* order ids and amounts never break across lines */
+html .order-id{white-space:nowrap}
+html .table td b{white-space:nowrap}
+/* items list: one item per line instead of one long run-on line */
+html #ordersTable td:nth-child(6){white-space:pre-line;line-height:1.7;min-width:220px}
+/* home "today's orders" table fits its card (status column was cut off) */
+html #homeOrders{display:table-row-group}
+html .card .table-wrap table:has(#homeOrders){min-width:0;width:100%}
+/* order rows: details + next step only; cancel / refund live in the order sheet */
+html #ordersTable .mini-actions [data-cancel-order],html #ordersTable .mini-actions [data-refund-order]{display:none}
+html #ordersTable .mini-actions{flex-wrap:nowrap}
+html #ordersTable td:nth-child(5){white-space:nowrap}
+/* sales hero: no stars, slimmer brand wave */
+html .kpis .kpi:nth-child(2){background:var(--hero)!important}
+html .kpis .kpi:nth-child(2)::after{border-top-width:5px;opacity:.75}
+/* placeholder button with no real action yet */
+html #quick{display:none!important}
+@media (max-width:860px){
+  html body{font-size:14.5px}
+  html .kpi .num{font-size:22px}
+  html .table td{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -1742,7 +1786,7 @@ html .kpi-ico{backdrop-filter:none}
         <div class="status-list">
           <div class="status-row"><span class="who" data-i18n="sessionState">حالة الجلسة</span><span class="badge b-green" id="sessionState">نشطة</span></div>
           <div class="status-row"><span class="who" data-i18n="permissionModel">نموذج الصلاحيات</span><b data-i18n="frontendOnly">واجهة فقط — يحتاج RBAC في backend</b></div>
-          <div class="status-row"><span class="who">n8n</span><span class="badge b-blue" id="activityN8n">—</span></div>
+          <div class="status-row"><span class="who" data-i18n="automationServer">خادم الأتمتة</span><span class="badge b-blue" id="activityN8n">—</span></div>
           <div class="status-row"><span class="who">Google Sheets</span><span class="badge b-blue" id="activityGs">—</span></div>
         </div>
       </div>
@@ -1753,15 +1797,9 @@ html .kpi-ico{backdrop-filter:none}
 <section id="reports" class="section" hidden>
 <div class="grid">
  <div class="card"><div class="card-head"><h2 data-i18n="perfSummaryTitle">ملخص الأداء</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who" data-i18n="avgOrderValue">متوسط قيمة الطلب</span><b id="repAov">—</b></div><div class="status-row"><span class="who" data-i18n="paymentRate">معدل الدفع</span><b id="repPayRate">—</b></div><div class="status-row"><span class="who" data-i18n="totalOrders">إجمالي الطلبات</span><b id="repTotalOrders">—</b></div><div class="status-row"><span class="who" data-i18n="delivered">تم التسليم</span><b id="repDone">—</b></div><div class="status-row"><span class="who" data-i18n="cancelledOrders">طلبات ملغاة</span><b id="repCancelled">—</b></div><div class="status-row"><span class="who" data-i18n="refundedTotal">إجمالي المسترد</span><b id="repRefundedAmount">—</b></div></div></div></div>
- <div class="card"><div class="card-head"><h2 data-i18n="integrationsTitle">التكاملات</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who">n8n Webhook</span><span class="badge b-blue" id="repN8n" data-i18n="readyToConnect">جاهز للربط</span></div><div class="status-row"><span class="who">Google Sheets</span><span class="badge b-blue" id="repGs" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">WhatsApp</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">Telegram</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div></div></div></div>
+ <div class="card"><div class="card-head"><h2 data-i18n="integrationsTitle">التكاملات</h2></div><div class="card-body"><div class="status-list"><div class="status-row"><span class="who" data-i18n="automationServer">خادم الأتمتة</span><span class="badge b-blue" id="repN8n" data-i18n="readyToConnect">جاهز للربط</span></div><div class="status-row"><span class="who">Google Sheets</span><span class="badge b-blue" id="repGs" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">WhatsApp</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div><div class="status-row"><span class="who">Telegram</span><span class="badge b-blue" data-i18n="notVerified">غير متحقق</span></div></div></div></div>
 </div>
-<div class="card"><div class="card-head"><h2 data-i18n="realConnectionPlanTitle">خطة الربط الحقيقية</h2></div><div class="card-body"><ol style="line-height:2.1;margin:0;padding-inline-start:20px;font-size:13.5px">
-  <li data-i18n="plan1">Dashboard API عبر n8n Webhook.</li>
-  <li data-i18n="plan2">قراءة الطلبات والمخزون والمدفوعات من Google Sheets.</li>
-  <li data-i18n="plan3">Actions لتأكيد الدفع وتغيير حالة الطلب.</li>
-  <li data-i18n="plan4">إرسال تحديث WhatsApp وTelegram من نفس الـworkflow.</li>
-  <li data-i18n="plan5">تسجيل كل Action في سجل العمليات Audit Log.</li>
-</ol></div></div>
+
 </section>
 </main>
 <nav class="m-bottomnav" id="mBottomNav">
@@ -1811,8 +1849,8 @@ const I18N = {
  ar:{
   brandWord:"المالكي", brandTag:"الأساسي · منذ 1917",
   navHome:"الرئيسية", navOrders:"الطلبات", navStock:"المخزون", navBranches:"الفروع", navCustomers:"العملاء", navPayments:"المدفوعات", navReports:"التقارير", navActivity:"سجل النشاط", notifications:"التنبيهات", export:"تصدير", advancedFilters:"فلاتر متقدمة", fromDate:"من تاريخ", toDate:"إلى تاريخ", channelFilter:"القناة", allChannels:"كل القنوات", manualChannel:"يدوي", paymentFilter:"طريقة الدفع", allPayments:"كل طرق الدفع", previous:"السابق", next:"التالي", activityTitle:"سجل النشاط", clearActivity:"مسح السجل", activityNote:"هذا السجل المحلي للواجهة الحالية. السجل المؤسسي الدائم يحتاج Audit Log في الـbackend.", securityOverview:"الأمان والصلاحيات", sessionState:"حالة الجلسة", permissionModel:"نموذج الصلاحيات", frontendOnly:"واجهة فقط — يحتاج RBAC في backend", cancel:"إلغاء", confirm:"تأكيد",
-  agentTitle:"وكيل n8n الذكي", agentWaiting:"جاري الاتصال بالوكيل…", agentOnline:"متصل ويستقبل الطلبات لحظيًا", agentOffline:"بانتظار أول استجابة من n8n",
-  liveConnecting:"جاري الاتصال بـ n8n…", liveOnline:"متصل بـ n8n — بيانات مباشرة", liveOffline:"تعذر الاتصال بـ n8n — لا توجد بيانات تجريبية معروضة",
+  agentTitle:"المساعد الذكي", agentWaiting:"جاري الاتصال بالوكيل…", agentOnline:"متصل ويستقبل الطلبات لحظيًا", agentOffline:"بانتظار أول استجابة",
+  liveConnecting:"جاري الاتصال…", liveOnline:"متصل — بيانات مباشرة", liveOffline:"تعذر الاتصال بالسيرفر — حاول تاني بعد لحظات",
   btnSync:"مزامنة الآن", btnAddOrder:"إضافة طلب", searchPlaceholder:"ابحث برقم الطلب، اسم العميل، الهاتف...",
   allBranches:"كل الفروع", allStatuses:"كل الحالات", statusPending:"قيد المراجعة", statusPaid:"مدفوع", statusProcessing:"قيد التجهيز", statusOut:"خرج للتوصيل", statusDone:"تم التسليم",
   btnClearFilters:"مسح الفلاتر",
@@ -1824,26 +1862,26 @@ const I18N = {
   titlePayments:"المدفوعات", subPayments:"مراجعة وتأكيد التحويلات",
   titleReports:"التقارير", subReports:"مؤشرات الأداء والتكاملات",
   kpiOrdersToday:"طلبات اليوم", kpiSalesToday:"مبيعات اليوم", kpiConfirmedPayments:"مدفوعات مؤكدة اليوم", kpiPending:"قيد الانتظار", kpiCancelled:"ملغاة اليوم", kpiRefundedAmount:"المسترد اليوم", kpiStockAlerts:"تنبيهات المخزون",
-  waitingData:"بانتظار البيانات", fromN8n:"من n8n", needsFollowUp:"تحتاج متابعة", allTimeMetric:"إجمالي حالي", todayMetric:"اليوم", currentAlerts:"تنبيهات حالية",
+  waitingData:"بانتظار البيانات", fromN8n:"تحديث لحظي", needsFollowUp:"تحتاج متابعة", allTimeMetric:"إجمالي حالي", todayMetric:"اليوم", currentAlerts:"تنبيهات حالية",
   unitTxn:"عملية", unitTxnConfirmed:"عملية مؤكدة",
-  weeklySalesTitle:"المبيعات خلال الأسبوع", legendSales:"المبيعات", chartEmpty:"بيانات المبيعات الأسبوعية هتظهر هنا أول ما يوصل تحديث من n8n",
+  weeklySalesTitle:"المبيعات خلال الأسبوع", legendSales:"المبيعات", chartEmpty:"مبيعات الأسبوع هتظهر هنا أول ما يوصل أول طلب",
   opStatusTitle:"حالة التشغيل", connected:"متصل", connecting:"جاري الاتصال", working:"يعمل", simulated:"محاكاة", lastSyncLabel:"آخر مزامنة",
   recentOrdersTitle:"أوردرات النهارده", viewAll:"عرض الكل", details:"التفاصيل", goodStatus:"جيد", alertStatus:"تنبيه", ordersUnit:"طلب", noOrdersToday:"لسه مفيش طلبات النهاردة",
-  agentActivityTitle:"نشاط الوكيل الذكي", agentActivityEmpty:"لسه مفيش نشاط مسجل للوكيل الذكي — هيظهر هنا أول ما يبدأ يرد على العملاء عبر n8n",
+  agentActivityTitle:"نشاط الوكيل الذكي", agentActivityEmpty:"لسه مفيش نشاط للمساعد الذكي — هيظهر هنا أول ما يبدأ يرد على العملاء",
   ordersManageTitle:"إدارة الطلبات", colOrder:"الطلب", colTime:"التاريخ والوقت", colChannel:"القناة", colCustomer:"العميل", colBranch:"الفرع", colItems:"الأصناف", colTotal:"الإجمالي", colPayment:"الدفع", colStatus:"الحالة", colAction:"إجراء",
   actionDetails:"تفاصيل", actionConfirm:"تأكيد", actionNext:"التالي", noMatchingOrders:"لا توجد طلبات مطابقة",
-  criticalItemsTitle:"أصناف حرجة", topItemsTitle:"أفضل الأصناف", stockSummaryTitle:"ملخص المخزون", unitsAvailable:"وحدة متاحة", topItemsEmpty:"الأصناف الأكثر طلبًا هتظهر هنا بعد أول تحديث من n8n",
+  criticalItemsTitle:"أصناف حرجة", topItemsTitle:"أفضل الأصناف", stockSummaryTitle:"ملخص المخزون", unitsAvailable:"وحدة متاحة", unitsSold:"قطعة مباعة", topItemsEmpty:"الأصناف الأكثر طلبًا هتظهر هنا أول ما يوصل أول طلب",
   branchPerformanceTitle:"أداء الفروع", colOrdersToday:"طلبات اليوم", colSales:"المبيعات", colProcessing:"قيد التجهيز",
   colPhone:"الهاتف", colOrderCount:"عدد الطلبات", colTotalSpend:"إجمالي الإنفاق", colLastOrder:"آخر طلب",
-  paymentStatusTitle:"حالة المدفوعات", totalPaid:"إجمالي المدفوع", confirmedLabel:"مؤكد", pendingReviewLabel:"قيد المراجعة", paymentsEmpty:"هتظهر هنا حالة المدفوعات أول ما يوصل أول طلب من n8n",
+  paymentStatusTitle:"حالة المدفوعات", totalPaid:"إجمالي المدفوع", confirmedLabel:"مؤكد", pendingReviewLabel:"قيد المراجعة", paymentsEmpty:"هتظهر هنا حالة المدفوعات أول ما يوصل أول طلب",
   needsReviewTitle:"عمليات تحتاج مراجعة", noPendingReview:"مفيش عمليات محتاجة مراجعة دلوقتي", channelsTitle:"قنوات الدفع", channelsEmpty:"توزيع قنوات الدفع هيظهر هنا بعد أول طلب",
   perfSummaryTitle:"ملخص الأداء", avgOrderValue:"متوسط قيمة الطلب", paymentRate:"معدل الدفع", totalOrders:"إجمالي الطلبات", delivered:"تم التسليم", cancelledOrders:"طلبات ملغاة", refundedTotal:"إجمالي المسترد",
-  integrationsTitle:"التكاملات", readyToConnect:"جاهز للربط", connectedWorking:"متصل ويعمل", notVerified:"غير متحقق",
+  integrationsTitle:"التكاملات", automationServer:"خادم الأتمتة", readyToConnect:"جاهز للربط", connectedWorking:"متصل ويعمل", notVerified:"غير متحقق",
   realConnectionPlanTitle:"خطة الربط الحقيقية",
   plan1:"Dashboard API عبر n8n Webhook.", plan2:"قراءة الطلبات والمخزون والمدفوعات من Google Sheets.", plan3:"Actions لتأكيد الدفع وتغيير حالة الطلب.", plan4:"إرسال تحديث WhatsApp وTelegram من نفس الـworkflow.", plan5:"تسجيل كل Action في سجل العمليات Audit Log.",
   fieldCustomer:"العميل", fieldPhone:"الهاتف", fieldBranch:"الفرع", fieldItems:"الأصناف", fieldTotal:"الإجمالي", fieldPayment:"الدفع", fieldStatus:"الحالة",
   orderDetailsPrefix:"تفاصيل", confirmPaymentBtn:"تأكيد الفلوس وصلت", changeStatusBtn:"تغيير الحالة",
-  toastLiveDataFetched:"تم جلب البيانات من n8n", toastCantConnect:"تعذر الاتصال بـ n8n", toastActionFailed:"تعذر تنفيذ العملية على n8n",
+  toastLiveDataFetched:"تم تحديث البيانات", toastCantConnect:"تعذر الاتصال بالسيرفر", toastActionFailed:"تعذر تنفيذ العملية، حاول تاني",
   toastFiltersCleared:"تم مسح الفلاتر", toastQuickAdd:"من هنا نقدر لاحقًا نربط إنشاء الطلب بـn8n",
   newOrderToast:"طلب جديد", newOrderNotifTitle:"طلب جديد — المالكي", enableNotifsToast:"فعّلنا تنبيهات الطلبات الجديدة",
   cash:"كاش", visa:"فيزا", statusAwaiting:"في انتظار الدفع", visaAutoConfirm:"دفع الفيزا بيتأكد تلقائياً من Paymob", currency:"ج",
@@ -1862,8 +1900,8 @@ const I18N = {
  en:{
   brandWord:"El Malky", brandTag:"Since 1917",
   navHome:"Home", navOrders:"Orders", navStock:"Stock", navBranches:"Branches", navCustomers:"Customers", navPayments:"Payments", navReports:"Reports", navActivity:"Activity Log", notifications:"Notifications", export:"Export", advancedFilters:"Advanced filters", fromDate:"From date", toDate:"To date", channelFilter:"Channel", allChannels:"All channels", manualChannel:"Manual", paymentFilter:"Payment method", allPayments:"All payment methods", previous:"Previous", next:"Next", activityTitle:"Activity log", clearActivity:"Clear log", activityNote:"This is a local UI session log. Persistent enterprise audit logging requires a backend Audit Log.", securityOverview:"Security & permissions", sessionState:"Session state", permissionModel:"Permission model", frontendOnly:"Frontend only — backend RBAC required", cancel:"Cancel", confirm:"Confirm",
-  agentTitle:"n8n AI Agent", agentWaiting:"Connecting to the agent…", agentOnline:"Connected — receiving orders live", agentOffline:"Waiting for the first response from n8n",
-  liveConnecting:"Connecting to n8n…", liveOnline:"Connected to n8n — live data", liveOffline:"Couldn't connect to n8n — no demo data is shown",
+  agentTitle:"AI Assistant", agentWaiting:"Connecting to the agent…", agentOnline:"Connected — receiving orders live", agentOffline:"Waiting for the first response",
+  liveConnecting:"Connecting…", liveOnline:"Connected — live data", liveOffline:"Couldn't reach the server — try again in a moment",
   btnSync:"Sync now", btnAddOrder:"Add order", searchPlaceholder:"Search by order ID, customer name, phone...",
   allBranches:"All branches", allStatuses:"All statuses", statusPending:"Pending", statusPaid:"Paid", statusProcessing:"Processing", statusOut:"Out for delivery", statusDone:"Delivered",
   btnClearFilters:"Clear filters",
@@ -1875,26 +1913,26 @@ const I18N = {
   titlePayments:"Payments", subPayments:"Review and confirm transfers",
   titleReports:"Reports", subReports:"Performance metrics and integrations",
   kpiOrdersToday:"Orders today", kpiSalesToday:"Sales today", kpiConfirmedPayments:"Confirmed today", kpiPending:"Pending", kpiCancelled:"Cancelled today", kpiRefundedAmount:"Refunded today", kpiStockAlerts:"Stock alerts",
-  waitingData:"Waiting for data", fromN8n:"from n8n", needsFollowUp:"needs follow-up", allTimeMetric:"Current total", todayMetric:"Today", currentAlerts:"current alerts",
+  waitingData:"Waiting for data", fromN8n:"Live", needsFollowUp:"needs follow-up", allTimeMetric:"Current total", todayMetric:"Today", currentAlerts:"current alerts",
   unitTxn:"txns", unitTxnConfirmed:"confirmed",
-  weeklySalesTitle:"Sales this week", legendSales:"Sales", chartEmpty:"Weekly sales will appear here once n8n sends an update",
+  weeklySalesTitle:"Sales this week", legendSales:"Sales", chartEmpty:"Weekly sales will appear here once the first order arrives",
   opStatusTitle:"Operational status", connected:"Connected", connecting:"Connecting", working:"Working", simulated:"Simulated", lastSyncLabel:"Last sync",
   recentOrdersTitle:"Today's orders", viewAll:"View all", details:"Details", goodStatus:"Good", alertStatus:"Alert", ordersUnit:"orders", noOrdersToday:"No orders yet today",
-  agentActivityTitle:"AI agent activity", agentActivityEmpty:"No agent activity logged yet — it'll appear here once it starts replying to customers via n8n",
+  agentActivityTitle:"AI agent activity", agentActivityEmpty:"No assistant activity yet — it'll appear here once it starts replying to customers",
   ordersManageTitle:"Manage orders", colOrder:"Order", colTime:"Date & time", colChannel:"Channel", colCustomer:"Customer", colBranch:"Branch", colItems:"Items", colTotal:"Total", colPayment:"Payment", colStatus:"Status", colAction:"Action",
   actionDetails:"Details", actionConfirm:"Confirm", actionNext:"Next", noMatchingOrders:"No matching orders",
-  criticalItemsTitle:"Critical items", topItemsTitle:"Top items", stockSummaryTitle:"Stock summary", unitsAvailable:"units available", topItemsEmpty:"Most-ordered items will appear here after the first update from n8n",
+  criticalItemsTitle:"Critical items", topItemsTitle:"Top items", stockSummaryTitle:"Stock summary", unitsAvailable:"units available", unitsSold:"sold", topItemsEmpty:"Most-ordered items will appear here once the first order arrives",
   branchPerformanceTitle:"Branch performance", colOrdersToday:"Orders today", colSales:"Sales", colProcessing:"Processing",
   colPhone:"Phone", colOrderCount:"Orders", colTotalSpend:"Total spend", colLastOrder:"Last order",
-  paymentStatusTitle:"Payment status", totalPaid:"Total paid", confirmedLabel:"Confirmed", pendingReviewLabel:"Pending review", paymentsEmpty:"Payment status will appear here once the first order arrives from n8n",
+  paymentStatusTitle:"Payment status", totalPaid:"Total paid", confirmedLabel:"Confirmed", pendingReviewLabel:"Pending review", paymentsEmpty:"Payment status will appear here once the first order arrives",
   needsReviewTitle:"Needs review", noPendingReview:"Nothing needs review right now", channelsTitle:"Payment channels", channelsEmpty:"Payment channel breakdown will appear here after the first order",
   perfSummaryTitle:"Performance summary", avgOrderValue:"Average order value", paymentRate:"Payment rate", totalOrders:"Total orders", delivered:"Delivered", cancelledOrders:"Cancelled orders", refundedTotal:"Total refunded",
-  integrationsTitle:"Integrations", readyToConnect:"Ready to connect", connectedWorking:"Connected & working", notVerified:"Not verified",
+  integrationsTitle:"Integrations", automationServer:"Automation server", readyToConnect:"Ready to connect", connectedWorking:"Connected & working", notVerified:"Not verified",
   realConnectionPlanTitle:"Real integration plan",
   plan1:"Dashboard API through an n8n Webhook.", plan2:"Read orders, stock and payments from Google Sheets.", plan3:"Actions to confirm payment and change order status.", plan4:"Send WhatsApp and Telegram updates from the same workflow.", plan5:"Log every action in an audit trail.",
   fieldCustomer:"Customer", fieldPhone:"Phone", fieldBranch:"Branch", fieldItems:"Items", fieldTotal:"Total", fieldPayment:"Payment", fieldStatus:"Status",
   orderDetailsPrefix:"Details for", confirmPaymentBtn:"Confirm payment received", changeStatusBtn:"Change status",
-  toastLiveDataFetched:"Data fetched from n8n", toastCantConnect:"Couldn't connect to n8n", toastActionFailed:"Couldn't complete the action on n8n",
+  toastLiveDataFetched:"Data refreshed", toastCantConnect:"Couldn't reach the server", toastActionFailed:"Couldn't complete the action, please try again",
   toastFiltersCleared:"Filters cleared", toastQuickAdd:"This is where creating an order will connect to n8n",
   newOrderToast:"New order", newOrderNotifTitle:"New order — El Malky", enableNotifsToast:"New-order alerts enabled",
   cash:"Cash", visa:"Visa", statusAwaiting:"Awaiting payment", visaAutoConfirm:"Visa payments are confirmed automatically by Paymob", currency:"EGP",
@@ -1926,9 +1964,14 @@ function channelLabel(c){
 function displayOrderDate(o){
   const raw=String(o.created_at||o.createdAt||'').trim();
   if(!raw) return String(o.time||'—');
-  const d=new Date(raw);
-  if(!Number.isNaN(d.getTime()) && /[-T:]/.test(raw)){
-    return d.toLocaleString(LANG==='ar'?'ar-EG':'en-US',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const loc=LANG==='ar'?'ar-EG-u-nu-latn':'en-US';
+  // The sheet stores "dd/mm/yyyy HH:MM"; new Date() would read it as month/day.
+  const m=raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2}))?/);
+  const d=m?new Date(+m[3],+m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)):new Date(raw);
+  if(!Number.isNaN(d.getTime()) && (m || /[-T:]/.test(raw))){
+    const sameYear=d.getFullYear()===new Date().getFullYear();
+    const day=d.toLocaleDateString(loc,sameYear?{day:'numeric',month:'short'}:{day:'numeric',month:'short',year:'numeric'});
+    return (m && !m[4]) ? day : day+' · '+d.toLocaleTimeString(loc,{hour:'numeric',minute:'2-digit'});
   }
   return raw;
 }
@@ -2555,8 +2598,22 @@ function renderStock(){
   $("#stockSummary").innerHTML=list.length?`<div class="kpi" style="box-shadow:none;padding:0"><div class="num">${total.toLocaleString("en-US")}</div><div class="trend">${t('unitsAvailable')}</div><div class="progress" style="margin-top:18px"><b data-w="${Math.min(100,Math.round(total/maxTotal*100))}"></b></div></div>`:`<div class="panel-empty"><svg><use href="#i-box"/></svg>${t('waitingData')}</div>`;
   requestAnimationFrame(()=>{const b=document.querySelector("#stockSummary .progress b");if(b)b.style.width=b.dataset.w+"%"});
 }
+function topItemsFromOrders(){
+  const acc={};
+  orders.forEach(o=>{
+    if(["cancelled","refunded","awaiting"].includes(o.status)) return;
+    String(o.items||"").split(/\n+/).forEach(line=>{
+      const m=line.replace(/^[•\-*\s]+/,"").match(/^(.*?)\s*[×xX]\s*(\d+)/);
+      if(!m) return;
+      const name=m[1].trim(); if(!name) return;
+      acc[name]=(acc[name]||0)+parseInt(m[2],10);
+    });
+  });
+  return Object.keys(acc).map(k=>({name:k,count:acc[k]})).sort((a,b)=>b.count-a.count);
+}
 function renderTopItems(){
   const box=$("#topItems");
+  if(!topItems.length && orders.length){ const list=topItemsFromOrders(); if(list.length){ box.innerHTML=list.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${escHtml(it.name)}</strong><small>${it.count.toLocaleString("en-US")} ${t('unitsSold')}</small></div></div>`).join(""); return; } }
   if(!topItems.length){ box.innerHTML=`<div class="panel-empty"><svg><use href="#i-star"/></svg>${t('topItemsEmpty')}</div>`; return; }
   box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${escHtml(it.name)}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
@@ -2623,7 +2680,9 @@ function renderReports(){
   const label=x=>x?.status==="connected"?(LANG==="ar"?"متصل":"Connected"):x?.status==="unknown"?(LANG==="ar"?"غير متحقق":"Not verified"):(x?.status||"—");
   const cls=x=>x?.status==="connected"?"green":x?.status==="unknown"?"yellow":"red";
   [["repN8n","n8n"],["repGs","google_sheets"]].forEach(([id,key])=>{const el=$("#"+id),x=get(key);if(el){el.textContent=label(x);el.className="badge b-"+cls(x);}});
-  document.querySelectorAll("#reports .status-list .status-row").forEach(row=>{const who=row.querySelector(".who")?.textContent?.trim();const key=who==="WhatsApp"?"whatsapp":who==="Telegram"?"telegram":null;if(key){const x=get(key),b=row.querySelector(".badge");if(b){b.textContent=label(x);b.className="badge b-"+cls(x);}}});
+  document.querySelectorAll("#reports .status-list .status-row").forEach(row=>{const who=row.querySelector(".who")?.textContent?.trim();const key=who==="WhatsApp"?"whatsapp":who==="Telegram"?"telegram":null;if(key){let x=get(key);const b=row.querySelector(".badge");
+    // WhatsApp / Telegram run through the automation server, so an unverified status follows it (same as the home page).
+    if(!x||x.status==="unknown") x=get("n8n")||x;if(b){b.textContent=label(x);b.className="badge b-"+cls(x);}}});
 }
 function renderAll(){renderHome();renderStock();renderTopItems();renderBranches();renderCustomers();renderPayments();renderReports();renderOrders();}
 
