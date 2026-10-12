@@ -1693,7 +1693,7 @@ html .kpi-ico{backdrop-filter:none}
   </div></div>
 </div>
 <div class="grid">
-  <div class="card"><div class="card-head"><h2 data-i18n="recentOrdersTitle">آخر الطلبات</h2><button class="btn" data-go="orders"><span data-i18n="viewAll">عرض الكل</span></button></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th></tr></thead><tbody id="homeOrders"></tbody></table></div></div>
+  <div class="card"><div class="card-head"><h2 data-i18n="recentOrdersTitle">أوردرات النهارده</h2><button class="btn" data-go="orders"><span data-i18n="viewAll">عرض الكل</span></button></div><div class="table-wrap"><table class="table"><thead><tr><th data-i18n="colOrder">الطلب</th><th data-i18n="colCustomer">العميل</th><th data-i18n="colBranch">الفرع</th><th data-i18n="colTotal">الإجمالي</th><th data-i18n="colPayment">الدفع</th><th data-i18n="colStatus">الحالة</th></tr></thead><tbody id="homeOrders"></tbody></table></div></div>
   <div class="card"><div class="card-head"><h2 data-i18n="navBranches">الفروع</h2><button class="btn" data-go="branches"><span data-i18n="details">التفاصيل</span></button></div><div class="card-body" id="branchSummary"></div></div>
 </div>
 </section>
@@ -1828,7 +1828,7 @@ const I18N = {
   unitTxn:"عملية", unitTxnConfirmed:"عملية مؤكدة",
   weeklySalesTitle:"المبيعات خلال الأسبوع", legendSales:"المبيعات", chartEmpty:"بيانات المبيعات الأسبوعية هتظهر هنا أول ما يوصل تحديث من n8n",
   opStatusTitle:"حالة التشغيل", connected:"متصل", connecting:"جاري الاتصال", working:"يعمل", simulated:"محاكاة", lastSyncLabel:"آخر مزامنة",
-  recentOrdersTitle:"آخر الطلبات", viewAll:"عرض الكل", details:"التفاصيل", goodStatus:"جيد", alertStatus:"تنبيه", ordersUnit:"طلب", noOrdersToday:"لسه مفيش طلبات النهاردة",
+  recentOrdersTitle:"أوردرات النهارده", viewAll:"عرض الكل", details:"التفاصيل", goodStatus:"جيد", alertStatus:"تنبيه", ordersUnit:"طلب", noOrdersToday:"لسه مفيش طلبات النهاردة",
   agentActivityTitle:"نشاط الوكيل الذكي", agentActivityEmpty:"لسه مفيش نشاط مسجل للوكيل الذكي — هيظهر هنا أول ما يبدأ يرد على العملاء عبر n8n",
   ordersManageTitle:"إدارة الطلبات", colOrder:"الطلب", colTime:"التاريخ والوقت", colChannel:"القناة", colCustomer:"العميل", colBranch:"الفرع", colItems:"الأصناف", colTotal:"الإجمالي", colPayment:"الدفع", colStatus:"الحالة", colAction:"إجراء",
   actionDetails:"تفاصيل", actionConfirm:"تأكيد", actionNext:"التالي", noMatchingOrders:"لا توجد طلبات مطابقة",
@@ -1879,7 +1879,7 @@ const I18N = {
   unitTxn:"txns", unitTxnConfirmed:"confirmed",
   weeklySalesTitle:"Sales this week", legendSales:"Sales", chartEmpty:"Weekly sales will appear here once n8n sends an update",
   opStatusTitle:"Operational status", connected:"Connected", connecting:"Connecting", working:"Working", simulated:"Simulated", lastSyncLabel:"Last sync",
-  recentOrdersTitle:"Recent orders", viewAll:"View all", details:"Details", goodStatus:"Good", alertStatus:"Alert", ordersUnit:"orders", noOrdersToday:"No orders yet today",
+  recentOrdersTitle:"Today's orders", viewAll:"View all", details:"Details", goodStatus:"Good", alertStatus:"Alert", ordersUnit:"orders", noOrdersToday:"No orders yet today",
   agentActivityTitle:"AI agent activity", agentActivityEmpty:"No agent activity logged yet — it'll appear here once it starts replying to customers via n8n",
   ordersManageTitle:"Manage orders", colOrder:"Order", colTime:"Date & time", colChannel:"Channel", colCustomer:"Customer", colBranch:"Branch", colItems:"Items", colTotal:"Total", colPayment:"Payment", colStatus:"Status", colAction:"Action",
   actionDetails:"Details", actionConfirm:"Confirm", actionNext:"Next", noMatchingOrders:"No matching orders",
@@ -2430,8 +2430,13 @@ function renderAgentFeed(){
 }
 function renderHome(){
  const br=$("#branch").value;
- const homeArr=filteredOrders().filter(o=>!["cancelled","refunded"].includes(o.status));
- $("#homeOrders").innerHTML=homeArr.slice(0,5).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
+ const dayStart=new Date(); dayStart.setHours(0,0,0,0);
+ const dayEnd=dayStart.getTime()+86400000;
+ const homeArr=filteredOrders()
+   .filter(o=>!["cancelled","refunded"].includes(o.status))
+   .filter(o=>{ const d=orderDateValue(o); return d>=dayStart.getTime() && d<dayEnd; })
+   .sort((a,b)=>orderDateValue(b)-orderDateValue(a));
+ $("#homeOrders").innerHTML=homeArr.slice(0,50).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
  const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
  if(br==="all"){
    const totalOrders=branchList.reduce((sum,b)=>sum+(Number(b.orders)||0),0);
