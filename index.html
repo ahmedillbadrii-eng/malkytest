@@ -1452,13 +1452,19 @@ html .kpi-ico{backdrop-filter:none}
 /* =====================================================================
    PREMIUM POLISH layer — clearer type, cleaner hero, no clipped tables
    ===================================================================== */
-/* clearer text: one step up from the compact layer, same fonts */
-html body{font-size:15px}
+/* clearer text: one step up from the compact layer, same fonts, heavier strokes and darker greys */
+:root,html[data-theme="light"]{--muted:#3E5677;--muted-2:#5B7294}
+html[data-theme="dark"]{--muted:#BCCDE6;--muted-2:#94AACB}
+html body{font-size:15px;font-weight:500}
+html .table td{font-weight:500;color:var(--ink)}
+html .table td small{font-weight:500}
+html .title p{font-weight:500}
+html .nav button{font-weight:600}
 html .title p{font-size:14px}
 html .card-head h2{font-size:16px}
-html .kpi-top{font-size:13.5px;font-weight:600}
+html .kpi-top{font-size:13.5px;font-weight:700}
 html .kpi .num{font-size:26px}
-html .trend{font-size:12.5px;font-weight:600}
+html .trend{font-size:12.5px;font-weight:700}
 html .nav button{font-size:14.5px}
 html .nav-group,html .nav .group-label,html .nav-title{font-size:11.5px;font-weight:700;letter-spacing:.02em}
 html .btn{font-size:13.5px}
@@ -1482,6 +1488,7 @@ html .card .table-wrap table:has(#homeOrders){min-width:0;width:100%}
 html #ordersTable .mini-actions [data-cancel-order],html #ordersTable .mini-actions [data-refund-order]{display:none}
 html #ordersTable .mini-actions{flex-wrap:nowrap}
 html #ordersTable td:nth-child(5){white-space:nowrap}
+html #ordersTable td:nth-child(4){min-width:130px}
 /* sales hero: no stars, slimmer brand wave */
 html .kpis .kpi:nth-child(2){background:var(--hero)!important}
 html .kpis .kpi:nth-child(2)::after{border-top-width:5px;opacity:.75}
@@ -2845,6 +2852,10 @@ function showSection(id){
   if(id==="payments") renderPayments();
   if(id==="reports") renderReports();
   if(id==="activity") renderActivity();
+  // A new page always opens at its top, not at the scroll position of the previous one
+  // (again after the next paint, once the new page's content has its final height).
+  const toTop=()=>{ try{ window.scrollTo({top:0,left:0,behavior:"instant"}); }catch(e){ window.scrollTo(0,0); } };
+  toTop(); requestAnimationFrame(()=>requestAnimationFrame(toTop));
 }
 function toast(msg,isError){
   const box=$("#toast");
