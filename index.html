@@ -2426,7 +2426,7 @@ function renderAgentFeed(){
     box.innerHTML=`<div class="panel-empty"><svg><use href="#i-bot"/></svg>${t('agentActivityEmpty')}</div>`;
     return;
   }
-  box.innerHTML=agentLog.slice(0,6).map((a,i)=>`<div class="agent-feed-item" style="animation-delay:${i*40}ms"><div class="agent-feed-ico"><svg><use href="#i-bot"/></svg></div><div class="agent-feed-body"><b>${a.title}</b><span>${a.detail}${a.time?" • "+a.time:""}</span></div></div>`).join("");
+  box.innerHTML=agentLog.slice(0,6).map((a,i)=>`<div class="agent-feed-item" style="animation-delay:${i*40}ms"><div class="agent-feed-ico"><svg><use href="#i-bot"/></svg></div><div class="agent-feed-body"><b>${escHtml(a.title)}</b><span>${escHtml(a.detail)}${a.time?" • "+escHtml(a.time):""}</span></div></div>`).join("");
 }
 function renderHome(){
  const br=$("#branch").value;
@@ -2436,7 +2436,7 @@ function renderHome(){
    .filter(o=>!["cancelled","refunded"].includes(o.status))
    .filter(o=>{ const d=orderDateValue(o); return d>=dayStart.getTime() && d<dayEnd; })
    .sort((a,b)=>orderDateValue(b)-orderDateValue(a));
- $("#homeOrders").innerHTML=homeArr.slice(0,50).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${o.id}</span></td><td>${o.name}</td><td>${prettyBranch(o.branch)}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
+ $("#homeOrders").innerHTML=homeArr.slice(0,50).map((o,i)=>`<tr style="animation-delay:${i*30}ms"><td><span class="order-id">${escHtml(o.id)}</span></td><td>${escHtml(o.name)}</td><td>${escHtml(prettyBranch(o.branch))}</td><td>${money(o.total)}</td><td>${paymentLabel(o.payment)}</td><td>${badgeStatus(o.status)}</td></tr>`).join("")||`<tr><td colspan="6" class="empty">${t('noOrdersToday')}</td></tr>`;
  const branchList=br==="all"?branches:branches.filter(b=>b.name===br);
  if(br==="all"){
    const totalOrders=branchList.reduce((sum,b)=>sum+(Number(b.orders)||0),0);
@@ -2558,7 +2558,7 @@ function renderStock(){
 function renderTopItems(){
   const box=$("#topItems");
   if(!topItems.length){ box.innerHTML=`<div class="panel-empty"><svg><use href="#i-star"/></svg>${t('topItemsEmpty')}</div>`; return; }
-  box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${it.name}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
+  box.innerHTML=topItems.slice(0,6).map((it,i)=>`<div class="stock-item"><span class="rank-badge">${i+1}</span><div class="stock-info"><strong>${escHtml(it.name)}</strong><small>${it.count.toLocaleString("en-US")} ${t('ordersUnit')}</small></div></div>`).join("");
 }
 function renderBranches(){
  const br=$("#branch").value;
@@ -2595,7 +2595,7 @@ function renderCustomers(){
     map[key].last_order=o.id;
   });
   const list=Object.values(map);
-  $("#customersTable").innerHTML=list.length?list.map(c=>`<tr><td><b>${c.name||"—"}</b></td><td>${c.phone||"—"}</td><td>${c.orders}</td><td>${money(c.spending)}</td><td>${c.last_order}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">${t('noMatchingOrders')}</td></tr>`;
+  $("#customersTable").innerHTML=list.length?list.map(c=>`<tr><td><b>${escHtml(c.name||"—")}</b></td><td>${escHtml(c.phone||"—")}</td><td>${escHtml(c.orders)}</td><td>${money(c.spending)}</td><td>${escHtml(c.last_order)}</td></tr>`).join(""):`<tr><td colspan="5" class="empty">${t('noMatchingOrders')}</td></tr>`;
 }
 function renderPayments(){
   const scoped=filteredOrders();
@@ -2603,7 +2603,7 @@ function renderPayments(){
   const pending=scoped.filter(o=>o.status==="pending"), refundedOrders=scoped.filter(o=>o.status==="refunded");
   const refundedAmount=refundedOrders.reduce((sum,o)=>sum+(Number(o.total)||0),0), totalPaid=paidLike.reduce((sum,o)=>sum+(Number(o.total)||0),0);
   $("#paymentStats").innerHTML=scoped.length?`<div class="status-list"><div class="status-row"><span class="who">${t('totalPaid')}</span><b>${money(totalPaid)}</b></div><div class="status-row"><span class="who">${t('confirmedLabel')}</span><span class="badge b-green">${paidLike.length}</span></div><div class="status-row"><span class="who">${t('pendingReviewLabel')}</span><span class="badge b-yellow">${pending.length}</span></div><div class="status-row"><span class="who">${t('statusAwaiting')}</span><span class="badge b-yellow">${scoped.filter(o=>o.status==="awaiting").length}</span></div><div class="status-row"><span class="who">${t('refundedTotal')}</span><b>${money(refundedAmount)}</b></div></div>`:`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('paymentsEmpty')}</div>`;
-  $("#paymentPending").innerHTML=pending.length?pending.map(o=>`<div class="status-row" style="margin-bottom:8px"><span class="who"><b>${o.id}</b><br><small style="font-weight:400">${o.name} • ${money(o.total)}</small></span><button class="mini green" data-confirm="${o.id}">${t('actionConfirm')}</button></div>`).join(""):`<div class="panel-empty" style="padding:14px"><svg><use href="#i-check"/></svg>${t('noPendingReview')}</div>`;
+  $("#paymentPending").innerHTML=pending.length?pending.map(o=>`<div class="status-row" style="margin-bottom:8px"><span class="who"><b>${escHtml(o.id)}</b><br><small style="font-weight:400">${escHtml(o.name)} • ${money(o.total)}</small></span><button class="mini green" data-confirm="${escHtml(o.id)}">${t('actionConfirm')}</button></div>`).join(""):`<div class="panel-empty" style="padding:14px"><svg><use href="#i-check"/></svg>${t('noPendingReview')}</div>`;
   const activeChannels=scoped.filter(o=>!["cancelled","refunded","awaiting"].includes(o.status)), insta=activeChannels.filter(o=>o.payment==="instapay").length, cash=activeChannels.filter(o=>o.payment==="cash").length, visaN=activeChannels.filter(o=>o.payment==="visa").length, tot=activeChannels.length;
   if(!tot){$("#paymentChannels").innerHTML=`<div class="panel-empty"><svg><use href="#i-wallet"/></svg>${t('channelsEmpty')}</div>`;return;}
   const pi=Math.round(insta/tot*100),pc=Math.round(cash/tot*100),pv=Math.round(visaN/tot*100);
