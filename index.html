@@ -1502,6 +1502,26 @@ html #quick{display:none!important}
   html .kpi .num{font-size:20px}
   html .table td{font-size:12px}
 }
+/* search fix: keep the filter bar (and its dropdown) above the page content; search only on Home/Orders */
+html .filters{position:relative;z-index:30}
+.filters.no-search #search,.filters.no-search .search-ico,.filters.no-search .search-kbd,.filters.no-search .search-clear,.filters.no-search .search-pop{display:none!important}
+.filters.no-search .search-box{display:none}
+@media(max-width:860px){.filters.no-search .search-box{display:block;flex:1 1 100%;min-height:38px}}
+/* mobile order cards: a later desktop rule (html .table td{padding:11px 10px}) leaked into cards and doubled their height */
+@media(max-width:860px){
+html .table td{padding:0;border-bottom:0}
+html .table tbody tr{gap:10px 12px;padding:14px}
+html #ordersTable td:nth-child(6){min-width:0}
+html #ordersTable td:nth-child(2){width:auto;max-width:none}
+html .table td .badge{align-self:flex-start}
+}
+/* polish: sales card wave no longer touches its caption; low-stock first; tidier mobile cards/spacing */
+html .kpis .kpi:nth-child(2){padding-bottom:34px}
+@media(max-width:860px){
+html .filters{margin-top:8px}
+html .table td:last-child:has(.mini-actions){flex-direction:row;align-items:center;justify-content:space-between}
+html .table td:last-child:has(.mini-actions) .mini-actions{margin-top:0}
+}
 </style>
 </head>
 <body>
@@ -2597,7 +2617,7 @@ function renderStock(){
   if(!list.length){
     $("#criticalStock").innerHTML=`<div class="panel-empty"><svg><use href="#i-box"/></svg>${t('waitingData')}</div>`;
   }else{
-    $("#criticalStock").innerHTML=list.map(s=>{
+    $("#criticalStock").innerHTML=[...list].sort((a,b)=>isLowStock(b)-isLowStock(a)).map(s=>{
       const p=Number(s.qty)/maxOf(s)*100,c=(Number(s.qty)||0)<=2?"danger":isLowStock(s)?"warn":"";
       const canEdit=!!(s.item_id&&s.branch&&br!=="all");
       return `<div class="stock-item${isLowStock(s)?' low':''}"><div class="stock-info"><strong>${escHtml(s.name)}</strong><small>${Number(s.qty).toLocaleString('en-US')} ${t('unitsAvailable')}${br==="all"?' · '+t('allBranches'):s.branch?' · '+escHtml(prettyBranch(s.branch)):''}</small><div class="progress"><b class="${c}" data-w="${Math.max(p,3)}"></b></div></div>${canEdit?`<button type="button" class="stock-edit" data-stock-edit="${escHtml(s.item_id)}" data-stock-branch="${escHtml(s.branch)}" title="${t('adjustStock')}"><svg><use href="#i-plus"/></svg><span>${t('adjustShort')}</span></button>`:''}</div>`;
@@ -2844,6 +2864,12 @@ function showSection(id){
   document.querySelectorAll(".section").forEach(x=>{ if(x.id!==id) x.hidden=true; });
   document.querySelectorAll("#nav button[data-section], #mBottomNav button[data-section]").forEach(x=>x.classList.toggle("active",x.dataset.section===id));
   if(typeof closeDrawer==="function") closeDrawer();
+  // Search only belongs to Home and Orders: close the dropdown/keyboard and drop any stale term elsewhere.
+  const searchable=(id==="home"||id==="orders");
+  closeSearchPop();
+  if(document.activeElement===$("#search")) $("#search").blur();
+  $("#filtersBox").classList.toggle("no-search",!searchable);
+  if(!searchable && $("#search").value){ $("#search").value=""; renderSearchPop(); renderAll(); }
   refreshSectionTitle();
   next.hidden=false;
   next.classList.remove("section-enter");
